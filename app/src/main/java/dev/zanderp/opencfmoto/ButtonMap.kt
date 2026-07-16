@@ -50,7 +50,11 @@ enum class ButtonAction(val id: String, val label: String) {
  *   • **Backward/Forward ×2** — a double-tap. Only the volume dashes can signal it (one coalesced
  *     volume write with a bigger jump); the 800MT's discrete track keys just repeat the single step,
  *     so these rows are effectively non-touch-dash only.
- *   • **Select** — the OK / ★ (start) button, which every dash sends as an AVRCP play/pause.
+ *   • **Select** — the OK / ★ (start) button, which every dash sends as an AVRCP play/pause. A quick
+ *     tap is [SELECT_PRESS]; holding it past [MediaButtonBridge]'s long-press threshold is
+ *     [SELECT_LONG]. The two are told apart by the gap between the button's key-down and key-up on the
+ *     media-button path, so long-press only works on dashes that send a distinct release (the ▲/▼
+ *     volume path has no release event, so it has no long-press).
  *
  * [label] is the semantic name (with the physical buttons that trigger it); [hint] explains it.
  */
@@ -62,7 +66,8 @@ enum class ButtonGesture(
 ) {
     NAV_BACK("navBack", "Backward  ◀ / ▲", "◀ left, or the ▲ volume press on non-touch dashes", ButtonAction.KNOB_BACK),
     NAV_FWD("navFwd", "Forward  ▶ / ▼", "▶ right, or the ▼ volume press on non-touch dashes", ButtonAction.KNOB_FORWARD),
-    SELECT_PRESS("selectPress", "Select  Enter / ★", "the OK / ★ start button (dash sends play-pause)", ButtonAction.SELECT),
+    SELECT_PRESS("selectPress", "Select  Enter / ★", "a quick tap of the OK / ★ start button (dash sends play-pause)", ButtonAction.SELECT),
+    SELECT_LONG("selectLong", "Select (hold)  Enter / ★", "press and hold the OK / ★ button", ButtonAction.ASSISTANT),
     NAV_BACK_DOUBLE("navBackDouble", "Backward ×2", "double-tap backward — non-touch dashes only", ButtonAction.HOME),
     NAV_FWD_DOUBLE("navFwdDouble", "Forward ×2", "double-tap forward — non-touch dashes only", ButtonAction.BACK),
 }

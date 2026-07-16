@@ -160,7 +160,7 @@ class ButtonMappingActivity : AppCompatActivity() {
             .setTitle("Reset to defaults?")
             .setMessage(
                 "Every gesture goes back to how it shipped: ▲/▼ press = knob, ▲▲ = home, " +
-                    "▼▼ = back, enter = select.\n\nSaved places are kept."
+                    "▼▼ = back, enter tap = select, enter hold = voice.\n\nSaved places are kept."
             )
             .setPositiveButton("Reset") { _, _ ->
                 ButtonMap.resetAll(this)

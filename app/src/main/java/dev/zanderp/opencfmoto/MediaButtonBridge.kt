@@ -19,6 +19,7 @@ import android.media.session.MediaSession
 import android.media.session.PlaybackState
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.provider.Settings
 import android.view.KeyEvent
 import dev.zanderp.opencfmoto.aa.AaInput
@@ -146,6 +147,7 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
                 if (on) takeMediaFocus() else releaseMediaFocus()
                 session?.isActive = on
                 if (on) pinVolume() else unpinVolume()
+                if (!on) selectDownAt = 0L   // drop any half-finished press when handing buttons back
                 log("[BTN] capture ${if (on) "ON — bike buttons drive Android Auto (music pauses)" else "OFF — buttons control media/volume"}")
             } catch (e: Exception) {
                 log("[BTN] setCaptureActive failed: $e")
@@ -192,7 +194,7 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
             session?.setMetadata(
                 MediaMetadata.Builder()
                     .putString(MediaMetadata.METADATA_KEY_TITLE, "Android Auto control")
-                    .putString(MediaMetadata.METADATA_KEY_ARTIST, "◀ ▶ / ▲ ▼ navigate · Enter selects")
+                    .putString(MediaMetadata.METADATA_KEY_ARTIST, "◀ ▶ / ▲ ▼ navigate · Enter selects · hold Enter = voice")
                     .putString(MediaMetadata.METADATA_KEY_ALBUM, "OpenCfMoto")
                     .putLong(MediaMetadata.METADATA_KEY_DURATION, TRACK_MS)
                     .build()
@@ -396,37 +398,69 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
     private val callback = object : MediaSession.Callback() {
         override fun onMediaButtonEvent(mediaButtonIntent: Intent): Boolean {
             @Suppress("DEPRECATION")
-            val ke = mediaButtonIntent.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT)
-            if (ke != null && ke.action == KeyEvent.ACTION_DOWN) {
-                log("[BTN] media key ${KeyEvent.keyCodeToString(ke.keyCode)} (code=${ke.keyCode})")
-                forward(ke.keyCode)
+            val ke = mediaButtonIntent.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT) ?: return true
+            when (ke.action) {
+                KeyEvent.ACTION_DOWN -> {
+                    val repeat = if (ke.repeatCount > 0) " repeat=${ke.repeatCount}" else ""
+                    log("[BTN] media key ${KeyEvent.keyCodeToString(ke.keyCode)} down (code=${ke.keyCode})$repeat")
+                    onKeyDown(ke.keyCode)
+                }
+                KeyEvent.ACTION_UP -> onKeyUp(ke.keyCode)
             }
             return true
         }
-        // Fallbacks: the bike takes the raw-key path above; other dashes / BT remotes may dispatch here.
+        // Fallbacks: the bike takes the raw-key path above; other dashes / BT remotes may dispatch
+        // here. These carry no hold timing, so they can only ever be a short press.
         override fun onPlay() = run(ButtonGesture.SELECT_PRESS)
         override fun onPause() = run(ButtonGesture.SELECT_PRESS)
     }
 
+    /** elapsedRealtime of the select button's key-down while it's held; 0 when nothing is pressed. */
+    private var selectDownAt = 0L
+
+    private fun isSelectKey(keyCode: Int) = when (keyCode) {
+        KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE,
+        KeyEvent.KEYCODE_MEDIA_PLAY,
+        KeyEvent.KEYCODE_MEDIA_PAUSE -> true
+        else -> false
+    }
+
     /**
-     * Map a raw media keycode to a gesture:
-     *   • play/pause → enter (select) — every dash sends this on the enter/OK button.
+     * Map a raw media key-down to a gesture:
+     *   • play/pause → the enter/OK button. We don't fire yet: a tap is [ButtonGesture.SELECT_PRESS]
+     *     and a hold is [ButtonGesture.SELECT_LONG], and we can only tell them apart once the button is
+     *     released (see [onKeyUp]). We just stamp when it went down (ignoring auto-repeat downs).
      *   • next-/previous-track → the ▶/◀ presses of the 800MT's 5-way joystick (verified on hardware:
      *     right = KEYCODE_MEDIA_NEXT, left = KEYCODE_MEDIA_PREVIOUS). The 3-button CFDL16 dashes never
-     *     emit these, so wiring them up is harmless there.
+     *     emit these, so wiring them up is harmless there. These fire on down (they have no long-press).
      * Anything else is logged and dropped — aliasing an unknown key onto a real action would be a
      * nasty surprise when that action is "navigate home".
      */
-    private fun forward(keyCode: Int) {
-        when (keyCode) {
-            KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE,
-            KeyEvent.KEYCODE_MEDIA_PLAY,
-            KeyEvent.KEYCODE_MEDIA_PAUSE -> run(ButtonGesture.SELECT_PRESS)
-            KeyEvent.KEYCODE_MEDIA_NEXT,
-            KeyEvent.KEYCODE_MEDIA_FAST_FORWARD -> run(ButtonGesture.NAV_FWD)
-            KeyEvent.KEYCODE_MEDIA_PREVIOUS,
-            KeyEvent.KEYCODE_MEDIA_REWIND -> run(ButtonGesture.NAV_BACK)
+    private fun onKeyDown(keyCode: Int) {
+        when {
+            isSelectKey(keyCode) -> { if (selectDownAt == 0L) selectDownAt = SystemClock.elapsedRealtime() }
+            keyCode == KeyEvent.KEYCODE_MEDIA_NEXT ||
+                keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD -> run(ButtonGesture.NAV_FWD)
+            keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS ||
+                keyCode == KeyEvent.KEYCODE_MEDIA_REWIND -> run(ButtonGesture.NAV_BACK)
         }
+    }
+
+    /**
+     * Select button released: how long it was held decides the gesture. Held past [LONG_PRESS_MS] →
+     * [ButtonGesture.SELECT_LONG], otherwise a normal [ButtonGesture.SELECT_PRESS]. An UP with no
+     * matching DOWN (e.g. capture turned on mid-press) falls back to a short press so select never
+     * silently does nothing.
+     */
+    private fun onKeyUp(keyCode: Int) {
+        if (!isSelectKey(keyCode)) return
+        val downAt = selectDownAt
+        selectDownAt = 0L
+        if (downAt == 0L) { run(ButtonGesture.SELECT_PRESS); return }
+        val heldMs = SystemClock.elapsedRealtime() - downAt
+        val long = heldMs >= LONG_PRESS_MS
+        log("[BTN] select held ${heldMs}ms → ${if (long) "long press" else "tap"}")
+        run(if (long) ButtonGesture.SELECT_LONG else ButtonGesture.SELECT_PRESS)
     }
 
     companion object {
@@ -440,6 +474,14 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
          * a dash calibrates differently, that log line is what to re-read.
          */
         private const val DOUBLE_TAP_STEPS = 3
+
+        /**
+         * How long the select button must be held to count as a long press rather than a tap. A touch
+         * above Android's own 500 ms long-press timeout, to leave margin for a gloved, deliberate hold
+         * and keep ordinary taps from tripping it. The actual hold is logged on every release, so this
+         * is the number to re-read if a dash times differently.
+         */
+        private const val LONG_PRESS_MS = 600L
 
         private const val REASSERT_POLL_MS = 1_000L
         private const val REASSERT_GIVEUP_MS = 90_000L

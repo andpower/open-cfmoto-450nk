@@ -285,7 +285,8 @@ the mirroring link — so you must **pair the phone to the bike over Bluetooth**
 | --- | --- |
 | **Backward** — ◀ left, or ▲ volume on non-touch dashes | Rotary knob back (previous item) |
 | **Forward** — ▶ right, or ▼ volume on non-touch dashes | Rotary knob forward (next item) |
-| **Select** — Enter / ★ (start) button | Select / OK |
+| **Select** — Enter / ★ (start) button, quick tap | Select / OK |
+| **Select (hold)** — press and hold Enter / ★ | Assistant (voice) |
 | **Backward ×2** (double-tap, non-touch dashes) | Home (app list) |
 | **Forward ×2** (double-tap, non-touch dashes) | Back |
 

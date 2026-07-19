@@ -80,6 +80,9 @@ object VideoPrefs {
     private const val KEY_FIT = "screen_fit"
     private const val KEY_POWER = "power_mode"
     private const val KEY_RESOLUTION = "resolution_mode"
+    private const val KEY_HUD = "dash_hud"
+    private const val KEY_SPEED_UNIT = "speed_unit"
+    private const val KEY_HUD_ELEMENTS = "dash_hud_elements"
 
     private fun prefs(ctx: Context) =
         ctx.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -123,6 +126,47 @@ object VideoPrefs {
 
     fun setResolution(ctx: Context, mode: ResolutionMode) {
         BikeScope.putString(prefs(ctx), ctx, KEY_RESOLUTION, mode.name)
+    }
+
+    /**
+     * Dash HUD (idea B1): paint live speed/trip/phone telemetry into the FIT letterbox bars. On by
+     * default, but only ever visible when [ScreenFit.FIT] leaves bars to paint into (FILL/STRETCH
+     * cover the whole canvas).
+     */
+    fun hudEnabled(ctx: Context): Boolean =
+        BikeScope.getString(prefs(ctx), ctx, KEY_HUD, "true") == "true"
+
+    fun setHudEnabled(ctx: Context, on: Boolean) {
+        BikeScope.putString(prefs(ctx), ctx, KEY_HUD, on.toString())
+    }
+
+    /** Speed/distance unit for the HUD. Defaults to mph in the few mph countries, else km/h. */
+    fun speedUnit(ctx: Context): SpeedUnit {
+        val name = BikeScope.getString(prefs(ctx), ctx, KEY_SPEED_UNIT, defaultSpeedUnit().name)
+        return runCatching { SpeedUnit.valueOf(name!!) }.getOrDefault(defaultSpeedUnit())
+    }
+
+    fun setSpeedUnit(ctx: Context, unit: SpeedUnit) {
+        BikeScope.putString(prefs(ctx), ctx, KEY_SPEED_UNIT, unit.name)
+    }
+
+    private fun defaultSpeedUnit(): SpeedUnit {
+        val mph = setOf("US", "GB", "MM", "LR")   // imperial-ish road-speed countries
+        return if (java.util.Locale.getDefault().country.uppercase() in mph) SpeedUnit.MPH else SpeedUnit.KMH
+    }
+
+    /** Which HUD elements the rider has enabled (per bike). Unset = all on; an explicitly emptied set
+     *  stays empty (the rider turned everything off — the master toggle is separate). */
+    fun hudElements(ctx: Context): Set<HudElement> {
+        val def = HudElement.ALL.joinToString(",") { it.name }
+        val csv = BikeScope.getString(prefs(ctx), ctx, KEY_HUD_ELEMENTS, def) ?: def
+        return csv.split(",").mapNotNull { runCatching { HudElement.valueOf(it.trim()) }.getOrNull() }.toSet()
+    }
+
+    fun setHudElement(ctx: Context, element: HudElement, on: Boolean) {
+        val cur = hudElements(ctx).toMutableSet()
+        if (on) cur.add(element) else cur.remove(element)
+        BikeScope.putString(prefs(ctx), ctx, KEY_HUD_ELEMENTS, cur.joinToString(",") { it.name })
     }
 
     /**

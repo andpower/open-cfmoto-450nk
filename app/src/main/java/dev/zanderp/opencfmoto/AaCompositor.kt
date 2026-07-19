@@ -9,6 +9,7 @@ import android.opengl.EGLExt
 import android.opengl.EGLSurface
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
+import android.opengl.GLUtils
 import android.opengl.Matrix
 import android.os.Handler
 import android.os.HandlerThread
@@ -65,6 +66,30 @@ class AaCompositor(private val log: (String) -> Unit) {
     private var uTexMatrix = 0
     private var textureId = 0
     private lateinit var surfaceTexture: SurfaceTexture
+
+    // ── Rider HUD (idea B1): paint telemetry into the FIT letterbox bars ──────────────────────────
+    // A second, plain-2D GL program draws a Canvas-rendered bitmap (speed/trip/clock/battery) into
+    // each detected black bar, on top of the AA frame, in the bike encoder surface only. Bars are
+    // computed from the viewport in FIT mode (none in FILL/STRETCH); the bitmap is only re-rendered
+    // and re-uploaded when a displayed value changes (~1 Hz), so it barely touches the idle throttle.
+    private var hudProgram = 0
+    private var hudAPos = 0
+    private var hudATex = 0
+    private var hudUTex = 0
+    @Volatile private var hudBars: List<BarRect> = emptyList()
+    private val hudTextures = HashMap<Int, Int>()   // bar index → GL texture id
+    private val hudSigs = HashMap<Int, String>()    // bar index → last uploaded content signature
+    // Quad with V flipped (Android bitmaps upload top-row-first, GL samples bottom-up).
+    private val hudQuad: FloatBuffer = ByteBuffer
+        .allocateDirect(4 * 4 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer().apply {
+            put(floatArrayOf(
+                -1f, -1f, 0f, 1f,
+                 1f, -1f, 1f, 1f,
+                -1f,  1f, 0f, 0f,
+                 1f,  1f, 1f, 0f,
+            ))
+            position(0)
+        }
 
     /** Where the AA decoder renders. Valid after [start]. */
     @Volatile var inputSurface: Surface? = null
@@ -270,6 +295,30 @@ class AaCompositor(private val log: (String) -> Unit) {
         }
         vpX = (canvasW - vpW) / 2
         vpY = (canvasH - vpH) / 2
+        computeHudBars()
+    }
+
+    /** Recompute the letterbox bars the HUD paints into, and (re)allocate a GL texture per bar.
+     *  Runs on the GL thread (called from [computeViewport], which is inside a handler post). */
+    private fun computeHudBars() {
+        val bars = HudBars.detect(canvasW, canvasH, vpX, vpY, vpW, vpH, fitMode, HUD_MIN_BAR_PX)
+        // Free any textures we no longer need, allocate any new ones.
+        if (bars.size != hudBars.size) {
+            hudTextures.values.forEach { id -> try { GLES20.glDeleteTextures(1, intArrayOf(id), 0) } catch (_: Exception) {} }
+            hudTextures.clear(); hudSigs.clear()
+            for (i in bars.indices) {
+                val ids = IntArray(1)
+                GLES20.glGenTextures(1, ids, 0)
+                GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, ids[0])
+                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR)
+                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR)
+                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE)
+                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE)
+                hudTextures[i] = ids[0]
+            }
+        }
+        hudBars = bars
+        if (bars.isNotEmpty()) log("[COMPOSITOR] HUD bars=${bars.size} (${bars.joinToString { "${it.w}x${it.h}@(${it.x},${it.y})" }})")
     }
 
     /** Set the live-frame cap (frames/sec) from the user's [dev.zanderp.opencfmoto.PowerMode]. */
@@ -324,14 +373,15 @@ class AaCompositor(private val log: (String) -> Unit) {
     private fun drawFrame() {
         if (windowSurface == EGL14.EGL_NO_SURFACE && previewSurface == EGL14.EGL_NO_SURFACE) return
         surfaceTexture.getTransformMatrix(texMatrix)
-        if (windowSurface != EGL14.EGL_NO_SURFACE) renderTo(windowSurface, vpX, vpY, vpW, vpH)
-        if (previewSurface != EGL14.EGL_NO_SURFACE) renderTo(previewSurface, ppX, ppY, ppW, ppH)
+        // The HUD is painted into the bars of the BIKE surface only (not the phone preview).
+        if (windowSurface != EGL14.EGL_NO_SURFACE) renderTo(windowSurface, vpX, vpY, vpW, vpH, drawHud = true)
+        if (previewSurface != EGL14.EGL_NO_SURFACE) renderTo(previewSurface, ppX, ppY, ppW, ppH, drawHud = false)
         lastDrawMs = android.os.SystemClock.uptimeMillis()
         pendingFrame = false
     }
 
     /** Render the latched frame into [target], letterboxed to viewport ([vx],[vy],[vw],[vh]). */
-    private fun renderTo(target: EGLSurface, vx: Int, vy: Int, vw: Int, vh: Int) {
+    private fun renderTo(target: EGLSurface, vx: Int, vy: Int, vw: Int, vh: Int, drawHud: Boolean = false) {
         EGL14.eglMakeCurrent(eglDisplay, target, target, eglContext)
 
         // Black background (the letterbox bars).
@@ -358,14 +408,64 @@ class AaCompositor(private val log: (String) -> Unit) {
         GLES20.glDisableVertexAttribArray(aPosition)
         GLES20.glDisableVertexAttribArray(aTexCoord)
 
+        // Paint the rider HUD into the black bars, over the AA frame (bike surface only). Guarded so a
+        // HUD glitch can never take down the video path.
+        if (drawHud && HudBus.enabled && hudBars.isNotEmpty()) {
+            try { drawHudPanels() } catch (e: Exception) { log("[COMPOSITOR] HUD draw failed: $e") }
+        }
+
         // Monotonic presentation time so repeated (keep-alive) frames aren't dropped as duplicate PTS.
         EGLExt.eglPresentationTimeANDROID(eglDisplay, target, System.nanoTime())
         EGL14.eglSwapBuffers(eglDisplay, target)
     }
 
+    /**
+     * Draw each HUD bar's texture into its bar rect on the current surface. The bitmap is only
+     * re-rendered + re-uploaded when its content signature changes (~1 Hz), so a static screen stays
+     * cheap; the textured-quad draw itself runs every frame. Assumes the AA program's attrib arrays
+     * were already disabled by [renderTo]. Bar rects are top-left; GL viewport is bottom-left, hence
+     * the Y flip.
+     */
+    private fun drawHudPanels() {
+        val bars = hudBars
+        if (bars.isEmpty()) return
+        val cellsPerBar = HudLayout.distribute(
+            HudLayout.cells(HudBus.stats, HudBus.unit, HudBus.clock, HudBus.elements), bars.size,
+        )
+        GLES20.glUseProgram(hudProgram)
+        hudQuad.position(0)
+        GLES20.glVertexAttribPointer(hudAPos, 2, GLES20.GL_FLOAT, false, 16, hudQuad)
+        GLES20.glEnableVertexAttribArray(hudAPos)
+        hudQuad.position(2)
+        GLES20.glVertexAttribPointer(hudATex, 2, GLES20.GL_FLOAT, false, 16, hudQuad)
+        GLES20.glEnableVertexAttribArray(hudATex)
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
+        for ((i, bar) in bars.withIndex()) {
+            val tex = hudTextures[i] ?: continue
+            val cells = cellsPerBar.getOrElse(i) { emptyList() }
+            val sig = HudLayout.signature(cells)
+            if (hudSigs[i] != sig) {
+                val bmp = HudRenderer.render(bar, cells)
+                GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex)
+                GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp, 0)
+                bmp.recycle()
+                hudSigs[i] = sig
+            }
+            GLES20.glViewport(bar.x, canvasH - (bar.y + bar.h), bar.w, bar.h)
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex)
+            GLES20.glUniform1i(hudUTex, 0)
+            GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
+        }
+        GLES20.glDisableVertexAttribArray(hudAPos)
+        GLES20.glDisableVertexAttribArray(hudATex)
+    }
+
     fun release() {
         handler.removeCallbacks(keepAlive)
         handler.post {
+            // The EGL context teardown below frees all GL objects (incl. HUD textures/program); just
+            // drop our bookkeeping so a reused instance starts clean.
+            hudTextures.clear(); hudSigs.clear(); hudBars = emptyList()
             try { inputSurface?.release() } catch (_: Exception) {}
             try { if (::surfaceTexture.isInitialized) surfaceTexture.release() } catch (_: Exception) {}
             if (eglDisplay != EGL14.EGL_NO_DISPLAY) {
@@ -440,6 +540,28 @@ class AaCompositor(private val log: (String) -> Unit) {
         GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR)
         GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE)
         GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE)
+
+        initHudGl()
+    }
+
+    /** Build the plain-2D program used to draw the HUD bitmap into the letterbox bars. */
+    private fun initHudGl() {
+        val vs = """
+            attribute vec4 aPosition;
+            attribute vec2 aTexCoord;
+            varying vec2 vTexCoord;
+            void main() { gl_Position = aPosition; vTexCoord = aTexCoord; }
+        """.trimIndent()
+        val fs = """
+            precision mediump float;
+            varying vec2 vTexCoord;
+            uniform sampler2D uTex;
+            void main() { gl_FragColor = texture2D(uTex, vTexCoord); }
+        """.trimIndent()
+        hudProgram = linkProgram(vs, fs)
+        hudAPos = GLES20.glGetAttribLocation(hudProgram, "aPosition")
+        hudATex = GLES20.glGetAttribLocation(hudProgram, "aTexCoord")
+        hudUTex = GLES20.glGetUniformLocation(hudProgram, "uTex")
     }
 
     private fun linkProgram(vsSrc: String, fsSrc: String): Int {
@@ -469,5 +591,10 @@ class AaCompositor(private val log: (String) -> Unit) {
             throw RuntimeException("shader compile failed: $err")
         }
         return s
+    }
+
+    companion object {
+        /** Minimum bar thickness (px) to bother painting the HUD — below this, text can't be legible. */
+        private const val HUD_MIN_BAR_PX = 56
     }
 }

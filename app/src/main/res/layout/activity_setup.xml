@@ -931,6 +931,32 @@
                         android:text="Off" />
                 </LinearLayout>
 
+                <!-- Dash HUD (telemetry painted into the letterbox bars) -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Dash HUD"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="6dp"
+                    android:text="Show live speed, trip and phone stats in the dashboard's black bars. Only appears when Screen fit is set to “Fit” (Display, above) — other fits leave no bars."
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/hud_settings_btn"
+                    style="@style/Widget.OpenCfMoto.Button.Tonal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="HUD settings" />
+
                 <!-- Seamless auto-resume (overlay permission → background AA relaunch) -->
                 <TextView
                     android:layout_width="match_parent"

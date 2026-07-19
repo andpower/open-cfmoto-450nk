@@ -90,6 +90,9 @@
             android:name=".HudViewActivity"
             android:exported="false"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
+        <activity
+            android:name=".HudSettingsActivity"
+            android:exported="false" />
         <service
             android:name=".ProjectionService"
             android:exported="false"

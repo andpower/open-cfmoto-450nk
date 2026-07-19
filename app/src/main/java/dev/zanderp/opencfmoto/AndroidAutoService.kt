@@ -35,6 +35,7 @@ class AndroidAutoService : Service() {
     private var pipeline: VideoPipeline? = null
     private var receiver: AaReceiver? = null
     private var mediaButtons: MediaButtonBridge? = null
+    private var hudStats: HudStatsProvider? = null
     private var wakeLock: PowerManager.WakeLock? = null
     // Wi-Fi locks that keep the bike link fast for the whole streaming session (see [acquireWifiLocks]).
     // Two are held on purpose: LOW_LATENCY only engages while the app is foreground AND the screen is
@@ -166,6 +167,9 @@ class AndroidAutoService : Service() {
         try { BikeLink.prober?.stop() } catch (_: Exception) {}
         try { mediaButtons?.stop() } catch (_: Exception) {}
         mediaButtons = null
+        try { hudStats?.stop() } catch (_: Exception) {}
+        hudStats = null
+        HudBus.enabled = false
         try { receiver?.stop() } catch (_: Exception) {}
         receiver = null
         AaVideoBridge.pipeline = null
@@ -378,6 +382,11 @@ class AndroidAutoService : Service() {
             }
             // Capture the bike's handlebar buttons (Bluetooth AVRCP) → Android Auto navigation.
             mediaButtons = MediaButtonBridge(applicationContext, LogBus::log).also { it.start() }
+            // Rider HUD (B1): publish the toggle/unit/elements for the compositor and feed it live stats.
+            HudBus.enabled = VideoPrefs.hudEnabled(applicationContext)
+            HudBus.unit = VideoPrefs.speedUnit(applicationContext)
+            HudBus.elements = VideoPrefs.hudElements(applicationContext)
+            hudStats = HudStatsProvider(applicationContext, LogBus::log).also { it.start() }
         } catch (e: Exception) {
             LogBus.log("[AA] receiver start failed: $e")
             stopSelf()
@@ -434,6 +443,9 @@ class AndroidAutoService : Service() {
         try { TripLogger.current?.stopAndSave() } catch (_: Exception) {}
         try { mediaButtons?.stop() } catch (_: Exception) {}
         mediaButtons = null
+        try { hudStats?.stop() } catch (_: Exception) {}
+        hudStats = null
+        HudBus.enabled = false
         try { receiver?.stop() } catch (_: Exception) {}
         receiver = null
         AaVideoBridge.pipeline = null

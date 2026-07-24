@@ -13,6 +13,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
+import android.graphics.drawable.Icon
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Handler
@@ -61,7 +62,8 @@ class AndroidAutoService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         active = this
         when (intent?.action) {
-            ACTION_STOP -> { stopSelf(); return START_NOT_STICKY }
+            // Notification "Stop" action — same full teardown as the main screen's Stop button.
+            ACTION_STOP -> { LogBus.log("[AA] Stop tapped from notification"); fullTeardown(); return START_NOT_STICKY }
         }
         startAsForeground()
         startReceiver()
@@ -304,12 +306,17 @@ class AndroidAutoService : Service() {
             if (resume) putExtra(EXTRA_RESUME, true)
         }
         val pi = PendingIntent.getActivity(this, if (resume) 1 else 0, open, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        val stopIntent = Intent(this, AndroidAutoService::class.java).apply { action = ACTION_STOP }
+        val stopPi = PendingIntent.getService(this, 2, stopIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         return Notification.Builder(this, CHANNEL_ID)
             .setContentTitle(title)
             .setContentText(text)
             .setSmallIcon(android.R.drawable.ic_menu_compass)
             .setContentIntent(pi)
             .setOnlyAlertOnce(true)
+            .addAction(Notification.Action.Builder(
+                Icon.createWithResource(this, R.drawable.ic_stop), "Stop", stopPi,
+            ).build())
             .build()
     }
 
@@ -423,14 +430,19 @@ class AndroidAutoService : Service() {
     /**
      * Drop the whole projection: stop the bike link (dash stops pulling the compositor's last frame,
      * so no frozen image), leave the bike Wi-Fi, mark STOPPED, and stop the service (which tears down
-     * the receiver, pipeline, and wake lock in [onDestroy]). Shared by the AA-exit path and app
-     * close/kill ([onTaskRemoved]).
+     * the receiver, pipeline, and wake lock in [onDestroy]). Mirrors [MainActivity]'s Stop button
+     * exactly so the notification's Stop action behaves identically. Shared by the AA-exit path, app
+     * close/kill ([onTaskRemoved]), and the notification's ACTION_STOP.
      */
     private fun fullTeardown() {
         AaVideoBridge.onSteadyVideo = null
         try { TripLogger.current?.stopAndSave() } catch (_: Exception) {}
         try { BikeLink.prober?.stop() } catch (_: Exception) {}
+        try { ProjectionHolder.projection?.stop() } catch (_: Exception) {}
+        ProjectionHolder.projection = null
+        try { ProjectionService.stop(applicationContext) } catch (_: Exception) {}
         try { BikeWifi.leave(applicationContext, LogBus::log) } catch (_: Exception) {}
+        try { BikeWifiP2p.stop(LogBus::log) } catch (_: Exception) {}
         ConnectionState.set(Phase.STOPPED, "")
         stopSelf()   // onDestroy tears down the receiver, pipeline, and wake lock
     }

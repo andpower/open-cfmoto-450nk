@@ -558,7 +558,7 @@ class AndroidAutoService : Service() {
         private const val RESUME_STEADY_TIMEOUT_MS = 12_000L // wait for AA video before falling back
 
         /** Intent extra: MainActivity should re-project on open (BAL-safe resume after a park). */
-        const val EXTRA_RESUME = "dev.zanderp.opencfmoto.RESUME_PROJECTION"
+        const val EXTRA_RESUME = "com.andpower.opencfmoto450nk.RESUME_PROJECTION"
 
         @Volatile var isRunning = false
             private set
@@ -610,8 +610,8 @@ class AndroidAutoService : Service() {
             }
         }
 
-        const val ACTION_STOP = "dev.zanderp.opencfmoto.ACTION_STOP_AA"
-        const val ACTION_GPX_WAKE = "dev.zanderp.opencfmoto.ACTION_GPX_WAKE"
+        const val ACTION_STOP = "com.andpower.opencfmoto450nk.ACTION_STOP_AA"
+        const val ACTION_GPX_WAKE = "com.andpower.opencfmoto450nk.ACTION_GPX_WAKE"
 
         fun start(ctx: Context) {
             val i = Intent(ctx, AndroidAutoService::class.java)

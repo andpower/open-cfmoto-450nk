@@ -41,8 +41,8 @@ class BikeProfileSelectTest {
         assertEquals(ButtonAction.KNOB_BACK, ButtonGesture.NAV_BACK.default)
         assertEquals(ButtonAction.KNOB_FORWARD, ButtonGesture.NAV_FWD.default)
         assertEquals(ButtonAction.SELECT, ButtonGesture.SELECT_PRESS.default)
-        assertEquals(ButtonAction.DPAD_UP, ButtonGesture.NAV_BACK_LONG.default)
-        assertEquals(ButtonAction.DPAD_DOWN, ButtonGesture.NAV_FWD_LONG.default)
+        assertEquals(ButtonAction.NONE, ButtonGesture.NAV_BACK_LONG.default)
+        assertEquals(ButtonAction.NONE, ButtonGesture.NAV_FWD_LONG.default)
         assertEquals(ButtonAction.HOME, ButtonGesture.SELECT_LONG.default)
         assertEquals(ButtonAction.DPAD_LEFT, ButtonGesture.NAV_BACK_DOUBLE.default)
         assertEquals(ButtonAction.DPAD_RIGHT, ButtonGesture.NAV_FWD_DOUBLE.default)
@@ -62,7 +62,7 @@ class BikeProfileSelectTest {
         assertEquals(ButtonAction.BACK, m[ButtonGesture.NAV_BACK_DOUBLE])
         assertEquals(ButtonAction.HOME, m[ButtonGesture.NAV_FWD_DOUBLE])
         assertTrue(ButtonClusterPreset.BACK_SET.instantSingles)
-        assertFalse(ButtonClusterPreset.FIVE_WAY.instantSingles)
+        assertTrue(ButtonClusterPreset.FIVE_WAY.instantSingles)
     }
 
     @Test

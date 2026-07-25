@@ -4,6 +4,7 @@
 package dev.zanderp.opencfmoto
 
 import android.Manifest
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -51,6 +52,10 @@ class MainActivity : AppCompatActivity() {
     private val ts = SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
     /** True when the pending QR scan should kick off the Android Auto flow (vs the mirror path). */
     private var pendingAaStart = false
+    /** Explicit installed app selected from [AppsActivity] for whole-screen parked projection. */
+    private var pendingAppPackage: String? = null
+    private var pendingAppClass: String? = null
+    private var pendingAppLabel: String? = null
     /** Guards the "close the official CFMoto app" prompt so it shows once per error, not every redraw. */
     private var rivalPromptShown = false
     /** Guards the VPN kill-switch prompt so it shows once per error, not every redraw. */
@@ -62,6 +67,10 @@ class MainActivity : AppCompatActivity() {
         val raw = result.data?.getStringExtra(QrScanActivity.RESULT_QR)
         if (result.resultCode != RESULT_OK || raw == null) {
             log("QR scan cancelled")
+            if (pendingAppPackage != null) {
+                cancelProjection()
+                clearPendingApp()
+            }
             return@registerForActivityResult
         }
         log("QR raw: $raw")
@@ -69,6 +78,10 @@ class MainActivity : AppCompatActivity() {
         if (qr == null) {
             log("QR parse FAILED — missing ssid/pwd?")
             Toast.makeText(this, "Invalid QR", Toast.LENGTH_SHORT).show()
+            if (pendingAppPackage != null) {
+                cancelProjection()
+                clearPendingApp()
+            }
             return@registerForActivityResult
         }
         log(
@@ -87,14 +100,50 @@ class MainActivity : AppCompatActivity() {
             applyProfile(qr)
             ConnectionState.set(Phase.MIRRORING, BikeMemory.lastBikeName(this) ?: qr.ssid)
             joinWifi(qr, gateOnAaSteady = false)
-            // Same as startMirrorLink: single-app capture needs the shared app visible.
-            moveTaskToBack(true)
-            Toast.makeText(
-                this,
-                "Leave the shared app on screen (OpenCfMoto stays in the notification)",
-                Toast.LENGTH_LONG,
-            ).show()
+            if (pendingAppPackage != null) {
+                launchPendingMirrorApp()
+            } else {
+                // Same as startMirrorLink: single-app capture needs the shared app visible.
+                moveTaskToBack(true)
+                Toast.makeText(
+                    this,
+                    "Leave the shared app on screen (OpenCfMoto stays in the notification)",
+                    Toast.LENGTH_LONG,
+                ).show()
+            }
         }
+    }
+
+    private val appsLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+    ) { result ->
+        if (result.resultCode != RESULT_OK || result.data == null) {
+            log("app selection cancelled")
+            clearPendingApp()
+            return@registerForActivityResult
+        }
+        val data = result.data!!
+        val packageName = data.getStringExtra(AppsActivity.EXTRA_PACKAGE).orEmpty()
+        val className = data.getStringExtra(AppsActivity.EXTRA_CLASS).orEmpty()
+        val label = data.getStringExtra(AppsActivity.EXTRA_LABEL).orEmpty()
+        val component = if (packageName.isNotBlank() && className.isNotBlank()) {
+            ComponentName(packageName, className)
+        } else {
+            null
+        }
+        val activity = component?.let {
+            runCatching { packageManager.getActivityInfo(it, 0) }.getOrNull()
+        }
+        if (component == null || activity == null || !activity.enabled || packageName == this.packageName) {
+            log("app selection invalid: package='$packageName' class='$className'")
+            Toast.makeText(this, "That app cannot be launched", Toast.LENGTH_LONG).show()
+            clearPendingApp()
+            return@registerForActivityResult
+        }
+        pendingAppPackage = packageName
+        pendingAppClass = className
+        pendingAppLabel = label.ifBlank { packageName }
+        confirmParkedAndStartApp()
     }
 
     /** Pick the bike profile from the QR up front — it drives the Android Auto resolution/orientation,
@@ -200,6 +249,7 @@ class MainActivity : AppCompatActivity() {
     ) { result ->
         if (result.resultCode != RESULT_OK || result.data == null) {
             log("screen-capture consent declined")
+            clearPendingApp()
             return@registerForActivityResult
         }
         // FGS of type mediaProjection must be RUNNING before getMediaProjection() on API 34+.
@@ -217,29 +267,51 @@ class MainActivity : AppCompatActivity() {
                         val mpm = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
                         ProjectionHolder.projection = mpm.getMediaProjection(code, data)
                         GpxSession.clear()
-                        log("screen-capture armed (FGS up after ${tries * 100}ms) — pick Entire screen or a single app (Android 14+)")
+                        val selectedApp = pendingAppLabel
+                        val captureMode = if (selectedApp == null) {
+                            "pick Entire screen or a single app (Android 14+)"
+                        } else {
+                            "whole screen for $selectedApp"
+                        }
+                        log("screen-capture armed (FGS up after ${tries * 100}ms) — $captureMode")
                         androidx.appcompat.app.AlertDialog.Builder(this@MainActivity)
-                            .setTitle("Mirror ready")
+                            .setTitle(if (selectedApp == null) "Mirror ready" else "$selectedApp ready")
                             .setMessage(
-                                "Entire screen — best for riding; phone stays awake while mirroring. " +
-                                    "Uses Setup ▸ Screen fit (Fit = whole UI + bars).\n\n" +
-                                    "Single app — that app must stay on screen; Android sends no frames " +
-                                    "in the background. Prefer GPX / Tracks or Android Auto for pocket use.\n\n" +
-                                    "Bike touch does not drive mirrored apps. Continue connects and " +
-                                    "sends OpenCfMoto to the background.",
+                                if (selectedApp == null) {
+                                    "Entire screen — best for riding; phone stays awake while mirroring. " +
+                                        "Uses Setup ▸ Screen fit (Fit = whole UI + bars).\n\n" +
+                                        "Single app — that app must stay on screen; Android sends no frames " +
+                                        "in the background. Prefer GPX / Tracks or Android Auto for pocket use.\n\n" +
+                                        "Bike touch does not drive mirrored apps. Continue connects and " +
+                                        "sends OpenCfMoto to the background."
+                                } else {
+                                    "OpenCfMoto will connect to the bike and open $selectedApp using " +
+                                        "whole-screen sharing.\n\nThe 450NK is not touch. The handlebar " +
+                                        "buttons will be switched to normal media control, so play/pause " +
+                                        "and track changes work only if $selectedApp supports them.\n\n" +
+                                        "Use this mode only while parked. Protected video may appear black."
+                                },
                             )
-                            .setPositiveButton("Continue") { _, _ -> startMirrorLink() }
+                            .setPositiveButton(if (selectedApp == null) "Continue" else "Launch on bike") { _, _ ->
+                                if (selectedApp == null) startMirrorLink() else startAppMirrorLink()
+                            }
+                            .setNegativeButton("Cancel") { _, _ ->
+                                cancelProjection()
+                                clearPendingApp()
+                            }
                             .setCancelable(false)
                             .show()
                     } catch (e: Exception) {
                         log("getMediaProjection failed: $e")
                         ProjectionService.stop(this@MainActivity)
+                        clearPendingApp()
                     }
                 } else if (tries++ < maxTries) {
                     logView.postDelayed(this, 100)
                 } else {
                     log("foreground service did not start within 5s — aborting mirror")
                     ProjectionService.stop(this@MainActivity)
+                    clearPendingApp()
                 }
             }
         }
@@ -274,7 +346,7 @@ class MainActivity : AppCompatActivity() {
         (connectBtn as? MaterialButton)?.setIconResource(R.drawable.ic_power)
         findViewById<android.widget.TextView>(R.id.brand_version).text =
             "v${BuildConfig.VERSION_NAME}"
-        // These three share a narrow third-width column: put the icon on TOP so the label gets the
+        // These four share a narrow row: put the icon on TOP so each label gets the full width.
         // full width and isn't clipped (e.g. "Mirror" → "Mirro" when the icon sat inline).
         (findViewById<View>(R.id.btn_aa_start) as? MaterialButton)?.apply {
             setIconResource(R.drawable.ic_qr)
@@ -284,6 +356,12 @@ class MainActivity : AppCompatActivity() {
         }
         (findViewById<View>(R.id.btn_gpx) as? MaterialButton)?.apply {
             setIconResource(R.drawable.ic_place)
+            iconGravity = MaterialButton.ICON_GRAVITY_TOP
+            iconPadding = 2
+            setPadding(0, paddingTop, 0, paddingBottom)
+        }
+        (findViewById<View>(R.id.btn_apps) as? MaterialButton)?.apply {
+            setIconResource(R.drawable.ic_apps)
             iconGravity = MaterialButton.ICON_GRAVITY_TOP
             iconPadding = 2
             setPadding(0, paddingTop, 0, paddingBottom)
@@ -400,6 +478,9 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_aa_start).setOnClickListener { startAaScan() }
 
         findViewById<Button>(R.id.btn_mirror_start).setOnClickListener { onMirrorPressed() }
+        findViewById<View>(R.id.btn_apps).setOnClickListener {
+            appsLauncher.launch(Intent(this, AppsActivity::class.java))
+        }
         findViewById<View>(R.id.btn_gpx).setOnClickListener { onMapPressed() }
         findViewById<Button>(R.id.btn_aa_stop).setOnClickListener { stopEverything() }
 
@@ -712,6 +793,7 @@ class MainActivity : AppCompatActivity() {
         setEnabled(R.id.btn_aa_start, !busy)
         // Map / Mirror stay available while live so the rider can switch dash content.
         setEnabled(R.id.btn_mirror_start, !busy || live)
+        setEnabled(R.id.btn_apps, !busy || live)
         setEnabled(R.id.btn_gpx, !busy || live)
         setEnabled(R.id.btn_aa_stop, busy || live)
     }
@@ -1010,6 +1092,8 @@ class MainActivity : AppCompatActivity() {
         try { ProjectionService.stop(this) } catch (e: Exception) { log("projection stop: $e") }
         try { BikeWifi.leave(this, ::log) } catch (e: Exception) { log("wifi leave: $e") }
         try { BikeWifiP2p.stop(::log) } catch (e: Exception) { log("p2p stop: $e") }
+        AppMirrorSession.restoreButtons(this)
+        clearPendingApp()
         ConnectionState.set(Phase.STOPPED, "")
     }
 
@@ -1033,6 +1117,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun onMirrorPressed() {
         log("→ Mirror: cast phone screen to dash")
+        clearPendingApp()
         pendingAaStart = false
         ensureLocationPermission()
         try {
@@ -1050,6 +1135,55 @@ class MainActivity : AppCompatActivity() {
             projectionLauncher.launch(intent)
         } catch (e: Exception) {
             log("mirror start failed ($e)")
+        }
+    }
+
+    /** Validate that the rider is stopped, then request whole-screen capture for the chosen app. */
+    private fun confirmParkedAndStartApp() {
+        val label = pendingAppLabel ?: return
+        val speed = ParkedSafety.recentSpeedKmh(this)
+        if (ParkedSafety.isMoving(speed)) {
+            val shown = speed?.toInt() ?: 0
+            log("→ Apps blocked: device reports $shown km/h")
+            Toast.makeText(
+                this,
+                "Apps are parked-only. Current speed is about $shown km/h.",
+                Toast.LENGTH_LONG,
+            ).show()
+            clearPendingApp()
+            return
+        }
+        val speedNote = speed?.let { "Current reported speed: ${it.toInt()} km/h.\n\n" }.orEmpty()
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Confirm the bike is parked")
+            .setMessage(
+                "$speedNote$label is not a standard Android Auto app. It will be mirrored as a " +
+                    "phone screen and may require phone interaction.\n\nDo not use video or touch-only " +
+                    "apps while riding.",
+            )
+            .setPositiveButton("I am parked") { _, _ -> startAppProjection() }
+            .setNegativeButton("Cancel") { _, _ -> clearPendingApp() }
+            .show()
+    }
+
+    /** Apps mode always captures the whole display so OpenCfMoto can launch the selected app itself. */
+    private fun startAppProjection() {
+        val label = pendingAppLabel ?: return
+        log("→ Apps: prepare whole-screen projection for $label")
+        pendingAaStart = false
+        ensureLocationPermission()
+        try {
+            val mpm = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+            val intent = if (Build.VERSION.SDK_INT >= 34) {
+                mpm.createScreenCaptureIntent(MediaProjectionConfig.createConfigForDefaultDisplay())
+            } else {
+                mpm.createScreenCaptureIntent()
+            }
+            projectionLauncher.launch(intent)
+        } catch (e: Exception) {
+            log("app projection start failed ($e)")
+            Toast.makeText(this, "Screen sharing could not be started", Toast.LENGTH_LONG).show()
+            clearPendingApp()
         }
     }
 
@@ -1211,6 +1345,84 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun log(msg: String) = LogBus.log(msg)
+
+    /** Connect the armed whole-screen projection, then put the selected installed app on top. */
+    private fun startAppMirrorLink() {
+        val label = pendingAppLabel ?: return
+        val saved = BikeMemory.lastQr(this)
+        if (saved != null) {
+            log("→ Apps: reusing saved bike '${BikeMemory.lastBikeName(this)}' for $label")
+            applyProfile(saved)
+            ConnectionState.set(Phase.MIRRORING, BikeMemory.lastBikeName(this) ?: saved.ssid)
+            joinWifi(saved, gateOnAaSteady = false)
+            launchPendingMirrorApp()
+        } else {
+            log("→ Apps: scan the dash QR before launching $label…")
+            scanLauncher.launch(Intent(this, QrScanActivity::class.java))
+        }
+    }
+
+    private fun launchPendingMirrorApp() {
+        val packageName = pendingAppPackage
+        val className = pendingAppClass
+        val label = pendingAppLabel ?: packageName
+        if (packageName.isNullOrBlank() || className.isNullOrBlank()) {
+            log("→ Apps failed: selected component was lost")
+            Toast.makeText(this, "The selected app was lost. Choose it again.", Toast.LENGTH_LONG).show()
+            stopEverything()
+            return
+        }
+        val component = ComponentName(packageName, className)
+        val enabled = runCatching { packageManager.getActivityInfo(component, 0).enabled }
+            .getOrDefault(false)
+        if (!enabled) {
+            log("→ Apps failed: $component is missing or disabled")
+            Toast.makeText(this, "$label is missing or disabled", Toast.LENGTH_LONG).show()
+            stopEverything()
+            return
+        }
+
+        val changedMode = AppMirrorSession.useMediaButtons(this)
+        try {
+            startActivity(
+                Intent(Intent.ACTION_MAIN)
+                    .addCategory(Intent.CATEGORY_LAUNCHER)
+                    .setComponent(component)
+                    .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT),
+            )
+            val mediaMode = if (changedMode) "media (temporary)" else "media"
+            log("→ Apps: launched $label ($component); handlebar mode=$mediaMode")
+            val drm = if (AppsCatalog.mayUseProtectedVideo(packageName)) {
+                " Protected video may appear black."
+            } else {
+                ""
+            }
+            Toast.makeText(
+                this,
+                "$label is on the bike. Handlebar media controls depend on the app.$drm",
+                Toast.LENGTH_LONG,
+            ).show()
+            clearPendingApp()
+        } catch (e: Exception) {
+            log("→ Apps launch failed for $component: $e")
+            Toast.makeText(this, "Couldn't open $label", Toast.LENGTH_LONG).show()
+            stopEverything()
+        }
+    }
+
+    private fun clearPendingApp() {
+        pendingAppPackage = null
+        pendingAppClass = null
+        pendingAppLabel = null
+    }
+
+    private fun cancelProjection() {
+        ProjectionHolder.projection?.let { projection ->
+            try { projection.stop() } catch (_: Exception) {}
+        }
+        ProjectionHolder.projection = null
+        ProjectionService.stop(this)
+    }
 
     /** After screen-capture consent: connect using saved bike or scan. */
     private fun startMirrorLink() {

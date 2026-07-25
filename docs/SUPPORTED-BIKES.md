@@ -18,6 +18,7 @@ Riders have projected Android Auto with these (US + international as noted):
 
 | Model | Notes |
 | --- | --- |
+| **450NK** | Confirmed on a real bike: correct display fit; non-touch focus navigation works with the handlebar/menu double press |
 | **800MT** (MT‑X / Explore / Explore GT) | Landscape touch (CFDL26) |
 | **1000 MT‑X** | Portrait CFDL26; handlebar-primary by default |
 | **800NK** (US CRCP / sdk 0.9.23.x) | Non‑touch; dual PXC heartbeat |
@@ -106,3 +107,10 @@ Setup → **Supported bikes** shows the same list. Profiles you can force in Set
 
 Touch dashes → use the screen (and **Dash view**). Non‑touch / focus-mode → **Controls** + Bluetooth
 handlebars.
+
+### 450NK Apps mode
+
+The `andpower/open-cfmoto-450nk` edition adds a parked-only **Apps** button. It launches a selected
+installed app through whole-screen projection. The bike display remains non-touch. Normal Bluetooth
+media keys can provide play/pause/track control when the selected app supports them; arbitrary
+touch-only screens cannot be navigated from the handlebar. DRM-protected video may be black.

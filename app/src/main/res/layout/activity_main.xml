@@ -177,7 +177,7 @@
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="0dp"
                     android:layout_height="60dp"
-                    android:layout_marginEnd="4dp"
+                    android:layout_marginEnd="3dp"
                     android:layout_weight="1"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
@@ -189,7 +189,7 @@
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="0dp"
                     android:layout_height="60dp"
-                    android:layout_marginHorizontal="4dp"
+                    android:layout_marginHorizontal="3dp"
                     android:layout_weight="1"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
@@ -197,11 +197,23 @@
                     android:textSize="13sp" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_apps"
+                    style="@style/Widget.OpenCfMoto.Button.Tonal"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_marginHorizontal="3dp"
+                    android:layout_weight="1"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="Apps"
+                    android:textSize="13sp" />
+
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_mirror_start"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="0dp"
                     android:layout_height="60dp"
-                    android:layout_marginStart="4dp"
+                    android:layout_marginStart="3dp"
                     android:layout_weight="1"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
@@ -311,7 +323,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:lineSpacingExtra="4dp"
-                        android:text="• Connect — start Android Auto on the dash (becomes Stop while linked).\n• Map — OpenCfMoto map / GPX (not Google Maps). Mirror — cast phone screen.\n• While connected, Map / Mirror switch what the dash shows.\n• Dash view &amp; Controls — phone HUD and D-pad / handlebar."
+                        android:text="• Connect — start Android Auto on the dash (becomes Stop while linked).\n• Map — OpenCfMoto map / GPX. Apps — launch an installed app while parked.\n• Mirror — cast the phone screen. Map / Apps / Mirror can switch dash content.\n• Dash view &amp; Controls — phone HUD and D-pad / handlebar."
                         android:textColor="@color/text_primary"
                         android:textSize="14sp" />
 

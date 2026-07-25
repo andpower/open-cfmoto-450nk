@@ -26,7 +26,7 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:padding="24dp"
-        android:text="Start Android Auto and connect to your bike to see the dash here.\n\nOr tap Map for a phone preview without the bike."
+        android:text="@string/layout_start_android_auto_and_connect_5e95280"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
         android:visibility="gone" />
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
-            android:text="Dash view"
+            android:text="@string/layout_dash_view_6124e47"
             android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -67,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="44dp"
             android:minWidth="44dp"
-            android:text="Hub"
+            android:text="@string/layout_hub_a38df5f"
             android:visibility="gone" />
 
         <Button
@@ -84,7 +84,7 @@
             android:layout_width="wrap_content"
             android:layout_height="44dp"
             android:layout_marginStart="4dp"
-            android:text="Controls" />
+            android:text="@string/layout_controls_bee75ca" />
 
         <Button
             android:id="@+id/hud_fullscreen"
@@ -116,12 +116,12 @@
             <Button android:id="@+id/hud_knob_back" android:layout_width="wrap_content" android:layout_height="48dp" android:minWidth="52dp" android:text="⟲" android:textSize="18sp" />
             <Button android:id="@+id/hud_left" android:layout_width="wrap_content" android:layout_height="48dp" android:minWidth="52dp" android:text="◀" />
             <Button android:id="@+id/hud_up" android:layout_width="wrap_content" android:layout_height="48dp" android:minWidth="52dp" android:text="▲" />
-            <Button android:id="@+id/hud_ok" android:layout_width="wrap_content" android:layout_height="48dp" android:minWidth="60dp" android:text="OK" />
+            <Button android:id="@+id/hud_ok" android:layout_width="wrap_content" android:layout_height="48dp" android:minWidth="60dp" android:text="@string/layout_ok_9ce3bd4" />
             <Button android:id="@+id/hud_down" android:layout_width="wrap_content" android:layout_height="48dp" android:minWidth="52dp" android:text="▼" />
             <Button android:id="@+id/hud_right" android:layout_width="wrap_content" android:layout_height="48dp" android:minWidth="52dp" android:text="▶" />
             <Button android:id="@+id/hud_knob_fwd" android:layout_width="wrap_content" android:layout_height="48dp" android:minWidth="52dp" android:text="⟳" android:textSize="18sp" />
-            <Button android:id="@+id/hud_back" android:layout_width="wrap_content" android:layout_height="48dp" android:minWidth="64dp" android:text="Back" />
-            <Button android:id="@+id/hud_home" android:layout_width="wrap_content" android:layout_height="48dp" android:minWidth="64dp" android:text="Home" />
+            <Button android:id="@+id/hud_back" android:layout_width="wrap_content" android:layout_height="48dp" android:minWidth="64dp" android:text="@string/layout_back_b52b36b" />
+            <Button android:id="@+id/hud_home" android:layout_width="wrap_content" android:layout_height="48dp" android:minWidth="64dp" android:text="@string/layout_home_70f8bb9" />
             <Button android:id="@+id/hud_voice" android:layout_width="wrap_content" android:layout_height="48dp" android:minWidth="64dp" android:text="🎙" android:textSize="16sp" />
         </LinearLayout>
     </HorizontalScrollView>

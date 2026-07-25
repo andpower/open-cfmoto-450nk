@@ -4,6 +4,10 @@ plugins {
 
 android {
     namespace = "dev.zanderp.opencfmoto"
+    androidResources {
+        // Generate Android 13+ per-app language metadata from values/ and values-es/.
+        generateLocaleConfig = true
+    }
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -16,8 +20,8 @@ android {
         applicationId = "com.andpower.opencfmoto450nk"
         minSdk = 29
         targetSdk = 36
-        versionCode = 32
-        versionName = "2.1.1-450nk"
+        versionCode = 33
+        versionName = "2.2.0-450nk"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

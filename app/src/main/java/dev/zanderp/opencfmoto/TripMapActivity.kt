@@ -52,14 +52,14 @@ class TripMapActivity : AppCompatActivity() {
         val id = intent.getStringExtra(EXTRA_ID)
         val trip = id?.let { TripStore.get(this, it) }
         if (trip == null) {
-            Toast.makeText(this, "Trip not found", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, uiText("Trip not found"), Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
         findViewById<TextView>(R.id.map_title).text = trip.dateText()
         findViewById<TextView>(R.id.map_stats).text =
-            "${trip.distanceText()} · ${trip.durationText()} · avg ${trip.avgKmh} · max ${trip.maxKmh} km/h"
+            uiText("${trip.distanceText()} · ${trip.durationText()} · avg ${trip.avgKmh} · max ${trip.maxKmh} km/h")
 
         renderRoute(trip)
     }

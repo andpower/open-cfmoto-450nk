@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Generated from layout literals by scripts/extract_layout_strings.py. -->
+    <string name="layout_0_00_km_13fd3a4" formatted="false">0.00 km</string>
+    <string name="layout_0_km_h_c744e8a" formatted="false">0 km/h</string>
+    <string name="layout_1000_mt_x_cc70836" formatted="false">1000 MT-X</string>
+    <string name="layout_100_km_bdb1700" formatted="false">100 km</string>
+    <string name="layout_10_km_61864f4" formatted="false">10 km</string>
+    <string name="layout_1_android_auto_e2fde0e" formatted="false">1. Android Auto</string>
+    <string name="layout_1x_6fe62d0" formatted="false">1x</string>
+    <string name="layout_200_ms_866be1a" formatted="false">200 ms</string>
+    <string name="layout_2026_alexandru_opencfmoto_agpl3_0_7b25e8e" formatted="false">© 2026 Alexandru · OpenCfMoto · AGPL‑3.0</string>
+    <string name="layout_25_km_2950787" formatted="false">25 km</string>
+    <string name="layout_2_permissions_06ef787" formatted="false">2. Permissions</string>
+    <string name="layout_2x_8b48f47" formatted="false">2x</string>
+    <string name="layout_300_ms_65316fd" formatted="false">300 ms</string>
+    <string name="layout_300_ms_balanced_recommended_b26a8b3" formatted="false">300 ms — balanced (recommended)</string>
+    <string name="layout_30_km_8c81257" formatted="false">30 km</string>
+    <string name="layout_3_head_unit_mode_in_62eab42" formatted="false">3. Head-unit mode in Android Auto</string>
+    <string name="layout_3d_64fe85d" formatted="false">3D</string>
+    <string name="layout_3d_buildings_a689e38" formatted="false">3D buildings</string>
+    <string name="layout_3x_229e7ea" formatted="false">3x</string>
+    <string name="layout_450_ms_4d1a9ba" formatted="false">450 ms</string>
+    <string name="layout_500_ms_7ade997" formatted="false">500 ms</string>
+    <string name="layout_50_km_3fba185" formatted="false">50 km</string>
+    <string name="layout_600_ms_balanced_recommended_bc5ab3e" formatted="false">600 ms — balanced (recommended)</string>
+    <string name="layout_600_ms_ca5a19b" formatted="false">600 ms</string>
+    <string name="layout_60_km_a8793ea" formatted="false">60 km</string>
+    <string name="layout_800_ms_40b3ff4" formatted="false">800 ms</string>
+    <string name="layout_800mt_625eae1" formatted="false">800MT</string>
+    <string name="layout_800nk_adv_7063bf9" formatted="false">800NK Adv</string>
+    <string name="layout_800nk_fd94ec4" formatted="false">800NK</string>
+    <string name="layout_a_one_time_setup_so_77532a1" formatted="false">A one-time setup so Android Auto can project to your CFMoto dash, plus display and battery options.</string>
+    <string name="layout_about_6b21fb7" formatted="false">About</string>
+    <string name="layout_about_credits_40344ae" formatted="false">About &amp; credits</string>
+    <string name="layout_address_or_place_ac61ca8" formatted="false">Address or place</string>
+    <string name="layout_advanced_optional_personal_openrouteservice_key_8fee577" formatted="false">Advanced (optional). Personal OpenRouteService key if you want one.</string>
+    <string name="layout_allow_navigate_from_handlebars_c935227" formatted="false">Allow navigate-from-handlebars</string>
+    <string name="layout_alt_m_4264ea2" formatted="false">ALT m</string>
+    <string name="layout_android_auto_runs_maps_waze_3708607" formatted="false">Android Auto runs Maps/Waze. OpenCfMoto relays its screen to the bike.</string>
+    <string name="layout_ap_bc5af77" formatted="false">AP</string>
+    <string name="layout_app_settings_d69225a" formatted="false">App settings</string>
+    <string name="layout_apply_preset_396d94d" formatted="false">Apply preset…</string>
+    <string name="layout_apps_d9a3685" formatted="false">Apps</string>
+    <string name="layout_apps_on_450nk_4e2539c" formatted="false">Apps on 450NK</string>
+    <string name="layout_arrive_dac6cbb" formatted="false">ARRIVE</string>
+    <string name="layout_auto_ap_when_the_qr_a958879" formatted="false">Auto — AP when the QR advertises it, else Wi‑Fi Direct</string>
+    <string name="layout_auto_c614ba7" formatted="false">Auto</string>
+    <string name="layout_auto_connect_on_launch_acfc88b" formatted="false">Auto-connect on launch</string>
+    <string name="layout_auto_day_night_62684d9" formatted="false">Auto (day / night)</string>
+    <string name="layout_auto_detect_from_the_bike_3a54cbc" formatted="false">Auto — detect from the bike (recommended)</string>
+    <string name="layout_auto_finish_7ebbec4" formatted="false">Auto-finish</string>
+    <string name="layout_auto_finish_on_arrive_4b7c098" formatted="false">Auto-finish on arrive</string>
+    <string name="layout_auto_fits_recognized_cfmoto_dashes_1e5b42a" formatted="false">Auto fits recognized CFMoto dashes. If your bike\'s screen is a different shape (e.g. a tall portrait display) or isn\'t recognized, pick the orientation + size that matches it. Android Auto supports only these fixed sizes, so Screen fit above decides how it\'s placed (Fill crops, Fit adds bars, Stretch distorts). HD is sharper but heavier and can black-screen on some dashes — drop to a smaller size or Auto if so.</string>
+    <string name="layout_auto_match_your_bike_recommended_505f41b" formatted="false">Auto — match your bike (recommended)</string>
+    <string name="layout_auto_recovery_watchdog_1522c7a" formatted="false">Auto-recovery watchdog</string>
+    <string name="layout_auto_switches_the_dash_map_b32a7fb" formatted="false">Auto switches the dash map to dark at night and light by day. Applies instantly while projecting.</string>
+    <string name="layout_avg_speed_73a0f71" formatted="false">Avg speed</string>
+    <string name="layout_avoid_highways_a36e887" formatted="false">Avoid highways</string>
+    <string name="layout_avoid_tolls_7194b98" formatted="false">Avoid tolls</string>
+    <string name="layout_back_b52b36b" formatted="false">Back</string>
+    <string name="layout_balanced_03342db" formatted="false">Balanced</string>
+    <string name="layout_balanced_24_fps_recommended_b6bbfd2" formatted="false">Balanced — 24 fps (recommended)</string>
+    <string name="layout_balanced_recommended_54966d3" formatted="false">Balanced (recommended)</string>
+    <string name="layout_battery_power_8ac19a9" formatted="false">Battery &amp; power</string>
+    <string name="layout_bike_profile_0875956" formatted="false">Bike profile</string>
+    <string name="layout_black_b406fb5" formatted="false">Black</string>
+    <string name="layout_bluetooth_c3b4148" formatted="false">Bluetooth</string>
+    <string name="layout_bottom_cce7f2f" formatted="false">Bottom</string>
+    <string name="layout_button_mapping_a45672e" formatted="false">Button mapping</string>
+    <string name="layout_camera_scan_the_dash_qr_7a4eb2e" formatted="false">Camera (scan the dash QR), Location (join the bike Wi-Fi), Notifications (keep running while you ride).</string>
+    <string name="layout_cancel_77dfd21" formatted="false">Cancel</string>
+    <string name="layout_cfmoto_ships_a_few_different_53a734e" formatted="false">CFMOTO ships a few different left pods. Pick the one that matches your bars — doubles and long-press do not work the same on every cluster.</string>
+    <string name="layout_check_for_update_d7dc0b0" formatted="false">Check for update</string>
+    <string name="layout_checking_bluetooth_6ddd904" formatted="false">Checking Bluetooth…</string>
+    <string name="layout_choose_an_installed_app_approve_9c492b0" formatted="false">Choose an installed app, approve whole-screen sharing, and OpenCfMoto will launch it on the bike display.</string>
+    <string name="layout_choose_another_installed_app_0e65904" formatted="false">Choose another installed app</string>
+    <string name="layout_choose_gpx_file_3e4b6a6" formatted="false">Choose GPX file…</string>
+    <string name="layout_choose_what_each_handlebar_gesture_716780c" formatted="false">Choose what each handlebar gesture does in Android Auto. Changes apply on the next press — no reconnect needed. Requires the phone paired to the bike over Bluetooth.</string>
+    <string name="layout_chrome_218e75c" formatted="false">Chrome</string>
+    <string name="layout_circuit_a13e1f1" formatted="false">Circuit</string>
+    <string name="layout_circuit_there_and_back_6e252b7" formatted="false">Circuit (there and back)</string>
+    <string name="layout_clc450_fdf7108" formatted="false">CL‑C450</string>
+    <string name="layout_clear_719ea39" formatted="false">Clear</string>
+    <string name="layout_clear_cached_bike_tiles_906ca3a" formatted="false">Clear cached bike tiles</string>
+    <string name="layout_clear_parked_spot_2eee9d1" formatted="false">Clear parked spot</string>
+    <string name="layout_clear_preset_85020d6" formatted="false">Clear preset</string>
+    <string name="layout_close_bbfa773" formatted="false">Close</string>
+    <string name="layout_community_support_6d77b2b" formatted="false">Community &amp; support</string>
+    <string name="layout_compass_9d5c8e5" formatted="false">Compass</string>
+    <string name="layout_connect_b65463c" formatted="false">Connect</string>
+    <string name="layout_connect_start_android_auto_on_0746ffd" formatted="false">• Connect — start Android Auto on the dash (becomes Stop while linked).\n• Map — OpenCfMoto map / GPX. Apps — launch an installed app while parked.\n• Mirror — cast the phone screen. Map / Apps / Mirror can switch dash content.\n• Dash view &amp; Controls — phone HUD and D-pad / handlebar.</string>
+    <string name="layout_connection_status_f87d453" formatted="false">Connection status</string>
+    <string name="layout_controls_bee75ca" formatted="false">Controls</string>
+    <string name="layout_copyright_a420abf" formatted="false">Copyright</string>
+    <string name="layout_credits_bfac50d" formatted="false">Credits</string>
+    <string name="layout_customize_buttons_ef5a899" formatted="false">Customize buttons</string>
+    <string name="layout_dark_ae1ef01" formatted="false">Dark</string>
+    <string name="layout_dash_chrome_2fbb933" formatted="false">Dash chrome</string>
+    <string name="layout_dash_view_6124e47" formatted="false">Dash view</string>
+    <string name="layout_day_987b9ce" formatted="false">Day</string>
+    <string name="layout_destination_d427134" formatted="false">Destination</string>
+    <string name="layout_detail_7c9a7c0" formatted="false">Detail</string>
+    <string name="layout_diagnostics_3af2279" formatted="false">Diagnostics</string>
+    <string name="layout_disable_touchscreen_726a748" formatted="false">Disable touchscreen</string>
+    <string name="layout_disclaimer_4c4a2e8" formatted="false">Disclaimer</string>
+    <string name="layout_discord_bccc14e" formatted="false">Discord</string>
+    <string name="layout_distance_4232080" formatted="false">Distance</string>
+    <string name="layout_donate_95345e2" formatted="false">Donate</string>
+    <string name="layout_done_e9b450d" formatted="false">Done</string>
+    <string name="layout_done_free_ride_7a016e0" formatted="false">Done · free ride</string>
+    <string name="layout_double_tap_delay_4afc9f1" formatted="false">Double-tap delay</string>
+    <string name="layout_download_an_area_to_ride_9c2d4c9" formatted="false">Download an area to ride without a connection — like Google Maps offline areas. Do it on home Wi‑Fi; bike Wi‑Fi has no internet.</string>
+    <string name="layout_download_area_around_gpx_7caa51b" formatted="false">Download area around GPX</string>
+    <string name="layout_download_area_around_me_3fd380c" formatted="false">Download area around me</string>
+    <string name="layout_download_offline_maps_11b5531" formatted="false">Download offline maps</string>
+    <string name="layout_download_roadside_poi_track_f2b7a91" formatted="false">Download roadside POI (track)</string>
+    <string name="layout_drive_android_auto_without_touching_c758cbb" formatted="false">Drive Android Auto without touching the dash: type a destination, use the on-screen pad, or map the bike\'s handlebar buttons.</string>
+    <string name="layout_duration_1370004" formatted="false">Duration</string>
+    <string name="layout_each_bike_keeps_its_own_7549579" formatted="false">Each bike keeps its own name, photo, screen fit, resolution, power mode and button mapping. Tap a bike to make it active or edit it.</string>
+    <string name="layout_enable_display_over_other_apps_eb49b80" formatted="false">Enable “Display over other apps”</string>
+    <string name="layout_enable_seamless_resume_c829e65" formatted="false">Enable seamless resume</string>
+    <string name="layout_end_a2bb9d3" formatted="false">End</string>
+    <string name="layout_end_navigation_7a7bba1" formatted="false">End navigation</string>
+    <string name="layout_export_bike_tuning_only_profile_e944703" formatted="false">Export bike tuning only — profile, resolution, fit, margins, buttons, Wi‑Fi transport (no passwords, no personal prefs). Share on Discord so others can Import.</string>
+    <string name="layout_export_map_data_6359115" formatted="false">Export map data…</string>
+    <string name="layout_extras_3b7782f" formatted="false">Extras</string>
+    <string name="layout_fast_8db6a2f" formatted="false">Fast</string>
+    <string name="layout_fast_quickest_roads_fun_twistier_25c5e6b" formatted="false">Fast = quickest roads. Fun = twistier. Circuit = go to a place and return home.</string>
+    <string name="layout_favorites_markers_ae640e2" formatted="false">Favorites &amp; markers</string>
+    <string name="layout_fill_7adb673" formatted="false">Fill</string>
+    <string name="layout_fill_edge_to_edge_crops_e2fae65" formatted="false">Fill — edge to edge (crops a little)</string>
+    <string name="layout_find_parking_715e689" formatted="false">Find parking</string>
+    <string name="layout_fit_dab564d" formatted="false">Fit</string>
+    <string name="layout_fit_route_ccd8672" formatted="false">Fit route</string>
+    <string name="layout_follow_66587a7" formatted="false">Follow</string>
+    <string name="layout_force_touchscreen_60433c4" formatted="false">Force touchscreen</string>
+    <string name="layout_forest_f41c4e4" formatted="false">Forest</string>
+    <string name="layout_free_ride_gpx_search_poi_41dcb3d" formatted="false">Free ride, GPX, search &amp; POI on the dash. Search stays in this app (not Google Maps).</string>
+    <string name="layout_fullscreen_bb08d10" formatted="false">Fullscreen</string>
+    <string name="layout_fun_5f941ab" formatted="false">Fun</string>
+    <string name="layout_fun_circuit_length_b30a559" formatted="false">Fun circuit length</string>
+    <string name="layout_garage_f614ac3" formatted="false">Garage</string>
+    <string name="layout_gestures_5458351" formatted="false">Gestures</string>
+    <string name="layout_get_started_90e40d5" formatted="false">Get started</string>
+    <string name="layout_gnu_affero_general_public_license_3160ede" formatted="false">GNU Affero General Public License v3 or later</string>
+    <string name="layout_go_2e0b45f" formatted="false">Go</string>
+    <string name="layout_go_home_19445d7" formatted="false">Go Home</string>
+    <string name="layout_gpx_track_4b2cdb6" formatted="false">GPX track</string>
+    <string name="layout_grant_permissions_d7ff0ee" formatted="false">Grant permissions</string>
+    <string name="layout_handlebar_384b086" formatted="false">Handlebar</string>
+    <string name="layout_handlebar_buttons_a7366b1" formatted="false">Handlebar buttons</string>
+    <string name="layout_handlebar_buttons_drive_android_auto_4b89f44" formatted="false">Handlebar buttons drive Android Auto</string>
+    <string name="layout_handlebar_media_call_buttons_5d62f5f" formatted="false">Handlebar media/call buttons</string>
+    <string name="layout_heading_up_a479fd5" formatted="false">Heading up</string>
+    <string name="layout_high_b1a5954" formatted="false">High</string>
+    <string name="layout_history_90ccd64" formatted="false">History</string>
+    <string name="layout_hold_delay_81d656c" formatted="false">Hold delay</string>
+    <string name="layout_home_70f8bb9" formatted="false">Home</string>
+    <string name="layout_hub_a38df5f" formatted="false">Hub</string>
+    <string name="layout_if_the_dash_drops_or_1623fc1" formatted="false">If the dash drops or projection stalls, reconnect automatically — no Stop/Start.</string>
+    <string name="layout_imperial_5d3908a" formatted="false">Imperial</string>
+    <string name="layout_import_4834caf" formatted="false">Import…</string>
+    <string name="layout_import_map_data_59a4bf4" formatted="false">Import map data…</string>
+    <string name="layout_in_android_auto_settings_tap_acfcb2e" formatted="false">In Android Auto settings, tap "Version" ~10 times to unlock Developer settings, then turn ON "Add new cars to Android Auto" / "Unknown sources". (Can\'t be checked automatically.)</string>
+    <string name="layout_include_secrets_in_shared_logs_040e3ad" formatted="false">Include secrets in shared logs</string>
+    <string name="layout_inset_android_auto_from_each_1a97327" formatted="false">Inset Android Auto from each edge of the dash (pixels). On 800NK Advanced, add a top margin so MotoPlay\'s pull-down handle doesn\'t steal swipes.</string>
+    <string name="layout_inset_android_auto_from_each_d5ea4c4" formatted="false">Inset Android Auto from each edge of the dash (top / bottom / left / right). Useful on 800NK Advanced for the MotoPlay pull-down.</string>
+    <string name="layout_install_android_auto_e6bf93c" formatted="false">Install Android Auto</string>
+    <string name="layout_installed_shortcuts_a92215d" formatted="false">Installed shortcuts</string>
+    <string name="layout_km_h_010f863" formatted="false">km/h</string>
+    <string name="layout_landscape_7dc4bea" formatted="false">Landscape</string>
+    <string name="layout_left_8ae1c34" formatted="false">Left</string>
+    <string name="layout_left_969e2cc" formatted="false">LEFT</string>
+    <string name="layout_legacy_fb74bca" formatted="false">Legacy</string>
+    <string name="layout_legacy_scenic_length_unused_circuit_1cf3ca3" formatted="false">Legacy scenic length (unused — Circuit is there and back)</string>
+    <string name="layout_let_the_app_re_project_4ce15b6" formatted="false">Let the app re-project on its own when the bike comes back, even with the screen off or the phone in a bag. Needs the “Display over other apps” permission; otherwise you\'ll get a tap-to-resume notification instead.</string>
+    <string name="layout_license_3229609" formatted="false">License</string>
+    <string name="layout_limit_9c590af" formatted="false">LIMIT</string>
+    <string name="layout_log_trips_automatically_7b42315" formatted="false">Log trips automatically</string>
+    <string name="layout_logs_126dd3b" formatted="false">Logs</string>
+    <string name="layout_low_a124947" formatted="false">Low</string>
+    <string name="layout_makes_android_auto_render_at_7552b58" formatted="false">Makes Android Auto render at your dash\'s real aspect ratio (AAP margins + crop) so the map can fill the screen without cropping or stretching. Auto uses the size the bike reports (or the profile). Odd panels (near-square, tall portrait) benefit; normal landscape dashes get zero margins and stay the same.</string>
+    <string name="layout_manual_4e836fd" formatted="false">Manual</string>
+    <string name="layout_map_a_gesture_to_navigate_c3ee5b1" formatted="false">Map a gesture to “Navigate to saved place” and a press starts turn-by-turn there — hands-free.</string>
+    <string name="layout_map_ab478f3" formatted="false">Map</string>
+    <string name="layout_map_gpx_uses_maplibre_vector_cc8bd5c" formatted="false">Map / GPX uses MapLibre vector tiles (online) and optional offline region packs. Search/OSRM/limits need phone internet before bike Wi‑Fi. Dash: End / Park / Recalc, LIMIT, Heading / North, zoom, 3D pitch.</string>
+    <string name="layout_map_settings_e45ed1e" formatted="false">Map settings</string>
+    <string name="layout_map_theme_99bfadc" formatted="false">Map theme</string>
+    <string name="layout_mark_parking_here_bc67708" formatted="false">Mark parking here</string>
+    <string name="layout_mark_this_spot_or_keep_83a390a" formatted="false">Mark this spot or keep riding</string>
+    <string name="layout_marker_0aeece5" formatted="false">＋ Marker</string>
+    <string name="layout_match_panel_aspect_3f71c1b" formatted="false">Match panel aspect</string>
+    <string name="layout_match_panel_aspect_705b5ba" formatted="false">Match panel aspect…</string>
+    <string name="layout_max_speed_70dae80" formatted="false">Max speed</string>
+    <string name="layout_menu_57f5f5e" formatted="false">Menu</string>
+    <string name="layout_metric_b2bb760" formatted="false">Metric</string>
+    <string name="layout_mirror_74adc57" formatted="false">Mirror</string>
+    <string name="layout_name_e_g_home_6b7f777" formatted="false">Name (e.g. Home)</string>
+    <string name="layout_navigate_1eee3af" formatted="false">Navigate</string>
+    <string name="layout_navigate_home_bebdb22" formatted="false">Navigate Home</string>
+    <string name="layout_navigate_to_e897077" formatted="false">Navigate to…</string>
+    <string name="layout_navigate_to_parked_bike_b4ad33f" formatted="false">Navigate to parked bike</string>
+    <string name="layout_next_8e4ffea" formatted="false">Next ⟳</string>
+    <string name="layout_next_day_38f859d" formatted="false">Next day</string>
+    <string name="layout_next_maneuver_6004d00" formatted="false">Next maneuver</string>
+    <string name="layout_next_stop_0aa3411" formatted="false">Next stop</string>
+    <string name="layout_next_stop_details_1c6b7c2" formatted="false">Next stop details</string>
+    <string name="layout_night_1097b55" formatted="false">Night</string>
+    <string name="layout_no_bike_paired_yet_9cb4295" formatted="false">No bike paired yet</string>
+    <string name="layout_no_bikes_yet_nscan_your_e2df692" formatted="false">No bikes yet.\nScan your dash QR to add your first motorcycle.</string>
+    <string name="layout_no_file_selected_f76f1c1" formatted="false">No file selected</string>
+    <string name="layout_no_popular_shortcut_was_detected_0f111d2" formatted="false">No popular shortcut was detected. Use Choose another installed app.</string>
+    <string name="layout_no_preset_shipped_defaults_your_699442c" formatted="false">No preset — shipped defaults / your custom map</string>
+    <string name="layout_no_rides_this_day_86103e0" formatted="false">No rides this day.</string>
+    <string name="layout_off_e3de5ab" formatted="false">Off</string>
+    <string name="layout_off_passwords_and_serials_are_195b12b" formatted="false">Off — passwords and serials are redacted (recommended)</string>
+    <string name="layout_off_use_the_bike_profile_3319bab" formatted="false">Off — use the bike profile (1000 MT‑X stays focus/knob)</string>
+    <string name="layout_off_use_the_bike_profile_73ad62c" formatted="false">Off — use the bike profile (touch dashes stay touch)</string>
+    <string name="layout_offline_maps_119fc20" formatted="false">Offline maps</string>
+    <string name="layout_ok_9ce3bd4" formatted="false">OK</string>
+    <string name="layout_on_e0049a6" formatted="false">On</string>
+    <string name="layout_on_screen_pad_7f359c7" formatted="false">On-screen pad</string>
+    <string name="layout_open_android_auto_settings_abdde39" formatted="false">Open Android Auto settings</string>
+    <string name="layout_open_bluetooth_settings_9c5ff5b" formatted="false">Open Bluetooth settings</string>
+    <string name="layout_open_gpx_on_map_b192edd" formatted="false">Open GPX on map</string>
+    <string name="layout_open_map_pick_place_circuit_9e542f2" formatted="false">Open map · pick place · Circuit there and back</string>
+    <string name="layout_opencfmoto_28368d6" formatted="false">OpenCfMoto</string>
+    <string name="layout_openrouteservice_api_key_061861a" formatted="false">OpenRouteService API key</string>
+    <string name="layout_p2p_2b36263" formatted="false">P2P</string>
+    <string name="layout_panel_height_d330e37" formatted="false">Panel height</string>
+    <string name="layout_panel_width_c9f2042" formatted="false">Panel width</string>
+    <string name="layout_park_here_1224919" formatted="false">Park here</string>
+    <string name="layout_parked_use_only_c054f96" formatted="false">PARKED USE ONLY</string>
+    <string name="layout_phone_media_volume_nav_voice_9ec3627" formatted="false">Phone media volume (nav voice &amp; music). Use this when the bike\'s volume buttons drive Android Auto.</string>
+    <string name="layout_point_the_camera_at_the_b09078b" formatted="false">Point the camera at the bike\'s MotoPlay QR\n\nIf it won\'t scan or connect — on the dash, switch to the iOS / CarPlay QR and try that one</string>
+    <string name="layout_portrait_92b6b1b" formatted="false">Portrait</string>
+    <string name="layout_prev_6a7005f" formatted="false">⟲ Prev</string>
+    <string name="layout_previous_day_e2b6b0a" formatted="false">Previous day</string>
+    <string name="layout_project_gpx_to_bike_d4383f0" formatted="false">Project GPX to bike</string>
+    <string name="layout_questions_logs_or_a_new_4656f72" formatted="false">Questions, logs, or a new bike? Join Discord. Tips keep the project moving.</string>
+    <string name="layout_radius_e5aaeaa" formatted="false">Radius</string>
+    <string name="layout_ready_20c7c55" formatted="false">Ready</string>
+    <string name="layout_recenter_gps_7e44efa" formatted="false">Recenter GPS</string>
+    <string name="layout_recenter_recalc_9cf8012" formatted="false">Recenter / Recalc</string>
+    <string name="layout_record_each_ride_s_route_a557c72" formatted="false">Record each ride\'s route and stats from GPS while projecting. View them under Trip ▸ Saved trips.</string>
+    <string name="layout_record_ride_a926a70" formatted="false">Record ride</string>
+    <string name="layout_report_a_problem_24f3f52" formatted="false">Report a problem</string>
+    <string name="layout_requires_the_phone_paired_to_d6eff42" formatted="false">Requires the phone paired to the bike over Bluetooth.\n\nWhile on, the bars drive the Android Auto UI (not track-skip). Music can keep playing — start/stop/skip by navigating that UI with the bars or the on-screen pad. Turn OFF only if you want the physical bars to control media again.</string>
+    <string name="layout_reset_44c57ab" formatted="false">Reset</string>
+    <string name="layout_reset_to_defaults_ddefe47" formatted="false">Reset to defaults</string>
+    <string name="layout_reset_to_profile_default_69cbb3e" formatted="false">Reset to profile default</string>
+    <string name="layout_resolution_orientation_d95034f" formatted="false">Resolution &amp; orientation</string>
+    <string name="layout_ride_09b04fb" formatted="false">Ride</string>
+    <string name="layout_rider_tips_0be7352" formatted="false">Rider tips</string>
+    <string name="layout_right_954daa8" formatted="false">Right</string>
+    <string name="layout_route_mode_54b9671" formatted="false">Route mode</string>
+    <string name="layout_routing_7d15dd1" formatted="false">Routing</string>
+    <string name="layout_save_d8dba70" formatted="false">★ Save</string>
+    <string name="layout_save_efc007a" formatted="false">Save</string>
+    <string name="layout_save_routing_key_c702828" formatted="false">Save routing key</string>
+    <string name="layout_saved_places_364519e" formatted="false">Saved places</string>
+    <string name="layout_saved_trips_0dddf6d" formatted="false">Saved trips</string>
+    <string name="layout_saver_a60d017" formatted="false">Saver</string>
+    <string name="layout_scan_28cba55" formatted="false">Scan</string>
+    <string name="layout_scan_new_bike_495a919" formatted="false">Scan new bike</string>
+    <string name="layout_screen_display_c5e78fe" formatted="false">Screen &amp; display</string>
+    <string name="layout_screen_fit_8fdf1a4" formatted="false">Screen fit</string>
+    <string name="layout_screen_margins_9d34fa4" formatted="false">Screen margins…</string>
+    <string name="layout_screen_margins_a189e22" formatted="false">Screen margins</string>
+    <string name="layout_seamless_auto_resume_369cc57" formatted="false">Seamless auto-resume</string>
+    <string name="layout_search_a_place_or_address_a4276e7" formatted="false">Search a place or address…</string>
+    <string name="layout_search_bce0641" formatted="false">Search</string>
+    <string name="layout_search_here_6029ad9" formatted="false">Search here</string>
+    <string name="layout_search_openstreetmap_a592a37" formatted="false">Search OpenStreetMap…</string>
+    <string name="layout_search_places_or_address_eea8d95" formatted="false">Search places or address</string>
+    <string name="layout_search_poi_7746c49" formatted="false">Search / POI</string>
+    <string name="layout_see_map_on_phone_no_b38d2c9" formatted="false">See map on phone (no bike)</string>
+    <string name="layout_set_home_here_cbe5861" formatted="false">Set Home here</string>
+    <string name="layout_settings_c7f73bb" formatted="false">Settings</string>
+    <string name="layout_setup_cdd7bb2" formatted="false">Setup</string>
+    <string name="layout_setup_settings_6cbb661" formatted="false">Setup &amp; settings</string>
+    <string name="layout_share_09ca55c" formatted="false">Share</string>
+    <string name="layout_share_json_e0740bb" formatted="false">Share JSON</string>
+    <string name="layout_share_settings_da8dd64" formatted="false">Share settings</string>
+    <string name="layout_sharper_de27f67" formatted="false">Sharper</string>
+    <string name="layout_slate_26d7b21" formatted="false">Slate</string>
+    <string name="layout_smooth_7f93ca7" formatted="false">Smooth</string>
+    <string name="layout_smoother_adeee51" formatted="false">Smoother</string>
+    <string name="layout_some_protected_drm_video_can_e2fc147" formatted="false">Some protected/DRM video can appear black even though menus and ordinary video are visible.</string>
+    <string name="layout_source_on_github_c60f2f8" formatted="false">Source on GitHub</string>
+    <string name="layout_speed_and_distance_come_from_d39b4f3" formatted="false">Speed and distance come from the phone\'s GPS (the bike doesn\'t share telemetry over the mirroring link). Keep a clear view of the sky for best accuracy.</string>
+    <string name="layout_standard_2dfa660" formatted="false">Standard</string>
+    <string name="layout_start_952f375" formatted="false">Start</string>
+    <string name="layout_start_android_auto_and_connect_5e95280" formatted="false">Start Android Auto and connect to your bike to see the dash here.\n\nOr tap Map for a phone preview without the bike.</string>
+    <string name="layout_start_ride_project_to_bike_f63c8ff" formatted="false">Start ride — project to bike</string>
+    <string name="layout_starting_navigation_from_a_handlebar_43b2480" formatted="false">Starting navigation from a handlebar button while the app is in your pocket needs the “Display over other apps” permission. Without it, use the in-app “Navigate to…” box instead.</string>
+    <string name="layout_startup_recovery_90c970e" formatted="false">Startup &amp; recovery</string>
+    <string name="layout_stop_9e25347" formatted="false">Stop</string>
+    <string name="layout_stretch_b148ed2" formatted="false">Stretch</string>
+    <string name="layout_supported_bikes_60c482e" formatted="false">Supported bikes</string>
+    <string name="layout_the_450nk_display_is_not_223526d" formatted="false">The 450NK display is not touch. Handlebar play/pause and track buttons work when the selected app supports Bluetooth media controls; they cannot operate every touch-only screen.</string>
+    <string name="layout_the_dash_sends_the_handlebar_23559a3" formatted="false">The dash sends the handlebar volume/track/call buttons over Bluetooth — not the mirroring link. Pair your phone to the bike (as a phone/audio device) and they control Android Auto media and calls.</string>
+    <string name="layout_the_rotary_knob_steps_through_4d7e7b2" formatted="false">The rotary knob steps through lists; the arrows jump between areas. Works only while Android Auto is projecting. Use Fullscreen while riding — the phone stays awake.</string>
+    <string name="layout_theme_a797e30" formatted="false">Theme</string>
+    <string name="layout_this_app_runs_a_live_f4a24f0" formatted="false">This app runs a live video transcoder — it always draws power and warms the phone. Keep it on the bike\'s USB charger, and turn the phone screen OFF while riding (projection keeps running).</string>
+    <string name="layout_time_64269f9" formatted="false">TIME</string>
+    <string name="layout_today_24345a1" formatted="false">Today</string>
+    <string name="layout_top_cae0435" formatted="false">Top</string>
+    <string name="layout_trip_9dda9aa" formatted="false">Trip</string>
+    <string name="layout_trip_computer_0bfd8fe" formatted="false">Trip computer</string>
+    <string name="layout_trips_d82b7e4" formatted="false">Trips</string>
+    <string name="layout_turn_on_for_a_touch_9a62e6c" formatted="false">Turn On for a touch panel on a focus/knob profile (e.g. 1000 MT‑X): Android Auto advertises a touchscreen so you can tap the dash. Turns off Disable touchscreen. Unlock the bike\'s own touch lock if needed. Applies next Connect — Stop first if you\'re already projecting.</string>
+    <string name="layout_turn_on_if_handlebar_buttons_43d99bc" formatted="false">Turn On if handlebar buttons do nothing: Android Auto runs in focus/knob mode (no touchscreen advertised) so ▲/▼/Enter work. Needed next Connect — Stop first if you\'re already projecting.</string>
+    <string name="layout_type_an_address_or_place_8caa83d" formatted="false">Type an address or place; the route appears on the dash. Enter it while parked.</string>
+    <string name="layout_units_1274828" formatted="false">Units</string>
+    <string name="layout_use_legacy_for_cfdl16_450sr_b37fd66" formatted="false">Use Legacy for CFDL16 / 450SR-style non-touch dashes if Auto picks the wrong bike. 800NK Adv = CFDL26 touch 720×712. Applies next Connect (Stop first if projecting).</string>
+    <string name="layout_video_quality_baf4d06" formatted="false">Video quality</string>
+    <string name="layout_view_license_notice_42183bf" formatted="false">View LICENSE &amp; NOTICE</string>
+    <string name="layout_voice_3091c84" formatted="false">Voice</string>
+    <string name="layout_voice_prompts_b3672d9" formatted="false">Voice prompts</string>
+    <string name="layout_volume_3b18e8e" formatted="false">Volume</string>
+    <string name="layout_waiting_for_gps_59eecf5" formatted="false">Waiting for GPS…</string>
+    <string name="layout_website_alexandru_rocks_df1180f" formatted="false">Website — alexandru.rocks</string>
+    <string name="layout_when_a_paired_bike_s_592fb67" formatted="false">When a paired bike\'s Wi-Fi is in range, start projecting automatically.</string>
+    <string name="layout_wifi_logs_c424c2e" formatted="false">Wi‑Fi &amp; logs</string>
+    <string name="layout_wifi_transport_9e6593d" formatted="false">Wi‑Fi transport</string>
+    <string name="layout_wireless_android_auto_for_cfmoto_3027827" formatted="false">Wireless Android Auto for CFMoto MotoPlay dashes.</string>
+    <string name="layout_you_ve_arrived_2d572eb" formatted="false">You\'ve arrived</string>
+    <string name="layout_your_dash_is_a_touchscreen_14dee9b" formatted="false">Your dash is a touchscreen — just tap the screen to navigate. Handlebar-button control is meant for non-touch dashes (e.g. 450SR); on this bike it can\'t move the menu and only pauses your music.</string>
+    <string name="layout_your_left_switch_cluster_552f3c6" formatted="false">Your left switch cluster</string>
+    <string name="layout_zoom_in_4fc05f2" formatted="false">Zoom in</string>
+    <string name="layout_zoom_out_a4ae4b2" formatted="false">Zoom out</string>
+</resources>

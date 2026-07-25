@@ -21,7 +21,7 @@
         <ImageView
             android:layout_width="26dp"
             android:layout_height="26dp"
-            android:contentDescription="Trip"
+            android:contentDescription="@string/layout_trip_9dda9aa"
             android:src="@drawable/ic_speed"
             android:tint="@color/brand_orange" />
 
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="10dp"
-            android:text="Trip computer"
+            android:text="@string/layout_trip_computer_0bfd8fe"
             android:textColor="@color/text_primary"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -41,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="0dp"
-            android:text="Saved trips" />
+            android:text="@string/layout_saved_trips_0dddf6d" />
     </LinearLayout>
 
     <ScrollView
@@ -85,7 +85,7 @@
                         android:id="@+id/trip_speed_unit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="km/h"
+                        android:text="@string/layout_km_h_010f863"
                         android:textColor="@color/text_secondary"
                         android:textSize="16sp"
                         android:letterSpacing="0.1" />
@@ -95,7 +95,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
-                        android:text="Waiting for GPS…"
+                        android:text="@string/layout_waiting_for_gps_59eecf5"
                         android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -123,12 +123,12 @@
 
                         <TextView
                             style="@style/TripStatLabel"
-                            android:text="Distance" />
+                            android:text="@string/layout_distance_4232080" />
 
                         <TextView
                             android:id="@+id/trip_distance"
                             style="@style/TripStatValue"
-                            android:text="0.00 km" />
+                            android:text="@string/layout_0_00_km_13fd3a4" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -146,7 +146,7 @@
 
                         <TextView
                             style="@style/TripStatLabel"
-                            android:text="Duration" />
+                            android:text="@string/layout_duration_1370004" />
 
                         <TextView
                             android:id="@+id/trip_duration"
@@ -177,12 +177,12 @@
 
                         <TextView
                             style="@style/TripStatLabel"
-                            android:text="Max speed" />
+                            android:text="@string/layout_max_speed_70dae80" />
 
                         <TextView
                             android:id="@+id/trip_max"
                             style="@style/TripStatValue"
-                            android:text="0 km/h" />
+                            android:text="@string/layout_0_km_h_c744e8a" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -200,12 +200,12 @@
 
                         <TextView
                             style="@style/TripStatLabel"
-                            android:text="Avg speed" />
+                            android:text="@string/layout_avg_speed_73a0f71" />
 
                         <TextView
                             android:id="@+id/trip_avg"
                             style="@style/TripStatValue"
-                            android:text="0 km/h" />
+                            android:text="@string/layout_0_km_h_c744e8a" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
@@ -214,7 +214,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Speed and distance come from the phone's GPS (the bike doesn't share telemetry over the mirroring link). Keep a clear view of the sky for best accuracy."
+                android:text="@string/layout_speed_and_distance_come_from_d39b4f3"
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:lineSpacingExtra="3dp" />
@@ -237,7 +237,7 @@
             android:layout_height="56dp"
             android:layout_marginEnd="5dp"
             android:layout_weight="2"
-            android:text="Start" />
+            android:text="@string/layout_start_952f375" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/trip_reset"
@@ -246,6 +246,6 @@
             android:layout_height="56dp"
             android:layout_marginStart="5dp"
             android:layout_weight="1"
-            android:text="Reset" />
+            android:text="@string/layout_reset_44c57ab" />
     </LinearLayout>
 </LinearLayout>

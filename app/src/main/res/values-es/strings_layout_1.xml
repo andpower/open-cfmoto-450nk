@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="layout_0_00_km_13fd3a4" formatted="false">0,00 km</string>
+    <string name="layout_0_km_h_c744e8a" formatted="false">0 km/h</string>
+    <string name="layout_1000_mt_x_cc70836" formatted="false">1000 MT-X</string>
+    <string name="layout_100_km_bdb1700" formatted="false">100 km</string>
+    <string name="layout_10_km_61864f4" formatted="false">10 km</string>
+    <string name="layout_1_android_auto_e2fde0e" formatted="false">1. Android Auto</string>
+    <string name="layout_1x_6fe62d0" formatted="false">1x</string>
+    <string name="layout_200_ms_866be1a" formatted="false">200 ms</string>
+    <string name="layout_2026_alexandru_opencfmoto_agpl3_0_7b25e8e" formatted="false">© 2026 Alexandru · OpenCfMoto · AGPL‑3.0</string>
+    <string name="layout_25_km_2950787" formatted="false">25 km</string>
+    <string name="layout_2_permissions_06ef787" formatted="false">2. Permisos</string>
+    <string name="layout_2x_8b48f47" formatted="false">2x</string>
+    <string name="layout_300_ms_65316fd" formatted="false">300 ms</string>
+    <string name="layout_300_ms_balanced_recommended_b26a8b3" formatted="false">300 ms — equilibrado (recomendado)</string>
+    <string name="layout_30_km_8c81257" formatted="false">30 km</string>
+    <string name="layout_3_head_unit_mode_in_62eab42" formatted="false">3. Modo unidad principal en Android Auto</string>
+    <string name="layout_3d_64fe85d" formatted="false">3D</string>
+    <string name="layout_3d_buildings_a689e38" formatted="false">Edificios 3D</string>
+    <string name="layout_3x_229e7ea" formatted="false">3x</string>
+    <string name="layout_450_ms_4d1a9ba" formatted="false">450 ms</string>
+    <string name="layout_500_ms_7ade997" formatted="false">500 ms</string>
+    <string name="layout_50_km_3fba185" formatted="false">50 km</string>
+    <string name="layout_600_ms_balanced_recommended_bc5ab3e" formatted="false">600 ms — equilibrado (recomendado)</string>
+    <string name="layout_600_ms_ca5a19b" formatted="false">600 ms</string>
+    <string name="layout_60_km_a8793ea" formatted="false">60 km</string>
+    <string name="layout_800_ms_40b3ff4" formatted="false">800 ms</string>
+    <string name="layout_800mt_625eae1" formatted="false">800MT</string>
+    <string name="layout_800nk_adv_7063bf9" formatted="false">800NK Adv</string>
+    <string name="layout_800nk_fd94ec4" formatted="false">800NK</string>
+    <string name="layout_a_one_time_setup_so_77532a1" formatted="false">Una configuración inicial para que Android Auto se proyecte en la pantalla de tu CFMOTO, además de opciones de pantalla y batería.</string>
+    <string name="layout_about_6b21fb7" formatted="false">Acerca de</string>
+    <string name="layout_about_credits_40344ae" formatted="false">Acerca de y créditos</string>
+    <string name="layout_address_or_place_ac61ca8" formatted="false">Dirección o lugar</string>
+    <string name="layout_advanced_optional_personal_openrouteservice_key_8fee577" formatted="false">Avanzado (opcional). Clave personal de OpenRouteService si querés usar una.</string>
+    <string name="layout_allow_navigate_from_handlebars_c935227" formatted="false">Permitir navegación desde el manillar</string>
+    <string name="layout_alt_m_4264ea2" formatted="false">ALT m</string>
+    <string name="layout_android_auto_runs_maps_waze_3708607" formatted="false">Android Auto ejecuta Maps/Waze. OpenCfMoto transmite su pantalla a la moto.</string>
+    <string name="layout_ap_bc5af77" formatted="false">AP</string>
+    <string name="layout_app_settings_d69225a" formatted="false">Configuración de la aplicación</string>
+    <string name="layout_apply_preset_396d94d" formatted="false">Aplicar preajuste…</string>
+    <string name="layout_apps_d9a3685" formatted="false">Aplicaciones</string>
+    <string name="layout_apps_on_450nk_4e2539c" formatted="false">Aplicaciones en la 450NK</string>
+    <string name="layout_arrive_dac6cbb" formatted="false">LLEGADA</string>
+    <string name="layout_auto_ap_when_the_qr_a958879" formatted="false">Automático — AP cuando lo anuncia el QR; de lo contrario, Wi‑Fi Direct</string>
+    <string name="layout_auto_c614ba7" formatted="false">Automático</string>
+    <string name="layout_auto_connect_on_launch_acfc88b" formatted="false">Conectar automáticamente al iniciar</string>
+    <string name="layout_auto_day_night_62684d9" formatted="false">Automático (día/noche)</string>
+    <string name="layout_auto_detect_from_the_bike_3a54cbc" formatted="false">Automático — detectar desde la moto (recomendado)</string>
+    <string name="layout_auto_finish_7ebbec4" formatted="false">Finalización automática</string>
+    <string name="layout_auto_finish_on_arrive_4b7c098" formatted="false">Finalizar automáticamente al llegar</string>
+    <string name="layout_auto_fits_recognized_cfmoto_dashes_1e5b42a" formatted="false">Automático ajusta las pantallas CFMOTO reconocidas. Si la pantalla de tu moto tiene otra forma (por ejemplo, una pantalla vertical alta) o no se reconoce, elegí la orientación y el tamaño correspondientes. Android Auto solo admite estos tamaños fijos; el Ajuste de pantalla define cómo se ubica (Rellenar recorta, Ajustar agrega barras y Estirar deforma). HD es más nítido, pero exige más y puede dejar la pantalla negra en algunas motos; en ese caso, elegí un tamaño menor o Automático.</string>
+    <string name="layout_auto_match_your_bike_recommended_505f41b" formatted="false">Automático — coincidir con tu moto (recomendado)</string>
+    <string name="layout_auto_recovery_watchdog_1522c7a" formatted="false">Supervisor de recuperación automática</string>
+    <string name="layout_auto_switches_the_dash_map_b32a7fb" formatted="false">Automático cambia el mapa de la moto a oscuro de noche y claro de día. Se aplica inmediatamente durante la proyección.</string>
+    <string name="layout_avg_speed_73a0f71" formatted="false">Velocidad promedio</string>
+    <string name="layout_avoid_highways_a36e887" formatted="false">Evitar autopistas</string>
+    <string name="layout_avoid_tolls_7194b98" formatted="false">Evitar peajes</string>
+    <string name="layout_back_b52b36b" formatted="false">Atrás</string>
+    <string name="layout_balanced_03342db" formatted="false">Equilibrado</string>
+    <string name="layout_balanced_24_fps_recommended_b6bbfd2" formatted="false">Equilibrado — 24 fps (recomendado)</string>
+    <string name="layout_balanced_recommended_54966d3" formatted="false">Equilibrado (recomendado)</string>
+    <string name="layout_battery_power_8ac19a9" formatted="false">Batería y energía</string>
+    <string name="layout_bike_profile_0875956" formatted="false">Perfil de la moto</string>
+    <string name="layout_black_b406fb5" formatted="false">Negro</string>
+    <string name="layout_bluetooth_c3b4148" formatted="false">Bluetooth</string>
+    <string name="layout_bottom_cce7f2f" formatted="false">Inferior</string>
+    <string name="layout_button_mapping_a45672e" formatted="false">Asignación de botones</string>
+    <string name="layout_camera_scan_the_dash_qr_7a4eb2e" formatted="false">Cámara (escanear el QR de la moto), Ubicación (conectarse al Wi‑Fi de la moto) y Notificaciones (mantener la aplicación activa mientras conducís).</string>
+    <string name="layout_cancel_77dfd21" formatted="false">Cancelar</string>
+    <string name="layout_cfmoto_ships_a_few_different_53a734e" formatted="false">CFMOTO utiliza varios comandos izquierdos. Elegí el que coincida con tu manillar: el doble toque y la pulsación larga no funcionan igual en todos.</string>
+    <string name="layout_check_for_update_d7dc0b0" formatted="false">Buscar actualización</string>
+    <string name="layout_checking_bluetooth_6ddd904" formatted="false">Comprobando Bluetooth…</string>
+    <string name="layout_choose_an_installed_app_approve_9c492b0" formatted="false">Elegí una aplicación instalada, autorizá compartir toda la pantalla y OpenCfMoto la abrirá en la pantalla de la moto.</string>
+    <string name="layout_choose_another_installed_app_0e65904" formatted="false">Elegir otra aplicación instalada</string>
+    <string name="layout_choose_gpx_file_3e4b6a6" formatted="false">Elegir archivo GPX…</string>
+    <string name="layout_choose_what_each_handlebar_gesture_716780c" formatted="false">Elegí qué hace cada gesto del manillar en Android Auto. Los cambios se aplican al pulsar nuevamente, sin reconectar. El teléfono debe estar vinculado por Bluetooth con la moto.</string>
+    <string name="layout_chrome_218e75c" formatted="false">Chrome</string>
+    <string name="layout_circuit_a13e1f1" formatted="false">Circuito</string>
+    <string name="layout_circuit_there_and_back_6e252b7" formatted="false">Circuito (ida y vuelta)</string>
+    <string name="layout_clc450_fdf7108" formatted="false">CL‑C450</string>
+    <string name="layout_clear_719ea39" formatted="false">Borrar</string>
+    <string name="layout_clear_cached_bike_tiles_906ca3a" formatted="false">Borrar mapas almacenados de la moto</string>
+    <string name="layout_clear_parked_spot_2eee9d1" formatted="false">Borrar lugar de estacionamiento</string>
+    <string name="layout_clear_preset_85020d6" formatted="false">Quitar preajuste</string>
+    <string name="layout_close_bbfa773" formatted="false">Cerrar</string>
+    <string name="layout_community_support_6d77b2b" formatted="false">Comunidad y soporte</string>
+    <string name="layout_compass_9d5c8e5" formatted="false">Brújula</string>
+    <string name="layout_connect_b65463c" formatted="false">Conectar</string>
+    <string name="layout_connect_start_android_auto_on_0746ffd" formatted="false">• Conectar — inicia Android Auto en la moto (cambia a Detener cuando se conecta).\n• Mapa — mapa/GPX de OpenCfMoto. Aplicaciones — abre una aplicación instalada con la moto estacionada.\n• Duplicar — proyecta la pantalla del teléfono. Mapa/Aplicaciones/Duplicar pueden cambiar el contenido de la moto.\n• Vista de pantalla y Controles — HUD del teléfono y control direccional/manillar.</string>
+    <string name="layout_connection_status_f87d453" formatted="false">Estado de conexión</string>
+    <string name="layout_controls_bee75ca" formatted="false">Controles</string>
+    <string name="layout_copyright_a420abf" formatted="false">Derechos de autor</string>
+    <string name="layout_credits_bfac50d" formatted="false">Créditos</string>
+    <string name="layout_customize_buttons_ef5a899" formatted="false">Personalizar botones</string>
+    <string name="layout_dark_ae1ef01" formatted="false">Oscuro</string>
+    <string name="layout_dash_chrome_2fbb933" formatted="false">Marco de pantalla</string>
+    <string name="layout_dash_view_6124e47" formatted="false">Vista de la pantalla</string>
+    <string name="layout_day_987b9ce" formatted="false">Día</string>
+    <string name="layout_destination_d427134" formatted="false">Destino</string>
+    <string name="layout_detail_7c9a7c0" formatted="false">Detalle</string>
+    <string name="layout_diagnostics_3af2279" formatted="false">Diagnóstico</string>
+    <string name="layout_disable_touchscreen_726a748" formatted="false">Desactivar pantalla táctil</string>
+    <string name="layout_disclaimer_4c4a2e8" formatted="false">Descargo de responsabilidad</string>
+    <string name="layout_discord_bccc14e" formatted="false">Discord</string>
+    <string name="layout_distance_4232080" formatted="false">Distancia</string>
+    <string name="layout_donate_95345e2" formatted="false">Donar</string>
+    <string name="layout_done_e9b450d" formatted="false">Listo</string>
+    <string name="layout_done_free_ride_7a016e0" formatted="false">Listo · recorrido libre</string>
+    <string name="layout_double_tap_delay_4afc9f1" formatted="false">Demora del doble toque</string>
+    <string name="layout_download_an_area_to_ride_9c2d4c9" formatted="false">Descargá una zona para usarla sin conexión, como las áreas sin conexión de Google Maps. Hacelo con el Wi‑Fi de tu casa; el Wi‑Fi de la moto no tiene Internet.</string>
+    <string name="layout_download_area_around_gpx_7caa51b" formatted="false">Descargar zona alrededor del GPX</string>
+    <string name="layout_download_area_around_me_3fd380c" formatted="false">Descargar zona a mi alrededor</string>
+    <string name="layout_download_offline_maps_11b5531" formatted="false">Descargar mapas sin conexión</string>
+    <string name="layout_download_roadside_poi_track_f2b7a91" formatted="false">Descargar puntos de interés del recorrido</string>
+    <string name="layout_drive_android_auto_without_touching_c758cbb" formatted="false">Manejá Android Auto sin tocar la pantalla: escribí un destino, usá el control en pantalla o asigná los botones del manillar.</string>
+    <string name="layout_duration_1370004" formatted="false">Duración</string>
+    <string name="layout_each_bike_keeps_its_own_7549579" formatted="false">Cada moto conserva su nombre, foto, ajuste de pantalla, resolución, modo de energía y asignación de botones. Tocá una moto para activarla o editarla.</string>
+</resources>

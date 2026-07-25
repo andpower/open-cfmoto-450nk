@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">OpenCfMoto 450NK</string>
+    <string name="language_title">Language</string>
+    <string name="language_description">Use the phone language automatically or choose a language for OpenCfMoto.</string>
+    <string name="language_system">Automatic</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_english">English</string>
 
     <string name="about_copyright">© 2026 Alexandru</string>
     <string name="about_copyright_body">450NK variant maintained by Andrés Hugo Quintana (andpower), based on OpenCfMoto by Alexandru (zanderp) and its contributors. Free software under the GNU AGPL v3 or later — see LICENSE and NOTICE for full attribution.</string>

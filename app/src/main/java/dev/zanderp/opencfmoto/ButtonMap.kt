@@ -31,7 +31,7 @@ enum class ButtonAction(val id: String, val label: String) {
         NAV_1 -> SavedPlaces.actionLabel(context, 0)
         NAV_2 -> SavedPlaces.actionLabel(context, 1)
         NAV_3 -> SavedPlaces.actionLabel(context, 2)
-        else -> label
+        else -> context.uiText(label)
     }
 
     companion object {

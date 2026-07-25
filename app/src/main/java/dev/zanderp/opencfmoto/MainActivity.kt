@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         val qr = QrData.parse(raw)
         if (qr == null) {
             log("QR parse FAILED — missing ssid/pwd?")
-            Toast.makeText(this, "Invalid QR", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, uiText("Invalid QR"), Toast.LENGTH_SHORT).show()
             if (pendingAppPackage != null) {
                 cancelProjection()
                 clearPendingApp()
@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
                 moveTaskToBack(true)
                 Toast.makeText(
                     this,
-                    "Leave the shared app on screen (OpenCfMoto stays in the notification)",
+                    uiText("Leave the shared app on screen (OpenCfMoto stays in the notification)"),
                     Toast.LENGTH_LONG,
                 ).show()
             }
@@ -136,7 +136,7 @@ class MainActivity : AppCompatActivity() {
         }
         if (component == null || activity == null || !activity.enabled || packageName == this.packageName) {
             log("app selection invalid: package='$packageName' class='$className'")
-            Toast.makeText(this, "That app cannot be launched", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, uiText("That app cannot be launched"), Toast.LENGTH_LONG).show()
             clearPendingApp()
             return@registerForActivityResult
         }
@@ -230,14 +230,14 @@ class MainActivity : AppCompatActivity() {
         if (CrashGuard.pendingCrashText(this) == null) return
         try {
             androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Recovered after a crash")
+                .setTitle(uiText("Recovered after a crash"))
                 .setMessage(
-                    "OpenCfMoto closed unexpectedly last time. The log and crash report were saved — " +
+                    uiText("OpenCfMoto closed unexpectedly last time. The log and crash report were saved — ") +
                         "open Logs and tap Share Logs so we can see what happened.",
                 )
-                .setPositiveButton("Share Logs") { _, _ -> shareLog() }
-                .setNegativeButton("Keep logs") { _, _ -> }
-                .setNeutralButton("Dismiss") { _, _ -> CrashGuard.clearCrash(this) }
+                .setPositiveButton(uiText("Share Logs")) { _, _ -> shareLog() }
+                .setNegativeButton(uiText("Keep logs")) { _, _ -> }
+                .setNeutralButton(uiText("Dismiss")) { _, _ -> CrashGuard.clearCrash(this) }
                 .show()
         } catch (e: Exception) {
             log("crash recovery UI failed: $e")
@@ -295,7 +295,7 @@ class MainActivity : AppCompatActivity() {
                             .setPositiveButton(if (selectedApp == null) "Continue" else "Launch on bike") { _, _ ->
                                 if (selectedApp == null) startMirrorLink() else startAppMirrorLink()
                             }
-                            .setNegativeButton("Cancel") { _, _ ->
+                            .setNegativeButton(uiText("Cancel")) { _, _ ->
                                 cancelProjection()
                                 clearPendingApp()
                             }
@@ -345,7 +345,7 @@ class MainActivity : AppCompatActivity() {
         // attributes like app:icon don't resolve in layouts, so we assign them programmatically.
         (connectBtn as? MaterialButton)?.setIconResource(R.drawable.ic_power)
         findViewById<android.widget.TextView>(R.id.brand_version).text =
-            "v${BuildConfig.VERSION_NAME}"
+            uiText("v${BuildConfig.VERSION_NAME}")
         // These four share a narrow row: put the icon on TOP so each label gets the full width.
         // full width and isn't clipped (e.g. "Mirror" → "Mirro" when the icon sat inline).
         (findViewById<View>(R.id.btn_aa_start) as? MaterialButton)?.apply {
@@ -489,7 +489,7 @@ class MainActivity : AppCompatActivity() {
             logPanel.visibility = if (show) View.VISIBLE else View.GONE
             // The tips panel and the log panel share the flexible space, so only one shows at a time.
             tipsPanel.visibility = if (show) View.GONE else View.VISIBLE
-            toggleLogBtn.text = if (show) "Hide logs" else "Logs"
+            toggleLogBtn.text = uiText(if (show) "Hide logs" else "Logs")
         }
 
         findViewById<View>(R.id.btn_hud_view).setOnClickListener { startActivity(Intent(this, HudViewActivity::class.java)) }
@@ -518,7 +518,7 @@ class MainActivity : AppCompatActivity() {
                         as? android.view.inputmethod.InputMethodManager
                     imm?.showSoftInput(field, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
                 }
-                Toast.makeText(this, "Type here — results show on the bike", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, uiText("Type here — results show on the bike"), Toast.LENGTH_SHORT).show()
             }
         }
         // Live suggestions on the dash while typing on the phone.
@@ -550,13 +550,13 @@ class MainActivity : AppCompatActivity() {
             try {
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(AboutActivity.URL_KOFI)))
             } catch (_: Exception) {
-                Toast.makeText(this, "Couldn't open donate link", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, uiText("Couldn't open donate link"), Toast.LENGTH_SHORT).show()
             }
         }
 
         findViewById<Button>(R.id.btn_clear).setOnClickListener {
             LogBus.clear()
-            logView.text = ""
+            logView.text = uiText("")
         }
 
         log("Ready. Tap Connect to project Android Auto to your dash.")
@@ -738,7 +738,7 @@ class MainActivity : AppCompatActivity() {
 
     /** Update the big status header + Connect button label from a [ConnectionState] transition. */
     private fun renderStatus(phase: Phase, detail: String) {
-        statusView.text = phase.label
+        statusView.text = uiText(phase.label)
         bikeView.text = if (detail.isNotBlank()) detail else bikeLabelText()
         val color = when (phase) {
             Phase.STREAMING, Phase.MIRRORING -> ContextCompat.getColor(this, R.color.status_live)
@@ -767,12 +767,12 @@ class MainActivity : AppCompatActivity() {
         } else {
             vpnPromptShown = false
         }
-        connectBtn.text = when {
+        connectBtn.text = uiText(when {
             phase.busy -> "Stop"
             phase == Phase.STREAMING || phase == Phase.MIRRORING -> "Stop"
             BikeMemory.hasSaved(this) -> "Connect to ${BikeMemory.lastBikeName(this)}"
             else -> "Connect"
-        }
+        })
         (connectBtn as? MaterialButton)?.setIconResource(
             if (phase.busy || phase == Phase.STREAMING || phase == Phase.MIRRORING) {
                 R.drawable.ic_stop
@@ -818,25 +818,25 @@ class MainActivity : AppCompatActivity() {
     private fun promptCloseRival() {
         val installed = RivalClient.isInstalled(this)
         com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-            .setTitle("Official CFMoto app is in the way")
+            .setTitle(uiText("Official CFMoto app is in the way"))
             .setMessage(
-                "The official CFMoto/EasyConnect app is running and holding the bike's link ports, so " +
+                uiText("The official CFMoto/EasyConnect app is running and holding the bike's link ports, so ") +
                     "the dash stays blank. Close it, then reconnect.\n\n" +
                     "\"Close & retry\" tries to stop it for you; if the dash is still blank, use " +
                     "\"App settings\" and tap Force stop."
             )
-            .setPositiveButton("Close & retry") { _, _ ->
+            .setPositiveButton(uiText("Close & retry")) { _, _ ->
                 val killed = RivalClient.closeBestEffort(this)
                 log(if (killed) "→ asked Android to close the official CFMoto app; retrying…"
                     else "→ couldn't auto-close the official CFMoto app — open its settings to Force stop.")
                 connectBtn.postDelayed({ reconnectSavedBike() }, 1500)
             }
-            .setNeutralButton("App settings") { _, _ ->
+            .setNeutralButton(uiText("App settings")) { _, _ ->
                 if (!RivalClient.openAppInfo(this)) {
-                    Toast.makeText(this, "Couldn't open app settings", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, uiText("Couldn't open app settings"), Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton("Dismiss", null)
+            .setNegativeButton(uiText("Dismiss"), null)
             .setCancelable(true)
             .apply { if (!installed) setMessage("Something is holding the bike's link ports (10920-10922). Close any other CFMoto/EasyConnect app and reconnect.") }
             .show()
@@ -848,9 +848,9 @@ class MainActivity : AppCompatActivity() {
      */
     private fun promptVpnKillSwitch() {
         com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-            .setTitle("VPN is blocking the bike")
+            .setTitle(uiText("VPN is blocking the bike"))
             .setMessage(
-                "Android Auto reached the phone, but a VPN kill-switch is blocking the bike Wi‑Fi " +
+                uiText("Android Auto reached the phone, but a VPN kill-switch is blocking the bike Wi‑Fi ") +
                     "(Network.bindSocket → EPERM).\n\n" +
                     "Fix (any one):\n" +
                     "• Turn the VPN off for this ride\n" +
@@ -858,18 +858,18 @@ class MainActivity : AppCompatActivity() {
                     "• Allow LAN / local network in the VPN app (PCAPdroid, AdGuard, etc.)\n\n" +
                     "Then tap Connect again."
             )
-            .setPositiveButton("VPN settings") { _, _ ->
+            .setPositiveButton(uiText("VPN settings")) { _, _ ->
                 try {
                     startActivity(Intent("android.net.vpn.SETTINGS"))
                 } catch (_: Exception) {
                     try {
                         startActivity(Intent(android.provider.Settings.ACTION_SETTINGS))
                     } catch (_: Exception) {
-                        Toast.makeText(this, "Open Settings ▸ Network ▸ VPN", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, uiText("Open Settings ▸ Network ▸ VPN"), Toast.LENGTH_LONG).show()
                     }
                 }
             }
-            .setNegativeButton("Dismiss", null)
+            .setNegativeButton(uiText("Dismiss"), null)
             .setCancelable(true)
             .show()
     }
@@ -1042,7 +1042,7 @@ class MainActivity : AppCompatActivity() {
         val field = findViewById<android.widget.EditText>(R.id.et_destination)
         val dest = field.text?.toString()?.trim().orEmpty()
         if (dest.isEmpty()) {
-            Toast.makeText(this, "Type a place to search on the map", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, uiText("Type a place to search on the map"), Toast.LENGTH_SHORT).show()
             return
         }
         (getSystemService(INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager)
@@ -1050,13 +1050,13 @@ class MainActivity : AppCompatActivity() {
         // 1) Our own map is projected to the bike → type into ITS search (results show on the dash).
         if (DashRemote.submit(dest)) {
             field.setText("")
-            Toast.makeText(this, "Searching \"$dest\" on the dash", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, uiText("Searching \"$dest\" on the dash"), Toast.LENGTH_SHORT).show()
             return
         }
         // 2) Android Auto (Google Maps / Waze) is live → search/navigate there so it hits the bike.
         if (AaVideoBridge.pipeline != null && launchMapsSearch(dest)) {
             field.setText("")
-            Toast.makeText(this, "Sent \"$dest\" to Android Auto", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, uiText("Sent \"$dest\" to Android Auto"), Toast.LENGTH_SHORT).show()
             return
         }
         // 3) Nothing projected → open our Map hub search on the phone.
@@ -1127,7 +1127,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(
                     this,
-                    "Single-app mirror needs Android 14+. Whole screen will be used.",
+                    uiText("Single-app mirror needs Android 14+. Whole screen will be used."),
                     Toast.LENGTH_LONG,
                 ).show()
                 mpm.createScreenCaptureIntent()
@@ -1147,7 +1147,7 @@ class MainActivity : AppCompatActivity() {
             log("→ Apps blocked: device reports $shown km/h")
             Toast.makeText(
                 this,
-                "Apps are parked-only. Current speed is about $shown km/h.",
+                uiText("Apps are parked-only. Current speed is about $shown km/h."),
                 Toast.LENGTH_LONG,
             ).show()
             clearPendingApp()
@@ -1155,14 +1155,14 @@ class MainActivity : AppCompatActivity() {
         }
         val speedNote = speed?.let { "Current reported speed: ${it.toInt()} km/h.\n\n" }.orEmpty()
         androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Confirm the bike is parked")
+            .setTitle(uiText("Confirm the bike is parked"))
             .setMessage(
-                "$speedNote$label is not a standard Android Auto app. It will be mirrored as a " +
+                uiText("$speedNote$label is not a standard Android Auto app. It will be mirrored as a ") +
                     "phone screen and may require phone interaction.\n\nDo not use video or touch-only " +
                     "apps while riding.",
             )
-            .setPositiveButton("I am parked") { _, _ -> startAppProjection() }
-            .setNegativeButton("Cancel") { _, _ -> clearPendingApp() }
+            .setPositiveButton(uiText("I am parked")) { _, _ -> startAppProjection() }
+            .setNegativeButton(uiText("Cancel")) { _, _ -> clearPendingApp() }
             .show()
     }
 
@@ -1182,7 +1182,7 @@ class MainActivity : AppCompatActivity() {
             projectionLauncher.launch(intent)
         } catch (e: Exception) {
             log("app projection start failed ($e)")
-            Toast.makeText(this, "Screen sharing could not be started", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, uiText("Screen sharing could not be started"), Toast.LENGTH_LONG).show()
             clearPendingApp()
         }
     }
@@ -1237,12 +1237,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkUpdateManual() {
-        Toast.makeText(this, "Checking for update…", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, uiText("Checking for update…"), Toast.LENGTH_SHORT).show()
         Thread {
             val release = UpdateChecker.check(this, manual = true)
             runOnUiThread {
                 if (release == null) {
-                    Toast.makeText(this, "You're up to date (or offline)", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, uiText("You're up to date (or offline)"), Toast.LENGTH_SHORT).show()
                 } else {
                     showUpdateDialog(release)
                 }
@@ -1252,17 +1252,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun showUpdateDialog(release: UpdateChecker.Release) {
         val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Update ${release.version}")
+            .setTitle(uiText("Update ${release.version}"))
             .setMessage(ReleaseNotes.toSpanned(release.notes))
-            .setPositiveButton("Download") { _, _ ->
+            .setPositiveButton(uiText("Download")) { _, _ ->
                 try {
                     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(release.downloadUrl)))
                 } catch (_: Exception) {
-                    Toast.makeText(this, "Couldn't open download link", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, uiText("Couldn't open download link"), Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton("Skip") { _, _ -> UpdateChecker.skip(this, release.version) }
-            .setNeutralButton("Later", null)
+            .setNegativeButton(uiText("Skip")) { _, _ -> UpdateChecker.skip(this, release.version) }
+            .setNeutralButton(uiText("Later"), null)
             .show()
         // Headings/bullets/bold come from [ReleaseNotes]; make markdown links tappable too.
         dialog.findViewById<TextView>(android.R.id.message)?.movementMethod =
@@ -1293,17 +1293,17 @@ class MainActivity : AppCompatActivity() {
             addView(year)
         }
         androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Report a problem")
-            .setMessage("Builds a shareable report with diagnostics + recent log (secrets redacted unless enabled in Setup).")
+            .setTitle(uiText("Report a problem"))
+            .setMessage(uiText("Builds a shareable report with diagnostics + recent log (secrets redacted unless enabled in Setup)."))
             .setView(box)
-            .setPositiveButton("Share") { _, _ ->
+            .setPositiveButton(uiText("Share")) { _, _ ->
                 shareProblemReport(
                     problem.text.toString(),
                     model.text.toString(),
                     year.text.toString(),
                 )
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(uiText("Cancel"), null)
             .show()
     }
 
@@ -1340,7 +1340,7 @@ class MainActivity : AppCompatActivity() {
             }
             startActivity(Intent.createChooser(send, "Share problem report"))
         } catch (e: Exception) {
-            Toast.makeText(this, "Couldn't share report: $e", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, uiText("Couldn't share report: $e"), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -1368,7 +1368,7 @@ class MainActivity : AppCompatActivity() {
         val label = pendingAppLabel ?: packageName
         if (packageName.isNullOrBlank() || className.isNullOrBlank()) {
             log("→ Apps failed: selected component was lost")
-            Toast.makeText(this, "The selected app was lost. Choose it again.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, uiText("The selected app was lost. Choose it again."), Toast.LENGTH_LONG).show()
             stopEverything()
             return
         }
@@ -1377,7 +1377,7 @@ class MainActivity : AppCompatActivity() {
             .getOrDefault(false)
         if (!enabled) {
             log("→ Apps failed: $component is missing or disabled")
-            Toast.makeText(this, "$label is missing or disabled", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, uiText("$label is missing or disabled"), Toast.LENGTH_LONG).show()
             stopEverything()
             return
         }
@@ -1399,13 +1399,13 @@ class MainActivity : AppCompatActivity() {
             }
             Toast.makeText(
                 this,
-                "$label is on the bike. Handlebar media controls depend on the app.$drm",
+                uiText("$label is on the bike. Handlebar media controls depend on the app.$drm"),
                 Toast.LENGTH_LONG,
             ).show()
             clearPendingApp()
         } catch (e: Exception) {
             log("→ Apps launch failed for $component: $e")
-            Toast.makeText(this, "Couldn't open $label", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, uiText("Couldn't open $label"), Toast.LENGTH_LONG).show()
             stopEverything()
         }
     }
@@ -1437,7 +1437,7 @@ class MainActivity : AppCompatActivity() {
             moveTaskToBack(true)
             Toast.makeText(
                 this,
-                "Leave the shared app on screen (OpenCfMoto stays in the notification)",
+                uiText("Leave the shared app on screen (OpenCfMoto stays in the notification)"),
                 Toast.LENGTH_LONG,
             ).show()
         } else {

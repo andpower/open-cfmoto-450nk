@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="layout_questions_logs_or_a_new_4656f72" formatted="false">¿Preguntas, registros o una moto nueva? Sumate a Discord. Las donaciones ayudan a mantener el proyecto.</string>
+    <string name="layout_radius_e5aaeaa" formatted="false">Radio</string>
+    <string name="layout_ready_20c7c55" formatted="false">Listo</string>
+    <string name="layout_recenter_gps_7e44efa" formatted="false">Centrar en GPS</string>
+    <string name="layout_recenter_recalc_9cf8012" formatted="false">Centrar/Recalcular</string>
+    <string name="layout_record_each_ride_s_route_a557c72" formatted="false">Registra la ruta y estadísticas de cada viaje mediante GPS durante la proyección. Podés verlas en Viaje ▸ Viajes guardados.</string>
+    <string name="layout_record_ride_a926a70" formatted="false">Registrar viaje</string>
+    <string name="layout_report_a_problem_24f3f52" formatted="false">Informar un problema</string>
+    <string name="layout_requires_the_phone_paired_to_d6eff42" formatted="false">El teléfono debe estar vinculado por Bluetooth con la moto.\n\nCuando está activado, el manillar controla la interfaz de Android Auto, no el cambio directo de pista. La música puede seguir sonando; iniciá, detené o cambiá de pista navegando por la interfaz con el manillar o el control en pantalla. Desactivalo únicamente si querés que el manillar vuelva a controlar el contenido multimedia directamente.</string>
+    <string name="layout_reset_44c57ab" formatted="false">Reiniciar</string>
+    <string name="layout_reset_to_defaults_ddefe47" formatted="false">Restablecer valores predeterminados</string>
+    <string name="layout_reset_to_profile_default_69cbb3e" formatted="false">Restablecer valor del perfil</string>
+    <string name="layout_resolution_orientation_d95034f" formatted="false">Resolución y orientación</string>
+    <string name="layout_ride_09b04fb" formatted="false">Viaje</string>
+    <string name="layout_rider_tips_0be7352" formatted="false">Consejos para conducir</string>
+    <string name="layout_right_954daa8" formatted="false">Derecho</string>
+    <string name="layout_route_mode_54b9671" formatted="false">Modo de ruta</string>
+    <string name="layout_routing_7d15dd1" formatted="false">Ruteo</string>
+    <string name="layout_save_d8dba70" formatted="false">★ Guardar</string>
+    <string name="layout_save_efc007a" formatted="false">Guardar</string>
+    <string name="layout_save_routing_key_c702828" formatted="false">Guardar clave de ruteo</string>
+    <string name="layout_saved_places_364519e" formatted="false">Lugares guardados</string>
+    <string name="layout_saved_trips_0dddf6d" formatted="false">Viajes guardados</string>
+    <string name="layout_saver_a60d017" formatted="false">Ahorro</string>
+    <string name="layout_scan_28cba55" formatted="false">Escanear</string>
+    <string name="layout_scan_new_bike_495a919" formatted="false">Escanear moto nueva</string>
+    <string name="layout_screen_display_c5e78fe" formatted="false">Pantalla y visualización</string>
+    <string name="layout_screen_fit_8fdf1a4" formatted="false">Ajuste de pantalla</string>
+    <string name="layout_screen_margins_9d34fa4" formatted="false">Márgenes de pantalla…</string>
+    <string name="layout_screen_margins_a189e22" formatted="false">Márgenes de pantalla</string>
+    <string name="layout_seamless_auto_resume_369cc57" formatted="false">Reanudación automática continua</string>
+    <string name="layout_search_a_place_or_address_a4276e7" formatted="false">Buscar un lugar o dirección…</string>
+    <string name="layout_search_bce0641" formatted="false">Buscar</string>
+    <string name="layout_search_here_6029ad9" formatted="false">Buscar aquí</string>
+    <string name="layout_search_openstreetmap_a592a37" formatted="false">Buscar en OpenStreetMap…</string>
+    <string name="layout_search_places_or_address_eea8d95" formatted="false">Buscar lugares o dirección</string>
+    <string name="layout_search_poi_7746c49" formatted="false">Búsqueda/Puntos de interés</string>
+    <string name="layout_see_map_on_phone_no_b38d2c9" formatted="false">Ver mapa en el teléfono (sin moto)</string>
+    <string name="layout_set_home_here_cbe5861" formatted="false">Establecer Casa aquí</string>
+    <string name="layout_settings_c7f73bb" formatted="false">Configuración</string>
+    <string name="layout_setup_cdd7bb2" formatted="false">Configurar</string>
+    <string name="layout_setup_settings_6cbb661" formatted="false">Configuración y ajustes</string>
+    <string name="layout_share_09ca55c" formatted="false">Compartir</string>
+    <string name="layout_share_json_e0740bb" formatted="false">Compartir JSON</string>
+    <string name="layout_share_settings_da8dd64" formatted="false">Compartir configuración</string>
+    <string name="layout_sharper_de27f67" formatted="false">Más nítido</string>
+    <string name="layout_slate_26d7b21" formatted="false">Pizarra</string>
+    <string name="layout_smooth_7f93ca7" formatted="false">Fluido</string>
+    <string name="layout_smoother_adeee51" formatted="false">Más fluido</string>
+    <string name="layout_some_protected_drm_video_can_e2fc147" formatted="false">Algunos videos protegidos con DRM pueden verse en negro aunque los menús y los videos comunes sean visibles.</string>
+    <string name="layout_source_on_github_c60f2f8" formatted="false">Código fuente en GitHub</string>
+    <string name="layout_speed_and_distance_come_from_d39b4f3" formatted="false">La velocidad y la distancia provienen del GPS del teléfono; la moto no comparte telemetría mediante el enlace de proyección. Mantené una vista despejada del cielo para lograr mayor precisión.</string>
+    <string name="layout_standard_2dfa660" formatted="false">Estándar</string>
+    <string name="layout_start_952f375" formatted="false">Iniciar</string>
+    <string name="layout_start_android_auto_and_connect_5e95280" formatted="false">Iniciá Android Auto y conectate a la moto para ver aquí su pantalla.\n\nTambién podés tocar Mapa para obtener una vista previa en el teléfono sin la moto.</string>
+    <string name="layout_start_ride_project_to_bike_f63c8ff" formatted="false">Iniciar viaje — proyectar en la moto</string>
+    <string name="layout_starting_navigation_from_a_handlebar_43b2480" formatted="false">Iniciar la navegación desde un botón del manillar con la aplicación guardada requiere el permiso “Mostrar sobre otras aplicaciones”. Sin él, usá el cuadro “Navegar a…” dentro de la aplicación.</string>
+    <string name="layout_startup_recovery_90c970e" formatted="false">Inicio y recuperación</string>
+    <string name="layout_stop_9e25347" formatted="false">Detener</string>
+    <string name="layout_stretch_b148ed2" formatted="false">Estirar</string>
+    <string name="layout_supported_bikes_60c482e" formatted="false">Motos compatibles</string>
+    <string name="layout_the_450nk_display_is_not_223526d" formatted="false">La pantalla de la 450NK no es táctil. Los botones de reproducción/pausa y pista del manillar funcionan cuando la aplicación elegida admite controles multimedia Bluetooth; no pueden manejar todas las pantallas diseñadas solo para uso táctil.</string>
+    <string name="layout_the_dash_sends_the_handlebar_23559a3" formatted="false">La moto envía los botones de volumen, pista y llamada del manillar mediante Bluetooth, no mediante el enlace de proyección. Vinculá el teléfono con la moto como dispositivo de teléfono/audio para controlar el contenido multimedia y las llamadas de Android Auto.</string>
+    <string name="layout_the_rotary_knob_steps_through_4d7e7b2" formatted="false">El control giratorio recorre las listas y las flechas saltan entre áreas. Funciona únicamente mientras Android Auto está proyectando. Usá Pantalla completa al conducir; el teléfono permanecerá activo.</string>
+    <string name="layout_theme_a797e30" formatted="false">Tema</string>
+    <string name="layout_this_app_runs_a_live_f4a24f0" formatted="false">Esta aplicación ejecuta un transcodificador de video en vivo, por lo que consume energía y calienta el teléfono. Mantenelo conectado al cargador USB de la moto y apagá su pantalla mientras conducís; la proyección seguirá funcionando.</string>
+    <string name="layout_time_64269f9" formatted="false">TIEMPO</string>
+    <string name="layout_today_24345a1" formatted="false">Hoy</string>
+    <string name="layout_top_cae0435" formatted="false">Superior</string>
+    <string name="layout_trip_9dda9aa" formatted="false">Viaje</string>
+    <string name="layout_trip_computer_0bfd8fe" formatted="false">Computadora de viaje</string>
+    <string name="layout_trips_d82b7e4" formatted="false">Viajes</string>
+    <string name="layout_turn_on_for_a_touch_9a62e6c" formatted="false">Activá esta opción para un panel táctil con un perfil de foco/control (por ejemplo, 1000 MT‑X): Android Auto anunciará una pantalla táctil para que puedas tocarla. Desactiva “Desactivar pantalla táctil”. Si es necesario, desbloqueá también el tacto propio de la moto. Se aplica en la próxima conexión; usá Detener primero si ya está proyectando.</string>
+    <string name="layout_turn_on_if_handlebar_buttons_43d99bc" formatted="false">Activá esta opción si los botones del manillar no responden: Android Auto funcionará en modo foco/control, sin anunciar pantalla táctil, para que ▲/▼/Enter funcionen. Se aplica en la próxima conexión; usá Detener primero si ya está proyectando.</string>
+    <string name="layout_type_an_address_or_place_8caa83d" formatted="false">Escribí una dirección o lugar; la ruta aparecerá en la moto. Ingresala con la moto estacionada.</string>
+    <string name="layout_units_1274828" formatted="false">Unidades</string>
+    <string name="layout_use_legacy_for_cfdl16_450sr_b37fd66" formatted="false">Usá Heredado para pantallas CFDL16/450SR sin tacto si Automático elige una moto incorrecta. 800NK Adv = CFDL26 táctil 720×712. Se aplica en la próxima conexión; usá Detener primero si está proyectando.</string>
+    <string name="layout_video_quality_baf4d06" formatted="false">Calidad de video</string>
+    <string name="layout_view_license_notice_42183bf" formatted="false">Ver LICENSE y NOTICE</string>
+    <string name="layout_voice_3091c84" formatted="false">Voz</string>
+    <string name="layout_voice_prompts_b3672d9" formatted="false">Indicaciones por voz</string>
+    <string name="layout_volume_3b18e8e" formatted="false">Volumen</string>
+    <string name="layout_waiting_for_gps_59eecf5" formatted="false">Esperando GPS…</string>
+    <string name="layout_website_alexandru_rocks_df1180f" formatted="false">Sitio web — alexandru.rocks</string>
+    <string name="layout_when_a_paired_bike_s_592fb67" formatted="false">Cuando el Wi‑Fi de una moto vinculada esté al alcance, inicia la proyección automáticamente.</string>
+    <string name="layout_wifi_logs_c424c2e" formatted="false">Wi‑Fi y registros</string>
+    <string name="layout_wifi_transport_9e6593d" formatted="false">Transporte Wi‑Fi</string>
+    <string name="layout_wireless_android_auto_for_cfmoto_3027827" formatted="false">Android Auto inalámbrico para pantallas CFMOTO MotoPlay.</string>
+    <string name="layout_you_ve_arrived_2d572eb" formatted="false">Llegaste</string>
+    <string name="layout_your_dash_is_a_touchscreen_14dee9b" formatted="false">La pantalla de tu moto es táctil: tocala para navegar. El control mediante el manillar está pensado para pantallas sin tacto, como la 450SR; en esta moto no puede mover el menú y solamente pausa la música.</string>
+    <string name="layout_your_left_switch_cluster_552f3c6" formatted="false">Comando izquierdo del manillar</string>
+    <string name="layout_zoom_in_4fc05f2" formatted="false">Acercar</string>
+    <string name="layout_zoom_out_a4ae4b2" formatted="false">Alejar</string>
+</resources>

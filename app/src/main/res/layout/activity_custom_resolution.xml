@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Match panel aspect"
+            android:text="@string/layout_match_panel_aspect_3f71c1b"
             android:textColor="@color/text_primary"
             android:textSize="26sp"
             android:textStyle="bold" />
@@ -26,7 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="Makes Android Auto render at your dash's real aspect ratio (AAP margins + crop) so the map can fill the screen without cropping or stretching. Auto uses the size the bike reports (or the profile). Odd panels (near-square, tall portrait) benefit; normal landscape dashes get zero margins and stay the same."
+            android:text="@string/layout_makes_android_auto_render_at_7552b58"
             android:textColor="@color/text_secondary"
             android:textSize="14sp" />
 
@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
                 android:layout_weight="1"
-                android:text="Auto" />
+                android:text="@string/layout_auto_c614ba7" />
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/match_off"
                 style="@style/Widget.OpenCfMoto.Segment"
@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="4dp"
                 android:layout_weight="1"
-                android:text="Off" />
+                android:text="@string/layout_off_e3de5ab" />
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/match_manual"
                 style="@style/Widget.OpenCfMoto.Segment"
@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_weight="1"
-                android:text="Manual" />
+                android:text="@string/layout_manual_4e836fd" />
         </LinearLayout>
 
         <LinearLayout
@@ -76,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
                 android:layout_weight="1"
-                android:hint="Panel width"
+                android:hint="@string/layout_panel_width_c9f2042"
                 android:importantForAutofill="no"
                 android:inputType="number"
                 android:textColor="@color/text_primary"
@@ -87,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_weight="1"
-                android:hint="Panel height"
+                android:hint="@string/layout_panel_height_d330e37"
                 android:importantForAutofill="no"
                 android:inputType="number"
                 android:textColor="@color/text_primary"
@@ -108,7 +108,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Save" />
+            android:text="@string/layout_save_efc007a" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_custom_res_done"
@@ -116,6 +116,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Done" />
+            android:text="@string/layout_done_e9b450d" />
     </LinearLayout>
 </ScrollView>

@@ -37,18 +37,26 @@ jobs:
 
       - name: Restore permanent release key
         env:
-          SIGNING_KEYSTORE_BASE64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
+          ANDROID_SIGNING_BUNDLE_BASE64: ${{ secrets.ANDROID_SIGNING_BUNDLE_BASE64 }}
         run: |
-          test -n "$SIGNING_KEYSTORE_BASE64"
-          printf '%s' "$SIGNING_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/opencfmoto450nk.jks"
+          test -n "$ANDROID_SIGNING_BUNDLE_BASE64"
+          mkdir -p "$RUNNER_TEMP/opencfmoto-signing"
+          printf '%s' "$ANDROID_SIGNING_BUNDLE_BASE64" |
+            base64 --decode > "$RUNNER_TEMP/opencfmoto-signing.tar.gz"
+          tar -xzf "$RUNNER_TEMP/opencfmoto-signing.tar.gz" \
+            -C "$RUNNER_TEMP/opencfmoto-signing"
+          chmod 600 "$RUNNER_TEMP/opencfmoto-signing/"*
 
       - name: Run unit tests and build permanently signed APK
-        env:
-          SIGNING_STORE_FILE: ${{ runner.temp }}/opencfmoto450nk.jks
-          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-        run: ./gradlew testDebugUnitTest assembleRelease
+        run: |
+          SIGNING_PASSWORD="$(
+            tr -d '\r\n' < "$RUNNER_TEMP/opencfmoto-signing/OpenCfMoto-450NK-signing-password.txt"
+          )"
+          SIGNING_STORE_FILE="$RUNNER_TEMP/opencfmoto-signing/OpenCfMoto-450NK-permanent-signing.p12" \
+          SIGNING_STORE_PASSWORD="$SIGNING_PASSWORD" \
+          SIGNING_KEY_ALIAS="opencfmoto450nk" \
+          SIGNING_KEY_PASSWORD="$SIGNING_PASSWORD" \
+            ./gradlew testDebugUnitTest assembleRelease
 
       - name: Name 450NK APK
         run: cp app/build/outputs/apk/release/app-release.apk OpenCfMoto-450NK.apk
@@ -84,3 +92,4 @@ jobs:
           movimiento y controles multimedia temporales desde el manillar. Usa su propio
           identificador e ícono 450NK, por lo que puede instalarse junto al OpenCfMoto original."
           fi
+

@@ -11,11 +11,13 @@ android {
     }
 
     defaultConfig {
-        applicationId = "dev.zanderp.opencfmoto"
+        // Keep this 450NK edition installable next to the upstream OpenCfMoto app.
+        // The Kotlin namespace stays unchanged to avoid a risky source/package migration.
+        applicationId = "com.andpower.opencfmoto450nk"
         minSdk = 29
         targetSdk = 36
-        versionCode = 31
-        versionName = "2.1.0-450nk"
+        versionCode = 32
+        versionName = "2.1.1-450nk"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

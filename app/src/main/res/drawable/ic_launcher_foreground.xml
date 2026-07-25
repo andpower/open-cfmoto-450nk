@@ -4,13 +4,35 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <group
-        android:scaleX="2.9"
-        android:scaleY="2.9"
-        android:translateX="19.2"
-        android:translateY="19.2">
-        <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M19.44,9.03L15.41,5H11v2h3.59l2,2H5c-2.8,0 -5,2.2 -5,5s2.2,5 5,5c2.46,0 4.45,-1.69 4.9,-4h1.65l2.77,-2.77c-0.21,0.54 -0.32,1.14 -0.32,1.77 0,2.8 2.2,5 5,5s5,-2.2 5,-5c0,-2.79 -2.21,-5 -5.01,-4.97zM7.82,15C7.4,16.15 6.28,17 5,17c-1.63,0 -3,-1.37 -3,-3s1.37,-3 3,-3c1.28,0 2.4,0.85 2.82,2L5,13v2h2.82zM19,17c-1.63,0 -3,-1.37 -3,-3s1.37,-3 3,-3 3,1.37 3,3 -1.37,3 -3,3z" />
-    </group>
+    <!-- Angular 450NK badge: deliberately distinct from upstream's orange motorcycle icon. -->
+    <path
+        android:fillColor="#F5FBFC"
+        android:pathData="M54,17 L84,34 L78,77 L54,92 L30,77 L24,34 Z" />
+    <path
+        android:fillColor="#0B232B"
+        android:pathData="M54,25 L76,38 L71,71 L54,82 L37,71 L32,38 Z" />
+    <!-- Geometric “4”. -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#FF6B2C"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="5"
+        android:pathData="M43,44 L33,58 L46,58 M44,44 L44,70" />
+    <!-- Geometric “5”. -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#F5FBFC"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="5"
+        android:pathData="M59,44 L50,44 L50,56 L57,56 C64,56 64,69 56,69 L50,69" />
+    <!-- Geometric “0”. -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#56E0DB"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="5"
+        android:pathData="M69,45 C62,45 62,69 69,69 C77,69 77,45 69,45 Z" />
 </vector>

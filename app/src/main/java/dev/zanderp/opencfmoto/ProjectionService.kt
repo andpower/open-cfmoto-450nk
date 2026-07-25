@@ -84,7 +84,7 @@ class ProjectionService : Service() {
     }
 
     companion object {
-        private const val ACTION_KEEP_SCREEN = "dev.zanderp.opencfmoto.KEEP_SCREEN"
+        private const val ACTION_KEEP_SCREEN = "com.andpower.opencfmoto450nk.KEEP_SCREEN"
         private const val EXTRA_KEEP = "keep"
 
         /** True once startForeground() has completed — poll this before getMediaProjection(). */

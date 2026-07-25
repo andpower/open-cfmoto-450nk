@@ -9,7 +9,7 @@ on:
       release_tag:
         description: Tag for the APK release
         required: true
-        default: v2.1.0-450nk
+        default: v2.1.1-450nk
 
 permissions:
   contents: write
@@ -53,7 +53,9 @@ jobs:
         run: >
           gh release create "$RELEASE_TAG" OpenCfMoto-450NK.apk
           --target "$GITHUB_SHA"
-          --title "OpenCfMoto 450NK 2.1.0"
+          --title "OpenCfMoto 450NK 2.1.1"
           --notes "450NK-tested edition with parked Apps launcher, installed-app picker,
           whole-screen projection, motion guard, and temporary handlebar media controls.
-          Android Auto and the existing handlebar focus-navigation path remain unchanged."
+          Uses its own Android application ID and 450NK icon, so it can be installed beside
+          upstream OpenCfMoto. Android Auto and the existing handlebar focus-navigation path
+          remain unchanged."

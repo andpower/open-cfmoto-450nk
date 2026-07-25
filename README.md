@@ -53,6 +53,11 @@ through whole-screen projection. It is **parked-only**: the 450NK is not touch, 
 media keys work only where the selected app supports Bluetooth play/pause/track controls, and
 protected DRM video may appear black.
 
+This edition uses the independent Android application ID
+`com.andpower.opencfmoto450nk` and its own teal **450** launcher icon. It can be installed beside
+the upstream `dev.zanderp.opencfmoto` app; each installation keeps separate bikes and settings,
+so scan the motorcycle QR once in this edition.
+
 ---
 
 ## ✨ Features

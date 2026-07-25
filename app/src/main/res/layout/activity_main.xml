@@ -133,8 +133,9 @@
                 android:id="@+id/btn_connect"
                 style="@style/Widget.OpenCfMoto.Button.Connect"
                 android:layout_width="match_parent"
-                android:layout_height="62dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:minHeight="62dp"
                 android:text="@string/layout_connect_b65463c" />
 
             <LinearLayout
@@ -148,9 +149,11 @@
                     android:id="@+id/btn_hud_view"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="0dp"
-                    android:layout_height="52dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
                     android:layout_weight="1"
+                    android:maxLines="2"
+                    android:minHeight="52dp"
                     android:text="@string/layout_dash_view_6124e47"
                     android:textSize="14sp" />
 
@@ -158,9 +161,11 @@
                     android:id="@+id/btn_controls"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="0dp"
-                    android:layout_height="52dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_weight="1"
+                    android:maxLines="2"
+                    android:minHeight="52dp"
                     android:text="@string/layout_controls_bee75ca"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -176,11 +181,13 @@
                     android:id="@+id/btn_aa_start"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="0dp"
-                    android:layout_height="60dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginEnd="3dp"
                     android:layout_weight="1"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
+                    android:maxLines="2"
+                    android:minHeight="60dp"
                     android:text="@string/layout_scan_28cba55"
                     android:textSize="13sp" />
 
@@ -188,11 +195,13 @@
                     android:id="@+id/btn_gpx"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="0dp"
-                    android:layout_height="60dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginHorizontal="3dp"
                     android:layout_weight="1"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
+                    android:maxLines="2"
+                    android:minHeight="60dp"
                     android:text="@string/layout_map_ab478f3"
                     android:textSize="13sp" />
 
@@ -200,11 +209,13 @@
                     android:id="@+id/btn_apps"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="0dp"
-                    android:layout_height="60dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginHorizontal="3dp"
                     android:layout_weight="1"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
+                    android:maxLines="2"
+                    android:minHeight="60dp"
                     android:text="@string/layout_apps_d9a3685"
                     android:textSize="13sp" />
 
@@ -212,11 +223,13 @@
                     android:id="@+id/btn_mirror_start"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="0dp"
-                    android:layout_height="60dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="3dp"
                     android:layout_weight="1"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
+                    android:maxLines="2"
+                    android:minHeight="60dp"
                     android:text="@string/layout_mirror_74adc57"
                     android:textSize="13sp" />
             </LinearLayout>

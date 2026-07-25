@@ -9,7 +9,7 @@ on:
       release_tag:
         description: Tag for the APK release
         required: true
-        default: v2.2.0-450nk
+        default: v2.2.1-450nk
 
 permissions:
   contents: write
@@ -35,11 +35,23 @@ jobs:
       - name: Validate English and Spanish UI resources
         run: python3 scripts/validate_translations.py
 
-      - name: Run unit tests and build APK
-        run: ./gradlew testDebugUnitTest assembleDebug
+      - name: Restore permanent release key
+        env:
+          SIGNING_KEYSTORE_BASE64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
+        run: |
+          test -n "$SIGNING_KEYSTORE_BASE64"
+          printf '%s' "$SIGNING_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/opencfmoto450nk.jks"
+
+      - name: Run unit tests and build permanently signed APK
+        env:
+          SIGNING_STORE_FILE: ${{ runner.temp }}/opencfmoto450nk.jks
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: ./gradlew testDebugUnitTest assembleRelease
 
       - name: Name 450NK APK
-        run: cp app/build/outputs/apk/debug/app-debug.apk OpenCfMoto-450NK.apk
+        run: cp app/build/outputs/apk/release/app-release.apk OpenCfMoto-450NK.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
@@ -52,15 +64,20 @@ jobs:
         if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ inputs.release_tag || 'v2.2.0-450nk' }}
+          RELEASE_TAG: ${{ inputs.release_tag || 'v2.2.1-450nk' }}
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             echo "Release $RELEASE_TAG already exists; leaving its APK unchanged."
           else
             gh release create "$RELEASE_TAG" OpenCfMoto-450NK.apk \
               --target "$GITHUB_SHA" \
-              --title "OpenCfMoto 450NK 2.2.0 — Español / English" \
-              --notes "Edición probada en 450NK con interfaz completa en español e inglés.
+              --title "OpenCfMoto 450NK 2.2.1 — Español / English" \
+              --notes "Primera versión con firma permanente para permitir actualizaciones directas
+          en las versiones siguientes. Como las compilaciones 2.1.1 y 2.2.0 usaban firmas de
+          depuración efímeras, es necesario desinstalarlas antes de instalar esta versión una sola vez.
+          También mejora el ajuste de textos en botones, selectores, cuadros y pantallas compactas.
+
+          Edición probada en 450NK con interfaz completa en español e inglés.
           El idioma sigue al teléfono automáticamente o se puede elegir en Configuración:
           Automático, Español o English. Incluye el lanzador de aplicaciones estacionadas,
           selector de aplicaciones instaladas, proyección de pantalla completa, bloqueo por

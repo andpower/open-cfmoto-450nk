@@ -38,13 +38,13 @@
     <string name="layout_alt_m_4264ea2" formatted="false">ALT m</string>
     <string name="layout_android_auto_runs_maps_waze_3708607" formatted="false">Android Auto ejecuta Maps/Waze. OpenCfMoto transmite su pantalla a la moto.</string>
     <string name="layout_ap_bc5af77" formatted="false">AP</string>
-    <string name="layout_app_settings_d69225a" formatted="false">Configuración de la aplicación</string>
+    <string name="layout_app_settings_d69225a" formatted="false">Ajustes de la app</string>
     <string name="layout_apply_preset_396d94d" formatted="false">Aplicar preajuste…</string>
-    <string name="layout_apps_d9a3685" formatted="false">Aplicaciones</string>
+    <string name="layout_apps_d9a3685" formatted="false">Apps</string>
     <string name="layout_apps_on_450nk_4e2539c" formatted="false">Aplicaciones en la 450NK</string>
     <string name="layout_arrive_dac6cbb" formatted="false">LLEGADA</string>
     <string name="layout_auto_ap_when_the_qr_a958879" formatted="false">Automático — AP cuando lo anuncia el QR; de lo contrario, Wi‑Fi Direct</string>
-    <string name="layout_auto_c614ba7" formatted="false">Automático</string>
+    <string name="layout_auto_c614ba7" formatted="false">Auto</string>
     <string name="layout_auto_connect_on_launch_acfc88b" formatted="false">Conectar automáticamente al iniciar</string>
     <string name="layout_auto_day_night_62684d9" formatted="false">Automático (día/noche)</string>
     <string name="layout_auto_detect_from_the_bike_3a54cbc" formatted="false">Automático — detectar desde la moto (recomendado)</string>
@@ -81,8 +81,8 @@
     <string name="layout_circuit_there_and_back_6e252b7" formatted="false">Circuito (ida y vuelta)</string>
     <string name="layout_clc450_fdf7108" formatted="false">CL‑C450</string>
     <string name="layout_clear_719ea39" formatted="false">Borrar</string>
-    <string name="layout_clear_cached_bike_tiles_906ca3a" formatted="false">Borrar mapas almacenados de la moto</string>
-    <string name="layout_clear_parked_spot_2eee9d1" formatted="false">Borrar lugar de estacionamiento</string>
+    <string name="layout_clear_cached_bike_tiles_906ca3a" formatted="false">Borrar mapas de la moto</string>
+    <string name="layout_clear_parked_spot_2eee9d1" formatted="false">Borrar estacionamiento</string>
     <string name="layout_clear_preset_85020d6" formatted="false">Quitar preajuste</string>
     <string name="layout_close_bbfa773" formatted="false">Cerrar</string>
     <string name="layout_community_support_6d77b2b" formatted="false">Comunidad y soporte</string>
@@ -96,7 +96,7 @@
     <string name="layout_customize_buttons_ef5a899" formatted="false">Personalizar botones</string>
     <string name="layout_dark_ae1ef01" formatted="false">Oscuro</string>
     <string name="layout_dash_chrome_2fbb933" formatted="false">Marco de pantalla</string>
-    <string name="layout_dash_view_6124e47" formatted="false">Vista de la pantalla</string>
+    <string name="layout_dash_view_6124e47" formatted="false">Pantalla</string>
     <string name="layout_day_987b9ce" formatted="false">Día</string>
     <string name="layout_destination_d427134" formatted="false">Destino</string>
     <string name="layout_detail_7c9a7c0" formatted="false">Detalle</string>
@@ -113,7 +113,7 @@
     <string name="layout_download_area_around_gpx_7caa51b" formatted="false">Descargar zona alrededor del GPX</string>
     <string name="layout_download_area_around_me_3fd380c" formatted="false">Descargar zona a mi alrededor</string>
     <string name="layout_download_offline_maps_11b5531" formatted="false">Descargar mapas sin conexión</string>
-    <string name="layout_download_roadside_poi_track_f2b7a91" formatted="false">Descargar puntos de interés del recorrido</string>
+    <string name="layout_download_roadside_poi_track_f2b7a91" formatted="false">Descargar puntos del recorrido</string>
     <string name="layout_drive_android_auto_without_touching_c758cbb" formatted="false">Manejá Android Auto sin tocar la pantalla: escribí un destino, usá el control en pantalla o asigná los botones del manillar.</string>
     <string name="layout_duration_1370004" formatted="false">Duración</string>
     <string name="layout_each_bike_keeps_its_own_7549579" formatted="false">Cada moto conserva su nombre, foto, ajuste de pantalla, resolución, modo de energía y asignación de botones. Tocá una moto para activarla o editarla.</string>

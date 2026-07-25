@@ -109,23 +109,23 @@ class TripsListActivity : AppCompatActivity() {
 
         if (dayTrips.isEmpty()) {
             empty.visibility = View.VISIBLE
-            empty.text = if (allTrips.isEmpty()) {
+            empty.text = uiText(if (allTrips.isEmpty()) {
                 "No trips yet.\nRides log automatically while you project Android Auto or use the built-in Map — or record one from the Trip screen."
             } else {
                 "No rides this day.\nUse ‹ › to browse other days."
-            }
-            daySummary.text = "No rides"
+            })
+            daySummary.text = uiText("No rides")
         } else {
             empty.visibility = View.GONE
             val km = dayTrips.sumOf { it.distanceKm }
             val n = dayTrips.size
-            daySummary.text = String.format(
+            daySummary.text = uiText(String.format(
                 Locale.getDefault(),
                 "%d ride%s · %.1f km",
                 n,
                 if (n == 1) "" else "s",
                 km,
-            )
+            ))
             for (trip in dayTrips) container.addView(buildCard(trip))
         }
     }
@@ -220,7 +220,7 @@ class TripsListActivity : AppCompatActivity() {
     private fun exportGpx(trip: Trip) {
         try {
             if (trip.points.isEmpty()) {
-                Toast.makeText(this, "Trip has no GPS points", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, uiText("Trip has no GPS points"), Toast.LENGTH_SHORT).show()
                 return
             }
             val dir = File(cacheDir, "trip-export").apply { mkdirs() }
@@ -237,7 +237,7 @@ class TripsListActivity : AppCompatActivity() {
             startActivity(Intent.createChooser(send, "Export GPX"))
             LogBus.log("→ Trip GPX exported: ${file.name}")
         } catch (e: Exception) {
-            Toast.makeText(this, "Export failed: $e", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, uiText("Export failed: $e"), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -263,14 +263,14 @@ class TripsListActivity : AppCompatActivity() {
 
     private fun confirmDelete(trip: Trip) {
         MaterialAlertDialogBuilder(this)
-            .setTitle("Delete trip?")
-            .setMessage("${trip.dateText()} · ${trip.distanceText()}")
-            .setPositiveButton("Delete") { _, _ ->
+            .setTitle(uiText("Delete trip?"))
+            .setMessage(uiText("${trip.dateText()} · ${trip.distanceText()}"))
+            .setPositiveButton(uiText("Delete")) { _, _ ->
                 TripStore.delete(this, trip.id)
                 allTrips = TripStore.list(this)
                 renderDay()
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(uiText("Cancel"), null)
             .show()
     }
 

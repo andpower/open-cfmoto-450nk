@@ -72,7 +72,7 @@ class CustomResolutionActivity : AppCompatActivity() {
             readInt(R.id.match_w, mw0),
             readInt(R.id.match_h, mh0),
         )
-        Toast.makeText(this, "Saved (applies next connect)", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, uiText("Saved (applies next connect)"), Toast.LENGTH_SHORT).show()
     }
 
     private fun refresh() {
@@ -123,7 +123,7 @@ class CustomResolutionActivity : AppCompatActivity() {
                     "Fills the panel; Screen fit no longer matters while margins apply."
             }
         }
-        findViewById<TextView>(R.id.match_note).text = "$detectedNote\n$marginNote"
+        findViewById<TextView>(R.id.match_note).text = uiText("$detectedNote\n$marginNote")
     }
 
     private fun <T> highlight(selected: T, vararg pairs: Pair<Int, T>) {

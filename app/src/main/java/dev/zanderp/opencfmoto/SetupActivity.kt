@@ -13,9 +13,11 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.os.LocaleListCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
@@ -86,6 +88,9 @@ class SetupActivity : AppCompatActivity() {
         step2Btn.setOnClickListener { requestMissingPermissions() }
         findViewById<MaterialButton>(R.id.step2_settings_btn).setOnClickListener { openAppSettings() }
         findViewById<MaterialButton>(R.id.step3_btn).setOnClickListener { openAndroidAutoSettings() }
+        findViewById<MaterialButton>(R.id.language_system).setOnClickListener { setLanguage("") }
+        findViewById<MaterialButton>(R.id.language_es).setOnClickListener { setLanguage("es") }
+        findViewById<MaterialButton>(R.id.language_en).setOnClickListener { setLanguage("en") }
 
         findViewById<MaterialButton>(R.id.quality_smooth).setOnClickListener { setQuality(VideoQuality.SMOOTH) }
         findViewById<MaterialButton>(R.id.quality_balanced).setOnClickListener { setQuality(VideoQuality.BALANCED) }
@@ -172,7 +177,7 @@ class SetupActivity : AppCompatActivity() {
             }
             startActivity(Intent.createChooser(send, "Share settings JSON"))
         } catch (e: Exception) {
-            Toast.makeText(this, "Share failed: $e", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, uiText("Share failed: $e"), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -180,52 +185,52 @@ class SetupActivity : AppCompatActivity() {
         try {
             val text = contentResolver.openInputStream(uri)?.use { it.readBytes().toString(Charsets.UTF_8) }
             if (text.isNullOrBlank()) {
-                Toast.makeText(this, "Empty file", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, uiText("Empty file"), Toast.LENGTH_SHORT).show()
                 return
             }
             val onto = BikeMemory.lastBikeName(this) ?: "the selected bike"
             AlertDialog.Builder(this)
-                .setTitle("Import settings?")
+                .setTitle(uiText("Import settings?"))
                 .setMessage(
-                    "Replace bike tuning for $onto — profile, resolution, fit, power, margins, " +
+                    uiText("Replace bike tuning for $onto — profile, resolution, fit, power, margins, ") +
                         "handlebar buttons, Control AA, non-touch, Wi‑Fi transport?\n\n" +
                         "Personal prefs (map theme, saved places, auto-connect, …) are left alone. " +
                         "Wi‑Fi passwords are never imported."
                 )
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton("Import") { _, _ ->
+                .setPositiveButton(uiText("Import")) { _, _ ->
                     val result = SettingsBackup.importJson(this, text)
                     refreshOptions()
                     Toast.makeText(this, result.message, Toast.LENGTH_LONG).show()
                 }
                 .show()
         } catch (e: Exception) {
-            Toast.makeText(this, "Import failed: $e", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, uiText("Import failed: $e"), Toast.LENGTH_LONG).show()
         }
     }
 
     private fun setQuality(q: VideoQuality) {
         VideoPrefs.set(this, q)
         refreshOptions()
-        toast("Video quality: ${q.label}")
+        toast("Video quality: ${uiText(q.label)}")
     }
 
     private fun setFit(f: ScreenFit) {
         VideoPrefs.setFit(this, f)
         refreshOptions()
-        toast("Screen fit: ${f.label}")
+        toast("Screen fit: ${uiText(f.label)}")
     }
 
     private fun setPower(m: PowerMode) {
         VideoPrefs.setPower(this, m)
         refreshOptions()
-        toast("Power mode: ${m.label}")
+        toast("Power mode: ${uiText(m.label)}")
     }
 
     private fun setResolution(m: ResolutionMode) {
         VideoPrefs.setResolution(this, m)
         refreshOptions()
-        toast("Resolution: ${m.label}")
+        toast("Resolution: ${uiText(m.label)}")
     }
 
     /** Map day/night applies live (no reconnect needed) — push it to any running AA session. */
@@ -233,62 +238,62 @@ class SetupActivity : AppCompatActivity() {
         NightPrefs.setTheme(this, theme)
         AaVideoBridge.nightSink?.invoke(NightPrefs.isNightNow(this))
         refreshOptions()
-        Toast.makeText(this, "Map theme: ${theme.label}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, uiText("Map theme: ${uiText(theme.label)}"), Toast.LENGTH_SHORT).show()
     }
 
     /** Button timing applies live — the next press uses the new window. */
     private fun setDoubleTap(delay: DoubleTapDelay) {
         ButtonTimingPrefs.setDoubleTap(this, delay)
         refreshOptions()
-        Toast.makeText(this, "Double-tap delay: ${delay.label}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, uiText("Double-tap delay: ${uiText(delay.label)}"), Toast.LENGTH_SHORT).show()
     }
 
     private fun setLongPress(delay: LongPressDelay) {
         ButtonTimingPrefs.setLongPress(this, delay)
         refreshOptions()
-        Toast.makeText(this, "Hold delay: ${delay.label}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, uiText("Hold delay: ${uiText(delay.label)}"), Toast.LENGTH_SHORT).show()
     }
 
     private fun setAutoConnect(on: Boolean) {
         AppSettings.setAutoConnect(this, on)
         refreshOptions()
-        Toast.makeText(this, "Auto-connect ${if (on) "on" else "off"}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, uiText("Auto-connect ${if (on) "on" else "off"}"), Toast.LENGTH_SHORT).show()
     }
 
     private fun setAutoRecovery(on: Boolean) {
         AppSettings.setAutoRecovery(this, on)
         refreshOptions()
-        Toast.makeText(this, "Auto-recovery ${if (on) "on" else "off"}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, uiText("Auto-recovery ${if (on) "on" else "off"}"), Toast.LENGTH_SHORT).show()
     }
 
     private fun setLogTrips(on: Boolean) {
         AppSettings.setLogTrips(this, on)
         refreshOptions()
-        Toast.makeText(this, "Trip logging ${if (on) "on" else "off"}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, uiText("Trip logging ${if (on) "on" else "off"}"), Toast.LENGTH_SHORT).show()
     }
 
     private fun setForceNonTouch(on: Boolean) {
         AppSettings.setForceNonTouch(this, on)
         refreshOptions()
-        toast("Disable touchscreen: ${if (on) "on" else "off"}")
+        toast(uiText("Disable touchscreen: ${if (on) "on" else "off"}"))
     }
 
     private fun setForceTouch(on: Boolean) {
         AppSettings.setForceTouch(this, on)
         refreshOptions()
-        toast("Force touchscreen: ${if (on) "on" else "off"}")
+        toast(uiText("Force touchscreen: ${if (on) "on" else "off"}"))
     }
 
     private fun setProfileOverride(ov: ProfileOverride) {
         ProfilePrefs.set(this, ov)
         refreshOptions()
-        toast("Bike profile: ${ov.shortLabel}")
+        toast("Bike profile: ${uiText(ov.shortLabel)}")
     }
 
     private fun setTransport(t: WifiTransport) {
         AppSettings.setTransport(this, t)
         refreshOptions()
-        toast("Wi‑Fi transport: ${t.label}")
+        toast("Wi‑Fi transport: ${uiText(t.label)}")
     }
 
     private fun setSecrets(on: Boolean) {
@@ -296,14 +301,28 @@ class SetupActivity : AppCompatActivity() {
         refreshOptions()
         Toast.makeText(
             this,
-            if (on) "Shared logs will include secrets — turn off before posting publicly"
-            else "Log redaction on",
+            uiText(
+                if (on) "Shared logs will include secrets — turn off before posting publicly"
+                else "Log redaction on",
+            ),
             Toast.LENGTH_SHORT,
         ).show()
     }
 
     private fun toast(msg: String) =
-        Toast.makeText(this, "$msg (applies next connect)", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, uiText("$msg (applies next connect)"), Toast.LENGTH_SHORT).show()
+
+    /** Apply an app-specific locale; an empty tag follows the phone language. */
+    private fun setLanguage(languageTag: String) {
+        val current = AppCompatDelegate.getApplicationLocales().get(0)?.language.orEmpty()
+        if (current == languageTag) return
+        val locales = if (languageTag.isBlank()) {
+            LocaleListCompat.getEmptyLocaleList()
+        } else {
+            LocaleListCompat.forLanguageTags(languageTag)
+        }
+        AppCompatDelegate.setApplicationLocales(locales)
+    }
 
     /** Update every selector's description + highlight the active segment. */
     private fun refreshOptions() {
@@ -314,23 +333,32 @@ class SetupActivity : AppCompatActivity() {
         val theme = NightPrefs.theme(this)
         val dbl = ButtonTimingPrefs.doubleTap(this)
         val hold = ButtonTimingPrefs.longPress(this)
-        qualityDesc.text = quality.label
-        fitDesc.text = fit.label
-        powerDesc.text = power.label
-        resDesc.text = res.label
-        themeDesc.text = theme.label
-        dblTapDesc.text = dbl.label
-        holdDesc.text = hold.label
-        nonTouchDesc.text = if (AppSettings.forceNonTouch(this))
-            "On — focus/knob UI so handlebar buttons work"
-        else
-            "Off — use the bike profile (touch dashes stay touch)"
-        forceTouchDesc.text = if (AppSettings.forceTouch(this))
-            "On — Android Auto touch UI (tap the dash)"
-        else
-            "Off — use the bike profile (1000 MT‑X stays focus/knob)"
+        val language = AppCompatDelegate.getApplicationLocales().get(0)?.language.orEmpty()
+        highlight(language,
+            R.id.language_system to "",
+            R.id.language_es to "es",
+            R.id.language_en to "en")
+        qualityDesc.text = uiText(quality.label)
+        fitDesc.text = uiText(fit.label)
+        powerDesc.text = uiText(power.label)
+        resDesc.text = uiText(res.label)
+        themeDesc.text = uiText(theme.label)
+        dblTapDesc.text = uiText(dbl.label)
+        holdDesc.text = uiText(hold.label)
+        nonTouchDesc.text = uiText(
+            if (AppSettings.forceNonTouch(this))
+                "On — focus/knob UI so handlebar buttons work"
+            else
+                "Off — use the bike profile (touch dashes stay touch)",
+        )
+        forceTouchDesc.text = uiText(
+            if (AppSettings.forceTouch(this))
+                "On — Android Auto touch UI (tap the dash)"
+            else
+                "Off — use the bike profile (1000 MT‑X stays focus/knob)",
+        )
         val pov = ProfilePrefs.get(this)
-        profileDesc.text = "${pov.shortLabel} — ${pov.detail}"
+        profileDesc.text = uiText("${pov.shortLabel} — ${pov.detail}")
 
         highlight(quality,
             R.id.quality_smooth to VideoQuality.SMOOTH,
@@ -388,15 +416,17 @@ class SetupActivity : AppCompatActivity() {
             R.id.profile_nk_adv to ProfileOverride.NK_ADV,
             R.id.profile_clc450 to ProfileOverride.CLC450)
         val transport = AppSettings.transport(this)
-        findViewById<android.widget.TextView>(R.id.transport_desc).text = transport.label
+        findViewById<android.widget.TextView>(R.id.transport_desc).text = uiText(transport.label)
         highlight(transport,
             R.id.transport_auto to WifiTransport.AUTO,
             R.id.transport_ap to WifiTransport.AP,
             R.id.transport_p2p to WifiTransport.P2P)
         val secrets = AppSettings.includeSecretsInLogs(this)
         findViewById<android.widget.TextView>(R.id.secrets_desc).text =
-            if (secrets) "On — passwords/serials stay in shared logs"
-            else "Off — passwords and serials are redacted (recommended)"
+            uiText(
+                if (secrets) "On — passwords/serials stay in shared logs"
+                else "Off — passwords and serials are redacted (recommended)",
+            )
         highlight(secrets, R.id.secrets_on to true, R.id.secrets_off to false)
     }
 
@@ -428,16 +458,16 @@ class SetupActivity : AppCompatActivity() {
 
     private fun refresh() {
         val aaOk = SetupHelper.isAndroidAutoInstalled(this)
-        step1Title.text = tick(aaOk) + " 1. Android Auto"
-        step1Btn.text = if (aaOk) "Open Android Auto" else "Install Android Auto"
+        step1Title.text = tick(aaOk) + uiText(" 1. Android Auto")
+        step1Btn.text = uiText(if (aaOk) "Open Android Auto" else "Install Android Auto")
 
         val permsOk = SetupHelper.permissionsGranted(this)
-        step2Title.text = tick(permsOk) + " 2. Permissions"
-        step2Btn.text = if (permsOk) "All granted" else "Grant permissions"
+        step2Title.text = tick(permsOk) + uiText(" 2. Permissions")
+        step2Btn.text = uiText(if (permsOk) "All granted" else "Grant permissions")
         step2Btn.isEnabled = !permsOk
 
         val resumeOk = SetupHelper.canAutoResume(this)
-        resumeBtn.text = if (resumeOk) "\u2713 Seamless resume enabled" else "Enable seamless resume"
+        resumeBtn.text = uiText(if (resumeOk) "\u2713 Seamless resume enabled" else "Enable seamless resume")
         resumeBtn.isEnabled = !resumeOk
     }
 
@@ -447,13 +477,13 @@ class SetupActivity : AppCompatActivity() {
         try {
             startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                 Uri.fromParts("package", packageName, null)))
-            Toast.makeText(this, "Turn on \u201cDisplay over other apps\u201d for seamless resume",
+            Toast.makeText(this, uiText("Turn on \u201cDisplay over other apps\u201d for seamless resume"),
                 Toast.LENGTH_LONG).show()
         } catch (_: Exception) {
             try {
                 startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION))
             } catch (_: Exception) {
-                Toast.makeText(this, "Couldn't open the overlay permission screen", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, uiText("Couldn't open the overlay permission screen"), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -475,7 +505,7 @@ class SetupActivity : AppCompatActivity() {
         // them at the system settings where it can still be granted.
         if (!SetupHelper.permissionsGranted(this)) {
             Toast.makeText(this,
-                "Some permissions are still off — use \u201cApp settings\u201d to enable them.",
+                uiText("Some permissions are still off — use \u201cApp settings\u201d to enable them."),
                 Toast.LENGTH_LONG).show()
         }
     }
@@ -485,7 +515,7 @@ class SetupActivity : AppCompatActivity() {
             startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                 Uri.fromParts("package", packageName, null)))
         } catch (_: Exception) {
-            Toast.makeText(this, "Couldn't open app settings", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, uiText("Couldn't open app settings"), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -503,7 +533,7 @@ class SetupActivity : AppCompatActivity() {
                 startActivity(Intent(Intent.ACTION_VIEW,
                     Uri.parse("https://play.google.com/store/apps/details?id=${SetupHelper.GEARHEAD_PACKAGE}")))
             } catch (_: Exception) {
-                Toast.makeText(this, "Couldn't open the Play Store", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, uiText("Couldn't open the Play Store"), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -518,7 +548,7 @@ class SetupActivity : AppCompatActivity() {
                     SetupHelper.GEARHEAD_PACKAGE,
                     "com.google.android.projection.gearhead.companion.settings.DefaultSettingsActivity"))
             } catch (_: Exception) {
-                Toast.makeText(this, "Couldn't open Android Auto settings", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, uiText("Couldn't open Android Auto settings"), Toast.LENGTH_SHORT).show()
             }
         }
     }

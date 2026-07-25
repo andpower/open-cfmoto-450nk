@@ -28,7 +28,7 @@ class AppsActivity : AppCompatActivity() {
         val picked = result.data
         val component = picked?.component ?: selectedIntent(picked)?.component
         if (component == null) {
-            Toast.makeText(this, "The selected app did not provide a launch activity", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, uiText("The selected app did not provide a launch activity"), Toast.LENGTH_LONG).show()
             return@registerForActivityResult
         }
         returnSelection(component, appLabel(component.packageName))
@@ -58,18 +58,18 @@ class AppsActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.apps_none).visibility = View.VISIBLE
         }
         findViewById<TextView>(R.id.apps_missing).text =
-            if (missing.isEmpty()) "" else "Not installed: ${missing.joinToString(" · ")}"
+            if (missing.isEmpty()) "" else uiText("Not installed: ${missing.joinToString(" · ")}")
 
         findViewById<MaterialButton>(R.id.btn_choose_any_app).setOnClickListener {
             val launcherIntent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
             val picker = Intent(Intent.ACTION_PICK_ACTIVITY)
                 .putExtra(Intent.EXTRA_INTENT, launcherIntent)
-                .putExtra(Intent.EXTRA_TITLE, "Choose an app to show on the bike")
+                .putExtra(Intent.EXTRA_TITLE, uiText("Choose an app to show on the bike"))
             try {
                 chooseAnyApp.launch(picker)
             } catch (e: Exception) {
                 LogBus.log("app picker failed: $e")
-                Toast.makeText(this, "No compatible app picker is available", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, uiText("No compatible app picker is available"), Toast.LENGTH_LONG).show()
             }
         }
         findViewById<MaterialButton>(R.id.btn_apps_cancel).setOnClickListener { finish() }
@@ -92,12 +92,12 @@ class AppsActivity : AppCompatActivity() {
 
     private fun returnSelection(component: ComponentName, label: String) {
         if (component.packageName == packageName) {
-            Toast.makeText(this, "Choose an app other than OpenCfMoto", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, uiText("Choose an app other than OpenCfMoto"), Toast.LENGTH_SHORT).show()
             return
         }
         val info = runCatching { packageManager.getActivityInfo(component, 0) }.getOrNull()
         if (info == null || !info.enabled) {
-            Toast.makeText(this, "$label is no longer available", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, uiText("$label is no longer available"), Toast.LENGTH_LONG).show()
             return
         }
         setResult(

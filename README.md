@@ -58,6 +58,14 @@ This edition uses the independent Android application ID
 the upstream `dev.zanderp.opencfmoto` app; each installation keeps separate bikes and settings,
 so scan the motorcycle QR once in this edition.
 
+### Español / English
+
+Version 2.2 adds a complete Spanish interface while keeping English available. Open **Setup /
+Configuración → Language / Idioma** and choose **Automatic / Automático**, **Español**, or
+**English**. Automatic follows the phone language. The choice is saved by Android and applies to
+screens, map controls, status messages, warnings, dialogs, and notifications. Apps projected by
+Android Auto or Apps mode keep their own language setting.
+
 ---
 
 ## ✨ Features

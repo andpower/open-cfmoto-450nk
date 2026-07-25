@@ -92,28 +92,28 @@ class TripActivity : AppCompatActivity() {
             return
         }
         if (!recorder.gpsAvailable()) {
-            gpsView.text = "GPS is off"
-            if (!silent) Toast.makeText(this, "Turn on GPS/Location to record", Toast.LENGTH_LONG).show()
+            gpsView.text = uiText("GPS is off")
+            if (!silent) Toast.makeText(this, uiText("Turn on GPS/Location to record"), Toast.LENGTH_LONG).show()
             return
         }
         if (!recorder.start() && !silent) {
-            Toast.makeText(this, "Couldn't start GPS", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, uiText("Couldn't start GPS"), Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun render(s: TripRecorder.Stats) {
         speedView.text = s.speedKmh.toString()
-        gpsView.text = when {
+        gpsView.text = uiText(when {
             !s.recording -> "Stopped"
             !s.hasFix -> "Acquiring GPS…"
             else -> "GPS fix" + if (s.accuracyM > 0) " ±${s.accuracyM}m" else ""
-        }
+        })
         distanceView.text = String.format(Locale.US, "%.2f km", s.distanceMeters / 1000.0)
         durationView.text = formatDuration(s.movingTimeMs)
-        maxView.text = "${(s.maxSpeedMs * 3.6f).toInt()} km/h"
+        maxView.text = uiText("${(s.maxSpeedMs * 3.6f).toInt()} km/h")
         val avgKmh = if (s.movingTimeMs > 0) (s.distanceMeters / (s.movingTimeMs / 1000.0)) * 3.6 else 0.0
-        avgView.text = "${avgKmh.toInt()} km/h"
-        startBtn.text = if (s.recording) "Pause" else "Start"
+        avgView.text = uiText("${avgKmh.toInt()} km/h")
+        startBtn.text = uiText(if (s.recording) "Pause" else "Start")
     }
 
     private fun formatDuration(ms: Long): String {
@@ -127,7 +127,7 @@ class TripActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQ_LOCATION) {
             if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) tryStart()
-            else Toast.makeText(this, "Location permission is required for the trip HUD", Toast.LENGTH_LONG).show()
+            else Toast.makeText(this, uiText("Location permission is required for the trip HUD"), Toast.LENGTH_LONG).show()
         }
     }
 

@@ -17,7 +17,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Apps on 450NK"
+            android:text="@string/layout_apps_on_450nk_4e2539c"
             android:textColor="@color/text_primary"
             android:textSize="26sp"
             android:textStyle="bold" />
@@ -26,7 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Choose an installed app, approve whole-screen sharing, and OpenCfMoto will launch it on the bike display."
+            android:text="@string/layout_choose_an_installed_app_approve_9c492b0"
             android:textColor="@color/text_secondary"
             android:textSize="14sp" />
 
@@ -44,7 +44,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="PARKED USE ONLY"
+                    android:text="@string/layout_parked_use_only_c054f96"
                     android:textAllCaps="true"
                     android:textColor="@color/brand_orange"
                     android:textSize="13sp"
@@ -54,7 +54,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="7dp"
-                    android:text="The 450NK display is not touch. Handlebar play/pause and track buttons work when the selected app supports Bluetooth media controls; they cannot operate every touch-only screen."
+                    android:text="@string/layout_the_450nk_display_is_not_223526d"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp" />
 
@@ -62,7 +62,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="7dp"
-                    android:text="Some protected/DRM video can appear black even though menus and ordinary video are visible."
+                    android:text="@string/layout_some_protected_drm_video_can_e2fc147"
                     android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
             </LinearLayout>
@@ -72,7 +72,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
-            android:text="Installed shortcuts"
+            android:text="@string/layout_installed_shortcuts_a92215d"
             android:textAllCaps="true"
             android:textColor="@color/text_secondary"
             android:textSize="12sp"
@@ -83,7 +83,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="No popular shortcut was detected. Use Choose another installed app."
+            android:text="@string/layout_no_popular_shortcut_was_detected_0f111d2"
             android:textColor="@color/text_secondary"
             android:textSize="13sp"
             android:visibility="gone" />
@@ -108,7 +108,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
-            android:text="Choose another installed app" />
+            android:text="@string/layout_choose_another_installed_app_0e65904" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_apps_cancel"
@@ -116,6 +116,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Cancel" />
+            android:text="@string/layout_cancel_77dfd21" />
     </LinearLayout>
 </ScrollView>

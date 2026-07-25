@@ -153,16 +153,16 @@ object DependencyPrompt {
             emptyList()
         }
         val body = buildString {
-            append("OpenCfMoto needs a few things on this phone before it can talk to your bike:\n")
+            append(activity.uiText("OpenCfMoto needs a few things on this phone before it can talk to your bike:\n"))
             for (issue in required) {
-                append("\n• ").append(issue.title)
-                append("\n  ").append(issue.detail)
+                append("\n• ").append(activity.uiText(issue.title))
+                append("\n  ").append(activity.uiText(issue.detail))
             }
             if (optional.isNotEmpty()) {
-                append("\n\nRecommended:")
+                append(activity.uiText("\n\nRecommended:"))
                 for (issue in optional) {
-                    append("\n• ").append(issue.title)
-                    append("\n  ").append(issue.detail)
+                    append("\n• ").append(activity.uiText(issue.title))
+                    append("\n  ").append(activity.uiText(issue.detail))
                 }
             }
         }
@@ -177,17 +177,17 @@ object DependencyPrompt {
         }
         try {
             AlertDialog.Builder(activity)
-                .setTitle("Missing dependencies")
+                .setTitle(activity.uiText("Missing dependencies"))
                 .setMessage(body)
-                .setPositiveButton(positiveLabel) { _, _ ->
+                .setPositiveButton(activity.uiText(positiveLabel)) { _, _ ->
                     primary?.let { fix(activity, it) } ?: SetupActivity.start(activity)
                 }
-                .setNeutralButton("Open Setup") { _, _ -> SetupActivity.start(activity) }
-                .setNegativeButton("Later", null)
+                .setNeutralButton(activity.uiText("Open Setup")) { _, _ -> SetupActivity.start(activity) }
+                .setNegativeButton(activity.uiText("Later"), null)
                 .show()
         } catch (e: Exception) {
             LogBus.log("[deps] dialog failed: $e")
-            Toast.makeText(activity, "Open Setup to finish prerequisites", Toast.LENGTH_LONG).show()
+            Toast.makeText(activity, activity.uiText("Open Setup to finish prerequisites"), Toast.LENGTH_LONG).show()
             SetupActivity.start(activity)
         }
     }
@@ -238,7 +238,7 @@ object DependencyPrompt {
                     ),
                 )
             } catch (_: Exception) {
-                Toast.makeText(activity, "Couldn't open the Play Store", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, activity.uiText("Couldn't open the Play Store"), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -252,7 +252,7 @@ object DependencyPrompt {
                 ),
             )
         } catch (_: Exception) {
-            Toast.makeText(activity, "Couldn't open app settings", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, activity.uiText("Couldn't open app settings"), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -268,7 +268,7 @@ object DependencyPrompt {
             try {
                 activity.startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION))
             } catch (_: Exception) {
-                Toast.makeText(activity, "Couldn't open overlay settings", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, activity.uiText("Couldn't open overlay settings"), Toast.LENGTH_SHORT).show()
             }
         }
     }

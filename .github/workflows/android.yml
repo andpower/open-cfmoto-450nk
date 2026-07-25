@@ -9,7 +9,7 @@ on:
       release_tag:
         description: Tag for the APK release
         required: true
-        default: v2.1.1-450nk
+        default: v2.2.0-450nk
 
 permissions:
   contents: write
@@ -32,6 +32,9 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Validate English and Spanish UI resources
+        run: python3 scripts/validate_translations.py
+
       - name: Run unit tests and build APK
         run: ./gradlew testDebugUnitTest assembleDebug
 
@@ -53,9 +56,10 @@ jobs:
         run: >
           gh release create "$RELEASE_TAG" OpenCfMoto-450NK.apk
           --target "$GITHUB_SHA"
-          --title "OpenCfMoto 450NK 2.1.1"
-          --notes "450NK-tested edition with parked Apps launcher, installed-app picker,
-          whole-screen projection, motion guard, and temporary handlebar media controls.
-          Uses its own Android application ID and 450NK icon, so it can be installed beside
-          upstream OpenCfMoto. Android Auto and the existing handlebar focus-navigation path
-          remain unchanged."
+          --title "OpenCfMoto 450NK 2.2.0 — Español / English"
+          --notes "Edición probada en 450NK con interfaz completa en español e inglés.
+          El idioma sigue al teléfono automáticamente o se puede elegir en Configuración:
+          Automático, Español o English. Incluye el lanzador de aplicaciones estacionadas,
+          selector de aplicaciones instaladas, proyección de pantalla completa, bloqueo por
+          movimiento y controles multimedia temporales desde el manillar. Usa su propio
+          identificador e ícono 450NK, por lo que puede instalarse junto al OpenCfMoto original."

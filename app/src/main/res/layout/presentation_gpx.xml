@@ -40,7 +40,7 @@
         <ImageView
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:contentDescription="Search"
+            android:contentDescription="@string/layout_search_bce0641"
             android:src="@drawable/ic_search"
             android:tint="#5F6368" />
 
@@ -51,7 +51,7 @@
             android:layout_marginStart="8dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Search here"
+            android:text="@string/layout_search_here_6029ad9"
             android:textColor="#3C4043"
             android:textSize="16sp" />
 
@@ -61,7 +61,7 @@
             android:layout_height="36dp"
             android:gravity="center"
             android:paddingHorizontal="8dp"
-            android:text="Circuit"
+            android:text="@string/layout_circuit_a13e1f1"
             android:textColor="#E65100"
             android:textSize="14sp"
             android:textStyle="bold" />
@@ -72,7 +72,7 @@
             android:layout_height="36dp"
             android:gravity="center"
             android:paddingHorizontal="10dp"
-            android:text="Hub"
+            android:text="@string/layout_hub_a38df5f"
             android:textColor="#1A73E8"
             android:textSize="14sp"
             android:textStyle="bold" />
@@ -107,7 +107,7 @@
                 android:id="@+id/gpx_cue_icon"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                android:contentDescription="Next maneuver"
+                android:contentDescription="@string/layout_next_maneuver_6004d00"
                 android:src="@drawable/ic_man_straight" />
 
             <LinearLayout
@@ -200,7 +200,7 @@
                     android:id="@+id/gpx_l_speed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="km/h"
+                    android:text="@string/layout_km_h_010f863"
                     android:textColor="#889098"
                     android:textSize="12sp" />
                 <TextView
@@ -223,7 +223,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
-                    android:text="TIME"
+                    android:text="@string/layout_time_64269f9"
                     android:textColor="#889098"
                     android:textSize="11sp" />
                 <TextView
@@ -250,7 +250,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
-                    android:text="ARRIVE"
+                    android:text="@string/layout_arrive_dac6cbb"
                     android:textColor="#889098"
                     android:textSize="11sp" />
                 <TextView
@@ -277,7 +277,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
-                    android:text="LEFT"
+                    android:text="@string/layout_left_969e2cc"
                     android:textColor="#889098"
                     android:textSize="11sp" />
                 <TextView
@@ -305,7 +305,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
-                    android:text="ALT m"
+                    android:text="@string/layout_alt_m_4264ea2"
                     android:textColor="#889098"
                     android:textSize="11sp" />
                 <TextView
@@ -331,7 +331,7 @@
                     android:id="@+id/gpx_l_limit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="LIMIT"
+                    android:text="@string/layout_limit_9c590af"
                     android:textColor="#889098"
                     android:textSize="12sp" />
                 <TextView
@@ -374,7 +374,7 @@
                 android:background="@drawable/bg_end_pill"
                 android:minWidth="0dp"
                 android:paddingHorizontal="16dp"
-                android:text="End"
+                android:text="@string/layout_end_a2bb9d3"
                 android:textAllCaps="false"
                 android:textColor="#FF8A80"
                 android:textSize="15sp"
@@ -414,7 +414,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
-                android:text="km/h"
+                android:text="@string/layout_km_h_010f863"
                 android:textColor="#B0B8C0"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -501,7 +501,7 @@
                 android:gravity="center"
                 android:includeFontPadding="false"
                 android:paddingHorizontal="12dp"
-                android:text="★ Save"
+                android:text="@string/layout_save_d8dba70"
                 android:textColor="#90CAF9"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -513,7 +513,7 @@
                 android:gravity="center"
                 android:includeFontPadding="false"
                 android:paddingHorizontal="12dp"
-                android:text="Home"
+                android:text="@string/layout_home_70f8bb9"
                 android:textColor="#FFD54F"
                 android:textSize="14sp"
                 android:textStyle="bold"
@@ -526,7 +526,7 @@
                 android:gravity="center"
                 android:includeFontPadding="false"
                 android:paddingHorizontal="12dp"
-                android:text="＋ Marker"
+                android:text="@string/layout_marker_0aeece5"
                 android:textColor="#A5D6A7"
                 android:textSize="14sp"
                 android:textStyle="bold"
@@ -539,7 +539,7 @@
                 android:gravity="center"
                 android:includeFontPadding="false"
                 android:paddingHorizontal="12dp"
-                android:text="Circuit"
+                android:text="@string/layout_circuit_a13e1f1"
                 android:textColor="#FFB74D"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -556,7 +556,7 @@
                 android:gravity="center"
                 android:includeFontPadding="false"
                 android:paddingHorizontal="12dp"
-                android:text="Done"
+                android:text="@string/layout_done_e9b450d"
                 android:textColor="#B0B8C0"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -569,7 +569,7 @@
                 android:background="@drawable/bg_go_button"
                 android:minWidth="110dp"
                 android:paddingHorizontal="20dp"
-                android:text="Go"
+                android:text="@string/layout_go_2e0b45f"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"
@@ -596,7 +596,7 @@
             android:id="@+id/gpx_arrive_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="You've arrived"
+            android:text="@string/layout_you_ve_arrived_2d572eb"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -606,7 +606,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="Mark this spot or keep riding"
+            android:text="@string/layout_mark_this_spot_or_keep_83a390a"
             android:textColor="#B0B8C0"
             android:textSize="13sp" />
 
@@ -622,7 +622,7 @@
                 android:layout_height="48dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_go_button"
-                android:text="Park here"
+                android:text="@string/layout_park_here_1224919"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold" />
@@ -634,7 +634,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_route_chip"
-                android:text="Find parking"
+                android:text="@string/layout_find_parking_715e689"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold" />
@@ -646,7 +646,7 @@
             android:layout_height="44dp"
             android:layout_marginTop="8dp"
             android:background="@android:color/transparent"
-            android:text="Done · free ride"
+            android:text="@string/layout_done_free_ride_7a016e0"
             android:textAllCaps="false"
             android:textColor="#B0B8C0" />
     </LinearLayout>
@@ -666,7 +666,7 @@
             android:layout_width="46dp"
             android:layout_height="46dp"
             android:background="@drawable/bg_fab_circle"
-            android:contentDescription="Recenter GPS"
+            android:contentDescription="@string/layout_recenter_gps_7e44efa"
             android:padding="11dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_fab_gps" />
@@ -677,7 +677,7 @@
             android:layout_height="46dp"
             android:layout_marginTop="6dp"
             android:background="@drawable/bg_fab_circle"
-            android:contentDescription="Zoom in"
+            android:contentDescription="@string/layout_zoom_in_4fc05f2"
             android:padding="11dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_fab_plus" />
@@ -688,7 +688,7 @@
             android:layout_height="46dp"
             android:layout_marginTop="6dp"
             android:background="@drawable/bg_fab_circle"
-            android:contentDescription="Zoom out"
+            android:contentDescription="@string/layout_zoom_out_a4ae4b2"
             android:padding="11dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_fab_minus" />
@@ -699,7 +699,7 @@
             android:layout_height="46dp"
             android:layout_marginTop="6dp"
             android:background="@drawable/bg_fab_circle"
-            android:contentDescription="Compass"
+            android:contentDescription="@string/layout_compass_9d5c8e5"
             android:padding="11dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_fab_compass" />
@@ -710,7 +710,7 @@
             android:layout_height="46dp"
             android:layout_marginTop="6dp"
             android:background="@drawable/bg_fab_circle"
-            android:contentDescription="Menu"
+            android:contentDescription="@string/layout_menu_57f5f5e"
             android:padding="11dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_fab_menu" />
@@ -723,7 +723,7 @@
             android:layout_height="46dp"
             android:layout_marginTop="6dp"
             android:background="@drawable/bg_fab_circle"
-            android:contentDescription="Fit route"
+            android:contentDescription="@string/layout_fit_route_ccd8672"
             android:padding="11dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_fab_fit"
@@ -734,7 +734,7 @@
             android:layout_width="46dp"
             android:layout_height="46dp"
             android:background="@drawable/bg_fab_circle"
-            android:contentDescription="Voice"
+            android:contentDescription="@string/layout_voice_3091c84"
             android:padding="11dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_fab_voice"
@@ -793,7 +793,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@null"
-                    android:hint="Search places or address"
+                    android:hint="@string/layout_search_places_or_address_eea8d95"
                     android:imeOptions="actionSearch"
                     android:inputType="text"
                     android:maxLines="1"
@@ -806,7 +806,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="Search"
+                    android:contentDescription="@string/layout_search_bce0641"
                     android:padding="9dp"
                     android:src="@drawable/ic_search"
                     android:tint="#5F6368" />
@@ -870,7 +870,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="8dp"
-                android:text="Ride"
+                android:text="@string/layout_ride_09b04fb"
                 android:textColor="#FFFFFF"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -879,7 +879,7 @@
                 android:id="@+id/gpx_end"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:text="End navigation"
+                android:text="@string/layout_end_navigation_7a7bba1"
                 android:textAllCaps="false" />
 
             <Button
@@ -887,7 +887,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="6dp"
-                android:text="Park here"
+                android:text="@string/layout_park_here_1224919"
                 android:textAllCaps="false" />
 
             <Button
@@ -895,7 +895,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="6dp"
-                android:text="Go Home"
+                android:text="@string/layout_go_home_19445d7"
                 android:textAllCaps="false" />
 
             <Button
@@ -903,7 +903,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="6dp"
-                android:text="Set Home here"
+                android:text="@string/layout_set_home_here_cbe5861"
                 android:textAllCaps="false" />
 
             <Button
@@ -911,7 +911,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="6dp"
-                android:text="Recenter / Recalc"
+                android:text="@string/layout_recenter_recalc_9cf8012"
                 android:textAllCaps="false" />
 
             <Button
@@ -919,7 +919,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="6dp"
-                android:text="Record ride"
+                android:text="@string/layout_record_ride_a926a70"
                 android:textAllCaps="false" />
 
             <Button
@@ -927,7 +927,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="6dp"
-                android:text="Circuit (there and back)"
+                android:text="@string/layout_circuit_there_and_back_6e252b7"
                 android:textAllCaps="false" />
 
             <TextView
@@ -935,7 +935,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="14dp"
                 android:paddingBottom="8dp"
-                android:text="Map"
+                android:text="@string/layout_map_ab478f3"
                 android:textColor="#FFFFFF"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -944,7 +944,7 @@
                 android:id="@+id/gpx_follow"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:text="Follow"
+                android:text="@string/layout_follow_66587a7"
                 android:textAllCaps="false" />
 
             <Button
@@ -952,7 +952,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="6dp"
-                android:text="Heading up"
+                android:text="@string/layout_heading_up_a479fd5"
                 android:textAllCaps="false" />
 
             <Button
@@ -960,7 +960,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="6dp"
-                android:text="Voice"
+                android:text="@string/layout_voice_3091c84"
                 android:textAllCaps="false" />
 
             <LinearLayout
@@ -994,7 +994,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="16dp"
-                android:text="Close"
+                android:text="@string/layout_close_bbfa773"
                 android:textAllCaps="false" />
         </LinearLayout>
     </ScrollView>

@@ -103,16 +103,18 @@ object WifiGate {
         promptShowing = true
         try {
             MaterialAlertDialogBuilder(activity)
-                .setTitle("Turn on Wi‑Fi")
+                .setTitle(activity.uiText("Turn on Wi‑Fi"))
                 .setMessage(
-                    "OpenCfMoto joins the bike over Wi‑Fi, but your phone’s Wi‑Fi is off.\n\n" +
-                        "Turn it on, then tap Connect again."
+                    activity.uiText(
+                        "OpenCfMoto joins the bike over Wi‑Fi, but your phone’s Wi‑Fi is off.\n\n" +
+                            "Turn it on, then tap Connect again.",
+                    ),
                 )
-                .setPositiveButton("Wi‑Fi settings") { _, _ ->
+                .setPositiveButton(activity.uiText("Wi‑Fi settings")) { _, _ ->
                     promptShowing = false
                     openWifiSettings(activity)
                 }
-                .setNegativeButton("Dismiss") { _, _ ->
+                .setNegativeButton(activity.uiText("Dismiss")) { _, _ ->
                     promptShowing = false
                 }
                 .setOnCancelListener { promptShowing = false }
@@ -138,8 +140,8 @@ object WifiGate {
             )
             val n = Notification.Builder(app, CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.ic_dialog_alert)
-                .setContentTitle("Turn on Wi‑Fi")
-                .setContentText("OpenCfMoto can’t reach the bike — tap to open Wi‑Fi settings.")
+                .setContentTitle(app.uiText("Turn on Wi‑Fi"))
+                .setContentText(app.uiText("OpenCfMoto can’t reach the bike — tap to open Wi‑Fi settings."))
                 .setContentIntent(pi)
                 .setAutoCancel(true)
                 .setOnlyAlertOnce(true)

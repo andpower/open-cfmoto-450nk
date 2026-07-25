@@ -37,12 +37,12 @@ class ProjectionService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             nm.createNotificationChannel(
-                NotificationChannel(channelId, "Screen mirroring", NotificationManager.IMPORTANCE_LOW)
+                NotificationChannel(channelId, uiText("Screen mirroring"), NotificationManager.IMPORTANCE_LOW)
             )
         }
         val notification: Notification = Notification.Builder(this, channelId)
             .setContentTitle("OpenCfMoto")
-            .setContentText("Mirroring screen to bike")
+            .setContentText(uiText("Mirroring screen to bike"))
             .setSmallIcon(android.R.drawable.ic_menu_share)
             .build()
 

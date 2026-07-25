@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="14dp"
         android:paddingBottom="8dp"
-        android:text="Settings"
+        android:text="@string/layout_settings_c7f73bb"
         android:textColor="#FFFFFF"
         android:textSize="15sp"
         android:textStyle="bold" />
@@ -18,7 +18,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Units"
+        android:text="@string/layout_units_1274828"
         android:textColor="#FFFFFF"
         android:textSize="13sp"
         android:textStyle="bold" />
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:layout_weight="1"
-            android:text="Metric" />
+            android:text="@string/layout_metric_b2bb760" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/gpx_units_imperial"
@@ -46,14 +46,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_weight="1"
-            android:text="Imperial" />
+            android:text="@string/layout_imperial_5d3908a" />
     </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Theme"
+        android:text="@string/layout_theme_a797e30"
         android:textColor="#FFFFFF"
         android:textSize="13sp"
         android:textStyle="bold" />
@@ -72,7 +72,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:layout_weight="1"
-            android:text="Auto" />
+            android:text="@string/layout_auto_c614ba7" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/gpx_theme_day"
@@ -81,7 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="4dp"
             android:layout_weight="1"
-            android:text="Day" />
+            android:text="@string/layout_day_987b9ce" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/gpx_theme_night"
@@ -90,14 +90,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_weight="1"
-            android:text="Night" />
+            android:text="@string/layout_night_1097b55" />
     </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Voice"
+        android:text="@string/layout_voice_3091c84"
         android:textColor="#FFFFFF"
         android:textSize="13sp"
         android:textStyle="bold" />
@@ -116,7 +116,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:layout_weight="1"
-            android:text="On" />
+            android:text="@string/layout_on_e0049a6" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/gpx_voice_off"
@@ -125,14 +125,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_weight="1"
-            android:text="Off" />
+            android:text="@string/layout_off_e3de5ab" />
     </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Next stop"
+        android:text="@string/layout_next_stop_0aa3411"
         android:textColor="#FFFFFF"
         android:textSize="13sp"
         android:textStyle="bold" />
@@ -151,7 +151,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:layout_weight="1"
-            android:text="On" />
+            android:text="@string/layout_on_e0049a6" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/gpx_next_stop_off"
@@ -160,14 +160,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_weight="1"
-            android:text="Off" />
+            android:text="@string/layout_off_e3de5ab" />
     </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Auto-finish"
+        android:text="@string/layout_auto_finish_7ebbec4"
         android:textColor="#FFFFFF"
         android:textSize="13sp"
         android:textStyle="bold" />
@@ -186,7 +186,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:layout_weight="1"
-            android:text="On" />
+            android:text="@string/layout_on_e0049a6" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/gpx_auto_finish_off"
@@ -195,14 +195,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_weight="1"
-            android:text="Off" />
+            android:text="@string/layout_off_e3de5ab" />
     </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Chrome"
+        android:text="@string/layout_chrome_218e75c"
         android:textColor="#FFFFFF"
         android:textSize="13sp"
         android:textStyle="bold" />
@@ -221,7 +221,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:layout_weight="1"
-            android:text="Dark" />
+            android:text="@string/layout_dark_ae1ef01" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/gpx_chrome_black"
@@ -230,7 +230,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="4dp"
             android:layout_weight="1"
-            android:text="Black" />
+            android:text="@string/layout_black_b406fb5" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/gpx_chrome_slate"
@@ -239,7 +239,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="4dp"
             android:layout_weight="1"
-            android:text="Slate" />
+            android:text="@string/layout_slate_26d7b21" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/gpx_chrome_forest"
@@ -248,14 +248,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_weight="1"
-            android:text="Forest" />
+            android:text="@string/layout_forest_f41c4e4" />
     </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="3D"
+        android:text="@string/layout_3d_64fe85d"
         android:textColor="#FFFFFF"
         android:textSize="13sp"
         android:textStyle="bold" />
@@ -274,7 +274,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:layout_weight="1"
-            android:text="On" />
+            android:text="@string/layout_on_e0049a6" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/gpx_buildings_off"
@@ -283,14 +283,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_weight="1"
-            android:text="Off" />
+            android:text="@string/layout_off_e3de5ab" />
     </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Route mode"
+        android:text="@string/layout_route_mode_54b9671"
         android:textColor="#FFFFFF"
         android:textSize="13sp"
         android:textStyle="bold" />
@@ -309,7 +309,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:layout_weight="1"
-            android:text="Fast" />
+            android:text="@string/layout_fast_8db6a2f" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/gpx_route_fun"
@@ -318,14 +318,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_weight="1"
-            android:text="Fun" />
+            android:text="@string/layout_fun_5f941ab" />
     </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Avoid tolls"
+        android:text="@string/layout_avoid_tolls_7194b98"
         android:textColor="#FFFFFF"
         android:textSize="13sp"
         android:textStyle="bold" />
@@ -344,7 +344,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:layout_weight="1"
-            android:text="On" />
+            android:text="@string/layout_on_e0049a6" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/gpx_avoid_tolls_off"
@@ -353,14 +353,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_weight="1"
-            android:text="Off" />
+            android:text="@string/layout_off_e3de5ab" />
     </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Avoid highways"
+        android:text="@string/layout_avoid_highways_a36e887"
         android:textColor="#FFFFFF"
         android:textSize="13sp"
         android:textStyle="bold" />
@@ -379,7 +379,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:layout_weight="1"
-            android:text="On" />
+            android:text="@string/layout_on_e0049a6" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/gpx_avoid_hwy_off"
@@ -388,14 +388,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_weight="1"
-            android:text="Off" />
+            android:text="@string/layout_off_e3de5ab" />
     </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Legacy scenic length (unused — Circuit is there and back)"
+        android:text="@string/layout_legacy_scenic_length_unused_circuit_1cf3ca3"
         android:textColor="#FFFFFF"
         android:textSize="13sp"
         android:textStyle="bold" />

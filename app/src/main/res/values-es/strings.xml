@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OpenCfMoto 450NK</string>
+    <string name="language_title">Idioma</string>
+    <string name="language_description">Usá automáticamente el idioma del teléfono o elegí un idioma para OpenCfMoto.</string>
+    <string name="language_system">Automático</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_english">English</string>
+
+    <string name="about_copyright">© 2026 Alexandru</string>
+    <string name="about_copyright_body">Variante 450NK mantenida por Andrés Hugo Quintana (andpower), basada en OpenCfMoto de Alexandru (zanderp) y sus colaboradores. Software libre bajo GNU AGPL v3 o posterior; consultá LICENSE y NOTICE para ver la atribución completa.</string>
+    <string name="about_license_body">Podés usar, estudiar, compartir y modificar esta aplicación bajo la AGPL. Si redistribuís una versión modificada, incluso como servicio de red, debés ofrecer el código fuente correspondiente completo bajo la misma licencia.</string>
+    <string name="about_credits">Construida sobre el trabajo de la comunidad open-cfmoto:\n\n• dcoletto / coletz — trabajo original de QR y EasyConn\n• BojanJ — integración del receptor Android Auto\n• richardbizik — compatibilidad con 1000 MT‑X\n• ionutradu252 / open-cflink — controles del manillar, márgenes, reconexión y mejoras\n• eugen0309 — Wi‑Fi Direct / CL‑C450\n• headunit-revived — sistema de proyección Android Auto (AGPL)\n\nY todas las personas que probaron motos, compartieron registros e informaron problemas.</string>
+    <string name="about_disclaimer">OpenCfMoto es un proyecto comunitario independiente. No está afiliado, respaldado ni patrocinado por CFMOTO, Google o Android Auto. CFMOTO, MotoPlay, EasyConn, Android y Android Auto son marcas de sus respectivos propietarios. Usalo bajo tu responsabilidad y configurá la ruta antes de conducir.</string>
+
+    <string name="supported_bikes_intro">Funciona con cualquier pantalla CFMOTO que muestre un QR de vinculación MotoPlay/EasyConnect. No requiere T‑BOX. Funciona en unidades estadounidenses e internacionales; si ves el QR, probá Conectar.</string>
+    <string name="supported_bikes_confirmed_title">Confirmadas con OpenCfMoto</string>
+    <string name="supported_bikes_confirmed">450NK (sin tacto, navegación con manillar) · 800MT (MT‑X / Explore / Explore GT) · 1000 MT‑X · 800NK (US CRCP) · 800NK Advanced · 450SR (+ SR‑S / TC) · 450CL‑C / CL‑C450 · scooter 150SC</string>
+    <string name="supported_bikes_full_title">Lista completa — pantallas EasyConnect/MotoPlay conocidas</string>
+    <string name="supported_bikes_full">Naked:  125NK · 450NK · 675NK · 800NK · 800NK Advanced · 800NK Sport · 800NK (US CRCP)\nSport:  300SR · 450SR · 450SR‑S · 450SR TC · 500SR VOOM · 675SR · 675SR‑R\nTouring / Adv:  450MT · 700MT · 700MT Adventure · 800MT‑X · 800MT Explore · 800MT Explore GT · 1000 MT‑X\nCruiser:  450CL‑C · CL‑C450\nScooter:  150SC\nATV / SSV (TFT):  CFORCE 800 · CFORCE 850 Touring · CFORCE 1000 · CFORCE 1000 Touring\nOtros:  U10 Pro (cuando la pantalla ofrece el QR)</string>
+    <string name="supported_bikes_unlikely_title">Normalmente sin QR de proyección</string>
+    <string name="supported_bikes_unlikely">800MT Sport · 800MT Touring · 450SR World Champion Edition · 700CL‑X (Adventure / Heritage / Sport) · PAPIO, salvo que tu unidad muestre el QR.</string>
+    <string name="supported_bikes_footer">Variante 450NK: github.com/andpower/open-cfmoto-450nk. Los informes de la comunidad también son bienvenidos en el Discord de OpenCfMoto.</string>
+</resources>

@@ -38,7 +38,7 @@ class QrScanActivity : AppCompatActivity() {
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) startCamera() else {
-            Toast.makeText(this, "Camera permission required", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, uiText("Camera permission required"), Toast.LENGTH_LONG).show()
             finish()
         }
     }
@@ -80,7 +80,7 @@ class QrScanActivity : AppCompatActivity() {
                 )
                 setupZoomButtons()
             } catch (e: Exception) {
-                findViewById<TextView>(R.id.hint).text = "Camera bind failed: ${e.message}"
+                findViewById<TextView>(R.id.hint).text = uiText("Camera bind failed: ${e.message}")
             }
         }, ContextCompat.getMainExecutor(this))
     }

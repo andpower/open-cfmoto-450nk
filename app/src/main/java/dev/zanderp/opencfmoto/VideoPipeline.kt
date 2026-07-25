@@ -383,7 +383,7 @@ class VideoPipeline(
                 var n = 0
                 override fun run() {
                     if (!running) return
-                    clock.text = "frame tick ${n++}"
+                    clock.text = pres.context.uiText("frame tick ${n++}")
                     main.postDelayed(this, 100)
                 }
             }

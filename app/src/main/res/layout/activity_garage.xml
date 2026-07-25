@@ -19,7 +19,7 @@
         <ImageView
             android:layout_width="26dp"
             android:layout_height="26dp"
-            android:contentDescription="Garage"
+            android:contentDescription="@string/layout_garage_f614ac3"
             android:src="@drawable/ic_devices"
             android:tint="@color/brand_orange" />
 
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="10dp"
-            android:text="Garage"
+            android:text="@string/layout_garage_f614ac3"
             android:textColor="@color/text_primary"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:paddingHorizontal="20dp"
         android:paddingBottom="4dp"
-        android:text="Each bike keeps its own name, photo, screen fit, resolution, power mode and button mapping. Tap a bike to make it active or edit it."
+        android:text="@string/layout_each_bike_keeps_its_own_7549579"
         android:textColor="@color/text_secondary"
         android:textSize="13sp"
         android:lineSpacingExtra="3dp" />
@@ -51,7 +51,7 @@
         android:layout_marginTop="30dp"
         android:gravity="center"
         android:paddingHorizontal="32dp"
-        android:text="No bikes yet.\nScan your dash QR to add your first motorcycle."
+        android:text="@string/layout_no_bikes_yet_nscan_your_e2df692"
         android:textColor="@color/text_secondary"
         android:textSize="15sp"
         android:lineSpacingExtra="4dp"
@@ -76,6 +76,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Scan new bike"
+        android:text="@string/layout_scan_new_bike_495a919"
         app:icon="@drawable/ic_qr" />
 </LinearLayout>

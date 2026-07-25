@@ -356,7 +356,7 @@ class AndroidAutoService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             nm.createNotificationChannel(
-                NotificationChannel(CHANNEL_ID, "Android Auto receiver", NotificationManager.IMPORTANCE_LOW)
+                NotificationChannel(CHANNEL_ID, uiText("Android Auto receiver"), NotificationManager.IMPORTANCE_LOW)
             )
         }
     }
@@ -371,14 +371,14 @@ class AndroidAutoService : Service() {
         val stopIntent = Intent(this, AndroidAutoService::class.java).apply { action = ACTION_STOP }
         val stopPi = PendingIntent.getService(this, 2, stopIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         return Notification.Builder(this, CHANNEL_ID)
-            .setContentTitle(title)
-            .setContentText(text)
+            .setContentTitle(uiText(title))
+            .setContentText(uiText(text))
             .setSmallIcon(android.R.drawable.ic_menu_compass)
             .setContentIntent(pi)
             .setOnlyAlertOnce(true)
             .addAction(
                 Notification.Action.Builder(
-                    Icon.createWithResource(this, R.drawable.ic_stop), "Stop", stopPi,
+                    Icon.createWithResource(this, R.drawable.ic_stop), uiText("Stop"), stopPi,
                 ).build(),
             )
             .build()

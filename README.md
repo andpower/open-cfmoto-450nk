@@ -10,7 +10,7 @@ every ride — all from an Android phone in your pocket.
 <br/>
 
 [![Join the Discord](https://img.shields.io/badge/Discord-Join%20the%20community-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/xRt5yZy2U)
-[![Downloads](https://img.shields.io/github/downloads/zanderp/open-cfmoto/total?style=for-the-badge&label=Downloads)](https://github.com/zanderp/open-cfmoto/releases)
+[![Downloads](https://img.shields.io/github/downloads/andpower/open-cfmoto-450nk/total?style=for-the-badge&label=450NK%20Downloads)](https://github.com/andpower/open-cfmoto-450nk/releases)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20the%20project-ff5e5b?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/alexandrupopa)
 
 **💬 Questions, logs, or a new bike to add? [Join the Open CFMoto Discord](https://discord.gg/xRt5yZy2U).**
@@ -41,6 +41,20 @@ dash touchscreen.
 
 ---
 
+## 450NK edition
+
+This repository is an independent, AGPL-compatible 450NK edition maintained at
+[`andpower/open-cfmoto-450nk`](https://github.com/andpower/open-cfmoto-450nk). It preserves the
+working OpenCfMoto Android Auto path and its full attribution. A real 450NK test confirmed that the
+display fits correctly and that focus navigation works with the handlebar/menu double press.
+
+The additional **Apps** mode can launch YouTube, VLC, Spotify, a browser, or another installed app
+through whole-screen projection. It is **parked-only**: the 450NK is not touch, ordinary handlebar
+media keys work only where the selected app supports Bluetooth play/pause/track controls, and
+protected DRM video may appear black.
+
+---
+
 ## ✨ Features
 
 | | |
@@ -66,6 +80,7 @@ dash touchscreen.
 | 📤 **Share / import bike tuning** | Export profile, resolution, fit, margins & button map as JSON (no passwords / personal prefs) — share on Discord, Import on another phone. |
 | 📶 **Wi‑Fi-off alert** | If phone Wi‑Fi is off when connecting, a dialog offers **Wi‑Fi settings** (one tap). |
 | 🗺️ **Map / GPX** | Free ride, GPX tracks, OSM search/POI, Home/favorites/markers, parked pin, road routing, voice cues — on the bike dash or phone. |
+| 🧩 **Parked Apps (450NK edition)** | Launch YouTube, VLC, Spotify, browsers, or another installed app through whole-screen projection, with motion guard and temporary handlebar media mode. |
 | 📱 **Mirror phone** | Cast the phone screen when you really need it (screen on; awkward for nav apps). |
 
 ---
@@ -74,12 +89,12 @@ dash touchscreen.
 
 - **A CFMoto (or CFMoto scooter / ATV) whose dash can show a MotoPlay / EasyConnect QR.**
   **No T‑BOX required.** Works on **US and international** units. See the full list:
-  **[Supported bikes](docs/09-SUPPORTED-BIKES.md)**. Touch dashes use the screen; non‑touch /
+  **[Supported bikes](docs/SUPPORTED-BIKES.md)**. Touch dashes use the screen; non‑touch /
   focus-mode bikes use **Controls** + handlebar buttons. Unknown dashes are learned after the first
   connect.
 - **An Android phone**, Android **10 or newer**.
 - **Google Android Auto** set up once (see [step 3](#3-one-time-android-auto-setup)).
-- **OpenCfMoto** from [Releases](https://github.com/zanderp/open-cfmoto/releases/latest) (sideload).
+- **OpenCfMoto 450NK** from [Releases](https://github.com/andpower/open-cfmoto-450nk/releases/latest) (sideload).
 - A **mobile-data plan** is recommended: the phone joins the bike's Wi‑Fi, so maps/traffic use cellular.
 
 No root, no VPN, no PC required to ride.
@@ -88,7 +103,7 @@ No root, no VPN, no PC required to ride.
 
 ## 🏍️ Supported bikes
 
-**→ Full list (source of truth): [docs/09-SUPPORTED-BIKES.md](docs/09-SUPPORTED-BIKES.md)**  
+**→ Full list (source of truth): [docs/SUPPORTED-BIKES.md](docs/SUPPORTED-BIKES.md)**
 (same content as Setup → Supported bikes in the app)
 
 **Rule:** if the dash shows a **pairing QR**, try OpenCfMoto. T‑BOX / CFMOTO RIDE subscription is
@@ -100,8 +115,8 @@ No root, no VPN, no PC required to ride.
 
 ### Confirmed with OpenCfMoto
 
-800MT (MT‑X / Explore / Explore GT) · 1000 MT‑X · 800NK (US CRCP) · 800NK Advanced · 450SR (+ SR‑S /
-TC) · 450CL‑C / CL‑C450 · **150SC** scooter
+**450NK** (non-touch, handlebar focus navigation) · 800MT (MT‑X / Explore / Explore GT) · 1000 MT‑X ·
+800NK (US CRCP) · 800NK Advanced · 450SR (+ SR‑S / TC) · 450CL‑C / CL‑C450 · **150SC** scooter
 
 ### Full list (summary)
 
@@ -134,8 +149,8 @@ its **pairing QR code** — the same QR the official CFMoto app uses.
 The app isn't on the Play Store — you sideload the APK.
 
 1. Download the latest **`OpenCfMoto.apk`** from the
-   **[Releases page](https://github.com/zanderp/open-cfmoto/releases/latest)**
-   (direct link: <https://github.com/zanderp/open-cfmoto/releases/latest/download/OpenCfMoto.apk>).
+   **[Releases page](https://github.com/andpower/open-cfmoto-450nk/releases/latest)**
+   (direct link: <https://github.com/andpower/open-cfmoto-450nk/releases/latest/download/OpenCfMoto-450NK.apk>).
 2. Tap it in a file manager / your browser downloads to install; allow installation from your
    browser/file manager when Android prompts about "unknown sources".
 3. Open **OpenCfMoto** once and grant the permissions it requests:
@@ -542,7 +557,7 @@ OpenCfMoto routes and **Connect** for Maps/Waze Android Auto.
 | Button | What it does |
 | --- | --- |
 | **Connect / Stop** | Connect starts Android Auto on the dash; becomes **Stop** while linking or projecting. |
-| **Scan · Map · Mirror** | Scan QR; Map = OpenCfMoto Map/GPX; Mirror = cast phone. While connected, Map/Mirror switch content. |
+| **Scan · Map · Apps · Mirror** | Scan QR; Map = OpenCfMoto Map/GPX; Apps = parked installed-app launcher; Mirror = cast phone. |
 | **Dash view · Controls** | Phone HUD and D-pad / handlebar (same row). |
 | **Dash view** | Live in-app mirror of the dash — touch + on-screen controls. |
 | **Controls** | On-screen D-pad/knob, volume, handlebar mapping, Navigate-to. |
@@ -645,9 +660,10 @@ and built the Android Auto plumbing before us. Huge thanks to:
 - **[headunit-revived](https://github.com/andreknieriem/headunit-revived)** by *andreknieriem* — the
   Android Auto (AAP) receiver foundation.
 
-Maintained by **Alexandru** ([alexandru.rocks](https://alexandru.rocks)) — see **About** in the app.
-Thank you to everyone who shared logs, captures, and bike reports. Technical notes live in
-[`docs/`](docs/).
+The upstream project is maintained by **Alexandru**
+([alexandru.rocks](https://alexandru.rocks)). This 450NK edition and its Apps mode are maintained by
+**Andrés Hugo Quintana** ([andpower](https://github.com/andpower)). Thank you to everyone who shared
+logs, captures, and bike reports. Technical notes live in [`docs/`](docs/).
 
 ---
 

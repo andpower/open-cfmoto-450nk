@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">Open CfMoto</string>
+    <string name="app_name">OpenCfMoto 450NK</string>
 
     <string name="about_copyright">© 2026 Alexandru</string>
-    <string name="about_copyright_body">Maintained by Alexandru (zanderp). Free software under the GNU AGPL v3 or later — see LICENSE and NOTICE in the repository for the full copyright and attribution text.</string>
+    <string name="about_copyright_body">450NK variant maintained by Andrés Hugo Quintana (andpower), based on OpenCfMoto by Alexandru (zanderp) and its contributors. Free software under the GNU AGPL v3 or later — see LICENSE and NOTICE for full attribution.</string>
     <string name="about_license_body">You may use, study, share, and modify this app under the AGPL. If you redistribute a modified version (including as a network service), you must offer the complete corresponding source under the same license.</string>
     <string name="about_credits">Built on the open-cfmoto community lineage:\n\n• dcoletto / coletz — original QR &amp; EasyConn work\n• BojanJ — Android Auto receiver integration\n• richardbizik — 1000 MT‑X support\n• ionutradu252 / open-cflink — handlebar controls, margins, reconnect &amp; polish\n• eugen0309 — Wi‑Fi Direct / CL‑C450 path\n• headunit-revived — Android Auto projection stack (AGPL)\n\nAnd everyone who tested bikes, shared logs, and filed issues.</string>
     <string name="about_disclaimer">OpenCfMoto is an independent community project. It is not affiliated with, endorsed by, or sponsored by CFMOTO, Google, or Android Auto. CFMOTO, MotoPlay, EasyConn, Android, and Android Auto are trademarks of their respective owners. Use at your own risk — set your route before you ride.</string>
@@ -10,10 +10,10 @@
     <!-- Keep in sync with docs/SUPPORTED-BIKES.md -->
     <string name="supported_bikes_intro">Works with any CFMoto dash that shows a MotoPlay / EasyConnect pairing QR. No T‑BOX required. US and international both work — if you see the QR, try Connect.</string>
     <string name="supported_bikes_confirmed_title">Confirmed with OpenCfMoto</string>
-    <string name="supported_bikes_confirmed">800MT (MT‑X / Explore / Explore GT) · 1000 MT‑X · 800NK (US CRCP) · 800NK Advanced · 450SR (+ SR‑S / TC) · 450CL‑C / CL‑C450 · 150SC scooter</string>
+    <string name="supported_bikes_confirmed">450NK (non-touch, handlebar navigation) · 800MT (MT‑X / Explore / Explore GT) · 1000 MT‑X · 800NK (US CRCP) · 800NK Advanced · 450SR (+ SR‑S / TC) · 450CL‑C / CL‑C450 · 150SC scooter</string>
     <string name="supported_bikes_full_title">Full list — known EasyConnect / MotoPlay dashes</string>
     <string name="supported_bikes_full">Naked:  125NK · 450NK · 675NK · 800NK · 800NK Advanced · 800NK Sport · 800NK (US CRCP)\nSport:  300SR · 450SR · 450SR‑S · 450SR TC · 500SR VOOM · 675SR · 675SR‑R\nTouring / Adv:  450MT · 700MT · 700MT Adventure · 800MT‑X · 800MT Explore · 800MT Explore GT · 1000 MT‑X\nCruiser:  450CL‑C · CL‑C450\nScooter:  150SC\nATV / SSV (TFT):  CFORCE 800 · CFORCE 850 Touring · CFORCE 1000 · CFORCE 1000 Touring\nOther:  U10 Pro (where the dash offers the QR)</string>
     <string name="supported_bikes_unlikely_title">Usually no projection QR</string>
     <string name="supported_bikes_unlikely">800MT Sport · 800MT Touring · 450SR World Champion Edition · 700CL‑X (Adventure / Heritage / Sport) · PAPIO — unless your unit shows the QR anyway.</string>
-    <string name="supported_bikes_footer">Full list online: github.com/zanderp/open-cfmoto → docs/SUPPORTED-BIKES.md — report new bikes in Discord.</string>
+    <string name="supported_bikes_footer">450NK variant: github.com/andpower/open-cfmoto-450nk — upstream community reports remain welcome in the OpenCfMoto Discord.</string>
 </resources>

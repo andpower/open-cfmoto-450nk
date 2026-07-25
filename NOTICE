@@ -38,6 +38,10 @@ Copyright is held by the respective authors of each contribution:
     portions Copyright (C) their original authors, ported from headunit-revived
     (see below). These files retain their original AGPLv3 attribution headers.
 
+  * 450NK parked-app launcher, installed-app picker, motion guard, temporary
+    handlebar media mode, and related documentation:
+    Copyright (C) 2026 Andrés Hugo Quintana and contributors.
+
 Holding copyright on your own contributions does not grant OpenCfMoto the right
 to relicense the incorporated AGPLv3 code under any other terms.
 

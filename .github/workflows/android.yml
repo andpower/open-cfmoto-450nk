@@ -1,0 +1,59 @@
+name: Android build
+
+on:
+  push:
+    branches: [main, "agent/**"]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Tag for the APK release
+        required: true
+        default: v2.1.0-450nk
+
+permissions:
+  contents: write
+
+jobs:
+  test-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run unit tests and build APK
+        run: ./gradlew testDebugUnitTest assembleDebug
+
+      - name: Name 450NK APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk OpenCfMoto-450NK.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenCfMoto-450NK
+          path: OpenCfMoto-450NK.apk
+          if-no-files-found: error
+
+      - name: Publish GitHub release
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: >
+          gh release create "$RELEASE_TAG" OpenCfMoto-450NK.apk
+          --target "$GITHUB_SHA"
+          --title "OpenCfMoto 450NK 2.1.0"
+          --notes "450NK-tested edition with parked Apps launcher, installed-app picker,
+          whole-screen projection, motion guard, and temporary handlebar media controls.
+          Android Auto and the existing handlebar focus-navigation path remain unchanged."

@@ -47,6 +47,16 @@
         <package android:name="com.google.android.gms" />
         <!-- So we can detect + best-effort close the official CFMoto app when it grabs the link ports. -->
         <package android:name="com.cfmoto.cfmotointernational" />
+        <!-- Optional one-tap shortcuts in the parked Apps picker. "Choose another app" uses the
+             Android system activity picker, so this list is not an allowlist. -->
+        <package android:name="com.google.android.youtube" />
+        <package android:name="com.google.android.apps.youtube.music" />
+        <package android:name="org.videolan.vlc" />
+        <package android:name="com.spotify.music" />
+        <package android:name="com.plexapp.android" />
+        <package android:name="com.android.chrome" />
+        <package android:name="org.mozilla.firefox" />
+        <package android:name="com.google.android.apps.photos" />
     </queries>
 
     <application
@@ -93,6 +103,9 @@
             android:exported="false" />
         <activity
             android:name=".ControlsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AppsActivity"
             android:exported="false" />
         <activity
             android:name=".ButtonMappingActivity"

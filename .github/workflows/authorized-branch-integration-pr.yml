@@ -63,6 +63,9 @@ jobs:
       - name: Apply and validate 450NK integration
         run: python3 scripts/integrate_upstream_206.py
 
+      - name: Wrap and translate new upstream runtime text
+        run: python3 scripts/fix_upstream_206_runtime_text.py
+
       - name: Validate translations
         run: |
           if [ -f scripts/validate_translations.py ]; then

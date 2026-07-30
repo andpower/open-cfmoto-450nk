@@ -76,6 +76,9 @@ fun Context.uiText(text: String): String {
         Regex("""^Roadside POI: (\\d+) \\(fuel, parking, food…\\)$""") to
             "Puntos de interés de la ruta: $1 (combustible, estacionamiento, comida…)",
         Regex("""^Not installed: (.+)$""") to "No instaladas: $1",
+        Regex("""^Preparing (.+) on the bike…$""") to "Preparando $1 en la moto…",
+        Regex("""^Couldn't transmit (.+): (.+)\. Open Logs and reconnect\.$""") to
+            "No se pudo transmitir $1: $2. Abrí Registros y volvé a conectar.",
         Regex("""^(.+) · (.+) · avg (.+) · max (.+)$""") to "$1 · $2 · prom. $3 · máx. $4",
     )
     for ((pattern, replacement) in replacements) {
@@ -97,6 +100,18 @@ private val SPANISH_EXACT = mapOf(
     "Cached bike tiles cleared" to "Se borraron los mapas guardados de la moto",
     "Camera permission required" to "Se necesita permiso para usar la cámara",
     "Cancel" to "Cancelar",
+    "Wi‑Fi name (SSID)" to "Nombre de Wi‑Fi (SSID)",
+    "Password" to "Contraseña",
+    "Bike name (optional)" to "Nombre de la moto (opcional)",
+    "Enter bike Wi‑Fi" to "Ingresar Wi‑Fi de la moto",
+    "For dashes that show SSID + password instead of a QR (e.g. Benelli TRK). Use the exact network name from the bike screen." to
+        "Para tableros que muestran SSID y contraseña en lugar de un QR. Usá el nombre exacto de la red que aparece en la pantalla de la moto.",
+    "Add bike" to "Agregar moto",
+    "SSID and password are required" to "El SSID y la contraseña son obligatorios",
+    "The bike video stalled; reconnecting automatically…" to
+        "El video de la moto se detuvo; reconectando automáticamente…",
+    "The app is open, but the TFT video did not recover. Tap Stop and reconnect." to
+        "La aplicación está abierta, pero el video del TFT no se recuperó. Tocá Detener y volvé a conectar.",
     "Centered on GPS" to "Centrado en el GPS",
     "Checking for update…" to "Buscando actualizaciones…",
     "Choose an app other than OpenCfMoto" to "Elegí una aplicación distinta de OpenCfMoto",

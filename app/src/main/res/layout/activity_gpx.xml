@@ -59,7 +59,7 @@
                     android:id="@+id/gpx_free_ride"
                     style="@style/Widget.OpenCfMoto.Button.Connect"
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:text="@string/layout_start_ride_project_to_bike_f63c8ff" />
 
@@ -67,7 +67,7 @@
                     android:id="@+id/gpx_see_phone"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="@string/layout_see_map_on_phone_no_b38d2c9" />
             </LinearLayout>
@@ -123,7 +123,7 @@
                     android:id="@+id/gpx_search_btn"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="@string/layout_search_bce0641" />
 
@@ -208,7 +208,7 @@
                     android:id="@+id/gpx_pick"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:text="@string/layout_choose_gpx_file_3e4b6a6" />
 
@@ -225,7 +225,7 @@
                     android:id="@+id/gpx_offline"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:enabled="false"
                     android:text="@string/layout_download_offline_maps_11b5531" />
@@ -250,7 +250,7 @@
                     android:id="@+id/gpx_open_map"
                     style="@style/Widget.OpenCfMoto.Button.Connect"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:enabled="false"
                     android:text="@string/layout_open_gpx_on_map_b192edd" />
@@ -259,7 +259,7 @@
                     android:id="@+id/gpx_project"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:enabled="false"
                     android:text="@string/layout_project_gpx_to_bike_d4383f0" />
@@ -649,7 +649,7 @@
                     android:id="@+id/gpx_hub_circuit"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="@string/layout_open_map_pick_place_circuit_9e542f2" />
 
@@ -895,7 +895,7 @@
                     android:id="@+id/gpx_offline_here"
                     style="@style/Widget.OpenCfMoto.Button.Connect"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:text="@string/layout_download_area_around_me_3fd380c" />
 
@@ -903,7 +903,7 @@
                     android:id="@+id/gpx_offline_track"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:enabled="false"
                     android:text="@string/layout_download_area_around_gpx_7caa51b" />
@@ -1010,7 +1010,7 @@
                     android:id="@+id/gpx_park_here"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:text="@string/layout_mark_parking_here_bc67708" />
 
@@ -1018,7 +1018,7 @@
                     android:id="@+id/gpx_go_parked"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:enabled="false"
                     android:text="@string/layout_navigate_to_parked_bike_b4ad33f" />
@@ -1027,7 +1027,7 @@
                     android:id="@+id/gpx_clear_parked"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:enabled="false"
                     android:text="@string/layout_clear_parked_spot_2eee9d1" />
@@ -1036,7 +1036,7 @@
                     android:id="@+id/gpx_set_home_hub"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="@string/layout_set_home_here_cbe5861" />
 
@@ -1044,7 +1044,7 @@
                     android:id="@+id/gpx_go_home_hub"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:enabled="false"
                     android:text="@string/layout_navigate_home_bebdb22" />
@@ -1053,7 +1053,7 @@
                     android:id="@+id/gpx_corridor_poi"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:enabled="false"
                     android:text="@string/layout_download_roadside_poi_track_f2b7a91" />
@@ -1062,7 +1062,7 @@
                     android:id="@+id/gpx_export_map"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="@string/layout_export_map_data_6359115" />
 
@@ -1070,7 +1070,7 @@
                     android:id="@+id/gpx_import_map"
                     style="@style/Widget.OpenCfMoto.Button.Tonal"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="@string/layout_import_map_data_59a4bf4" />
             </LinearLayout>

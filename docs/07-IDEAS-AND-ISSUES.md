@@ -150,12 +150,13 @@ positioning (tunnels, urban canyons) and unlock an accurate in-map speed readout
 careful, but the proto support is already generated. **Impact:** medium. **Effort:** medium. **Risk:**
 medium (keep `DRIVING_STATUS` UNRESTRICTED — deliberately chosen so the dash stays fully interactive).
 
-### B4 — Localization (reach CFMoto's actual markets)
+### B4 — Localization (reach CFMoto's actual markets) ✅ in progress
 
-All UI strings are inline English in the activities (`SetupActivity`, etc.) — no `strings.xml`
-extraction. CFMoto's biggest rider bases are non-English (EU, China, LATAM). Extracting strings and
-adding even two or three translations widens the audience far more than most features, for modest,
-mechanical effort. **Impact:** high (reach). **Effort:** medium (extraction is the bulk). **Risk:** low.
+UI strings live in `values/strings.xml` with draft locales for Discord languages
+(`values-de` / `it` / `fr` / `es` / `pt` / `pl` / `cs` / `ro` / `nl`) and `localeConfig` for per-app
+language on Android 13+. Community polish via PRs — see `docs/TRANSLATIONS.md`. Remaining: GPX
+turn-by-turn / TTS catalog and scattered Toasts. **Impact:** high (reach). **Effort:** ongoing.
+**Risk:** low.
 
 ### B5 — "It just knows" context automation
 
@@ -176,7 +177,7 @@ per-bike settings are all there). Each is a few lines of glue in the connect pat
 | A2 | Remove "Hacked by Coletz" placeholder | Cleanup | Low | Trivial | None |
 | B2 | Crash detection + SOS | Feature | High | Medium | Medium |
 | A3 | Unit-test the fragile pure code | Health | Med | Small–Med | None |
-| B4 | Localization | Reach | High | Medium | Low |
+| B4 | Localization ✅ extract + draft locales | Reach | High | Ongoing | Low |
 | A5 | Self-healing port-conflict recovery | UX | Med | Small–Med | Low |
 | B3 | GPS-as-AA-sensor | Feature | Med | Medium | Medium |
 | B5 | Context automation on connect | Polish | Med | Small | Low |

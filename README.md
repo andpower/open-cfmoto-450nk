@@ -2,7 +2,12 @@
 
 # 🏍️ OpenCfMoto
 
-### Wireless Android Auto on your CFMoto MotoPlay dashboard — no root, no PC.
+### Wireless Android Auto on Carbit / EasyConnect dashes (CFMoto MotoPlay and siblings) — no root, no PC.
+
+**CFMoto** · **Voge** · **Moto Morini** · **Morbidelli** · **Zontes** · **Benelli** · **QJ Motor** ·
+**GOES** / **Gladiator** · and other brands with a MotoPlay / EasyConnect pairing QR
+
+[Supported bikes](docs/SUPPORTED-BIKES.md) · [Dash showcase](docs/SHOWCASE.md) — real Android Auto photos from the community
 
 Put **Google Maps / Waze** on your bike's dash over Wi-Fi, drive it from the touchscreen, and log
 every ride — all from an Android phone in your pocket.
@@ -30,14 +35,21 @@ every ride — all from an Android phone in your pocket.
 **▶ [Watch the full demo](docs/media/hud-demo.mp4)** — Google Maps navigation + media, driven from the
 dash touchscreen.
 
+<br/>
+
+### 📸 See it on more bikes — [Dash showcase](docs/SHOWCASE.md)
+
+CFMoto · Voge · Morini · Morbidelli and more — community photos of Android Auto on the dash.
+
 </div>
 
 ---
 
-> ⚠️ **Community project — not affiliated with or endorsed by CFMoto.** If the dash shows a
-> **MotoPlay / EasyConnect QR**, OpenCfMoto can try to connect — **no T‑BOX required**, US and
-> international. Full model list: **[Supported bikes](docs/SUPPORTED-BIKES.md)**. Don't rely on it
-> for critical navigation — set your route **before** you ride. Use at your own risk.
+> ⚠️ **Community project — not affiliated with CFMoto, Carbit, or other EasyConnect brands.** If the
+> dash shows a **MotoPlay / EasyConnect QR**, OpenCfMoto can try to connect — **no T‑BOX required**,
+> US and international. Full model list: **[Supported bikes](docs/SUPPORTED-BIKES.md)** · see it on
+> real dashes: **[Dash showcase](docs/SHOWCASE.md)**. Don't rely on it for critical navigation —
+> set your route **before** you ride. Use at your own risk.
 
 ---
 
@@ -95,6 +107,7 @@ Android Auto or Apps mode keep their own language setting.
 | 🗺️ **Map / GPX** | Free ride, GPX tracks, OSM search/POI, Home/favorites/markers, parked pin, road routing, voice cues — on the bike dash or phone. |
 | 🧩 **Parked Apps (450NK edition)** | Launch YouTube, VLC, Spotify, browsers, or another installed app through whole-screen projection, with motion guard and temporary handlebar media mode. |
 | 📱 **Mirror phone** | Cast the phone screen when you really need it (screen on; awkward for nav apps). |
+| 🌐 **Languages** | Follows the phone language, or set **per-app** on Android 13+: Settings → Apps → OpenCfMoto → **Language**. Draft DE / IT / FR / ES / PT / PL / CS / RO / NL ([docs/TRANSLATIONS.md](docs/TRANSLATIONS.md)). |
 
 ---
 
@@ -119,8 +132,10 @@ No root, no VPN, no PC required to ride.
 **→ Full list (source of truth): [docs/SUPPORTED-BIKES.md](docs/SUPPORTED-BIKES.md)**
 (same content as Setup → Supported bikes in the app)
 
-**Rule:** if the dash shows a **pairing QR**, try OpenCfMoto. T‑BOX / CFMOTO RIDE subscription is
-**not** required. US CRCP dashes and international EasyConnect dashes both work.
+**Rule:** if the dash shows a **pairing QR**, try OpenCfMoto. Same **Carbit / EasyConnect** framework
+used by CFMoto MotoPlay and several sibling brands. T‑BOX / CFMOTO RIDE subscription is **not**
+required. US CRCP and international dashes both work. OpenCfMoto projects **wireless Android Auto**
+(not Apple CarPlay).
 
 <p>
 <img src="docs/screenshots/12_supported_bikes.png" width="240" alt="In-app supported bikes list"/>
@@ -131,7 +146,18 @@ No root, no VPN, no PC required to ride.
 **450NK** (non-touch, handlebar focus navigation) · 800MT (MT‑X / Explore / Explore GT) · 1000 MT‑X ·
 800NK (US CRCP) · 800NK Advanced · 450SR (+ SR‑S / TC) · 450CL‑C / CL‑C450 · **150SC** scooter
 
-### Full list (summary)
+**Other brands:** **Voge DS800 Rally** · **Moto Morini X-Cape 649** · **Moto Morini X-Cape 700** ·
+**Moto Morini Seiemmezzo** · **Morbidelli T1002VX**
+
+### Other brands (Carbit / EasyConnect)
+
+Try Connect when the dash shows a pairing QR; report results in Discord:
+
+**Voge** (DS800 Rally confirmed) · **Moto Morini** (X-Cape 649 / 700 / Seiemmezzo confirmed; MotoFun) · **Zontes** ·
+**Benelli** (e.g. TRK 702 / 702X) · **QJ Motor** (e.g. Fort 4.0) · **Morbidelli** / MBP (**T1002VX**
+confirmed)
+
+### Full CFMoto list (summary)
 
 | Family | Models |
 | --- | --- |
@@ -140,7 +166,7 @@ No root, no VPN, no PC required to ride.
 | **Touring / Adventure (MT)** | 450MT · 700MT · 700MT Adventure · 800MT‑X · 800MT Explore · 800MT Explore GT · 1000 MT‑X |
 | **Cruiser (CL)** | 450CL‑C · CL‑C450 |
 | **Scooter** | **150SC** |
-| **ATV / SSV (TFT)** | CFORCE 800 · CFORCE 850 Touring · CFORCE 1000 · CFORCE 1000 Touring |
+| **ATV / SSV (TFT)** | CFORCE 800 · CFORCE 850 Touring · CFORCE 1000 · CFORCE 1000 Touring · **GOES Terrox 1000** / **Gladiator G3 1000** (CFORCE rebadges, confirmed) |
 | **Other** | U10 Pro (where the dash offers the QR) |
 
 Usually **no** projection QR (won’t work unless your unit has one anyway): 800MT Sport · 800MT
@@ -155,7 +181,7 @@ Report a working bike that isn’t listed in **[Discord](https://discord.gg/xRt5
 ### 1. Prepare the bike
 
 While parked, open the **MotoPlay / phone-connection (EasyConnect) screen** on the dash so it shows
-its **pairing QR code** — the same QR the official CFMoto app uses.
+its **pairing QR code** — the same QR the official brand / Carbit companion app uses.
 
 ### 2. Install the app
 
@@ -457,8 +483,9 @@ Preset **MODE / ENT cluster** — all nine rows:
 Changes apply on the **next press** (no reconnect).
 
 1. **Setup → Handlebar**
-   - **Double-tap delay** — `200 ms` (snappy singles) · `300 ms` (default) · `450 ms` (forgiving doubles). Longer = easier ×2, but every single tap waits that long before firing (except the BACK/SET preset, which skips the wait).
-   - **Hold delay** — `500 ms` · `600 ms` (default) · `800 ms`. Applies to **◀ / ▶ / ★** hold, not only Select.
+   - **Double-tap delay** — `200 ms` · `300 ms` (default) · `450 ms` · `1000 ms` (slow doubles). Longer = easier ×2 when each physical click is slow; singles wait that long unless the cluster fires them instantly.
+   - **Hold detection** — On (default) or **Off**. Turn **Off** when a long physical press must still count as a tap / ×2 (otherwise Hold delay eats it). Pair with `1000 ms` double-tap if needed.
+   - **Hold delay** — `500 ms` · `600 ms` (default) · `800 ms`. Ignored when Hold detection is Off.
 2. **Controls → Customize buttons** — remap any of the 9 gestures; use **Apply cluster preset…** first if you changed bikes.
 3. **Diagnostics (home → Logs)** while projecting with *Handlebar buttons drive Android Auto* **ON** — press the bars and watch for `[BTN]` lines:
 
@@ -711,11 +738,17 @@ agree that your contribution is licensed under the AGPL-3.0, and grant the proje
 to also offer your contribution under a separate commercial license. This keeps dual-licensing possible
 without every contributor holding a veto.
 
+**Translations** — the UI follows the phone language (de / it / fr / es / pt / pl / cs / ro / nl drafts
+ship today). On **Android 13+** you can also set a language just for this app:
+**Settings → Apps → OpenCfMoto → Language** (no in-app picker yet). Improve any locale by editing
+`app/src/main/res/values-<lang>/strings.xml` and opening a PR. See
+**[docs/TRANSLATIONS.md](docs/TRANSLATIONS.md)**.
+
 ## 🔒 Privacy
 
-OpenCfMoto is **local-first**: no account, no analytics, no project-run servers. Bike profiles, trip
-logs, and diagnostics stay on your phone. The full permissions-and-privacy breakdown — including the
-opt-in GPS trip logging and the OpenStreetMap map tiles — is in **[PRIVACY.md](PRIVACY.md)**.
+OpenCfMoto is **local-first**: no account, no ads. Bike profiles, trip logs, and full diagnostics
+stay on your phone. Optional **anonymous** install pings + crash reports (random UUID only) can be
+turned off under Setup → Privacy — details in **[PRIVACY.md](PRIVACY.md)**.
 
 <div align="center">
 

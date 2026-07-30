@@ -27,6 +27,7 @@ object AppSettings {
     private const val KEY_FORCE_TOUCH = "force_touch"
     private const val KEY_INCLUDE_SECRETS = "include_secrets_in_logs"
     private const val KEY_TRANSPORT = "wifi_transport"
+    private const val KEY_ANON_TELEMETRY = "anonymous_telemetry"
 
     private fun prefs(ctx: Context) =
         ctx.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -72,6 +73,16 @@ object AppSettings {
         WifiTransport.byId(prefs(ctx).getString(KEY_TRANSPORT, null))
     fun setTransport(ctx: Context, t: WifiTransport) =
         prefs(ctx).edit().putString(KEY_TRANSPORT, t.id).apply()
+
+    /**
+     * Anonymous install ping + crash/error upload (random UUID only). Default **off** in the
+     * independent 450NK edition; the build also ships without an active telemetry endpoint.
+     */
+    fun anonymousTelemetry(ctx: Context): Boolean = prefs(ctx).getBoolean(KEY_ANON_TELEMETRY, false)
+    fun setAnonymousTelemetry(ctx: Context, on: Boolean) {
+        prefs(ctx).edit().putBoolean(KEY_ANON_TELEMETRY, on).apply()
+        if (!on) AnonymousTelemetry.onDisabled(ctx)
+    }
 
     /** Sync holder flags from prefs (call on process start / before connect). */
     fun applyToHolder(ctx: Context) {

@@ -260,6 +260,11 @@ class ControlsActivity : AppCompatActivity() {
     }
 
     private fun key(code: Int) {
+        val map = MapInputBridge.keySink
+        if (map != null) {
+            map(code)
+            return
+        }
         val sink = AaVideoBridge.keySink
         if (sink == null) {
             Toast.makeText(this, uiText("Start Android Auto first"), Toast.LENGTH_SHORT).show()
@@ -269,6 +274,11 @@ class ControlsActivity : AppCompatActivity() {
     }
 
     private fun scroll(delta: Int) {
+        val map = MapInputBridge.scrollSink
+        if (map != null) {
+            map(delta)
+            return
+        }
         val sink = AaVideoBridge.scrollSink
         if (sink == null) {
             Toast.makeText(this, uiText("Start Android Auto first"), Toast.LENGTH_SHORT).show()

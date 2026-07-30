@@ -131,7 +131,12 @@ class EasyConnProber(
         gatewayOverride: java.net.Inet4Address? = null,
         bindIpOverride: java.net.Inet4Address? = null,
     ) {
-        if (running) { log("already running"); return }
+        if (running) {
+            // Mode switches (AA↔Map↔Mirror) must never no-op on a half-dead session
+            // (logs: "already running" + framesSent=0). Always rebuild PXC cleanly.
+            log("already running — forcing PXC restart for clean mode switch")
+            stop()
+        }
         probed = false
         framesSent = 0
         lastFrameAt = 0L
@@ -219,6 +224,71 @@ class EasyConnProber(
         stitchExec = java.util.concurrent.Executors.newSingleThreadScheduledExecutor { r ->
             Thread(r, "ec-touch-stitch").apply { isDaemon = true }
         }
+    }
+
+    /**
+     * Drop the current video source without closing PXC. Used when parking AA so 114 doesn't keep
+     * polling a stopped shared pipeline (that looked like a stall and triggered forceReconnect).
+     */
+    fun detachVideoSource() {
+        if (ownsVideo) {
+            try { video?.stop(abandonNavigation = false) } catch (_: Exception) {}
+        }
+        video = null
+        ownsVideo = false
+        lastFrameAt = System.currentTimeMillis()
+        log("[MAP] detached video source (PXC kept)")
+    }
+
+    /**
+     * Soft-switch the live bike video source to an owned Map / GPX Presentation without tearing
+     * down PXC sockets or rejoining Wi‑Fi. Used when the rider starts NAV_TO / free ride while AA
+     * (or mirror) was already projecting.
+     *
+     * @return true if a GPX pipeline is attached; false if the prober isn't running so the caller
+     *   should fall back to [joinWifi].
+     */
+    fun attachOwnedGpxVideo(): Boolean {
+        if (!running) {
+            log("[MAP] attachOwnedGpxVideo: prober not running")
+            return false
+        }
+        if (!GpxSession.active) {
+            log("[MAP] attachOwnedGpxVideo: no map session")
+            return false
+        }
+        detachVideoSource()
+        val w = negW.coerceAtLeast(16)
+        val h = negH.coerceAtLeast(16)
+        log("[MAP] attaching owned GPX video ${w}x${h} (PXC kept)")
+        val vp = VideoPipeline(context, w, h, log)
+        vp.start()
+        if (!vp.isAlive) {
+            log("[MAP] GPX VideoPipeline failed to start — retry once")
+            try { vp.stop(abandonNavigation = false) } catch (_: Exception) {}
+            val retry = VideoPipeline(context, w, h, log)
+            retry.start()
+            if (!retry.isAlive) {
+                log("[MAP] GPX VideoPipeline failed to start")
+                try { retry.stop(abandonNavigation = false) } catch (_: Exception) {}
+                return false
+            }
+            video = retry
+        } else {
+            video = vp
+        }
+        val live = video!!
+        ownsVideo = true
+        // Watchdog grace + keyframe for the bike's next pull.
+        lastFrameAt = System.currentTimeMillis()
+        framesSent = 0
+        live.onBikeDataStart()
+        // Second IDR after the Presentation has painted.
+        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+            if (video === live && live.isAlive) live.onBikeDataStart()
+        }, 200)
+        ConnectionState.set(Phase.STREAMING)
+        return true
     }
 
     fun stop() {

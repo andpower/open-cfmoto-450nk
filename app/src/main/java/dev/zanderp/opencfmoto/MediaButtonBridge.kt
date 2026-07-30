@@ -123,7 +123,7 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
                 s.setPlaybackToLocal(mediaAttrs)
                 if (on) pinVolume()
                 startVolumeObserver()
-                log("[BTN] bridge ready — mode=${if (on) "control AA (media focus + volume hijacked)" else "control media"}")
+                log("[BTN] bridge ready — mode=${if (on) "control dash (media focus + volume hijacked)" else "control media"}")
                 scheduleReassertWhenBikeUp()
             } catch (e: Exception) {
                 log("[BTN] media session failed: $e")
@@ -659,8 +659,8 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
     private fun perform(action: ButtonAction) {
         when (action) {
             ButtonAction.NONE -> {}
-            ButtonAction.KNOB_FORWARD -> AaVideoBridge.scrollSink?.invoke(+1)
-            ButtonAction.KNOB_BACK -> AaVideoBridge.scrollSink?.invoke(-1)
+            ButtonAction.KNOB_FORWARD -> scroll(+1)
+            ButtonAction.KNOB_BACK -> scroll(-1)
             ButtonAction.SELECT -> key(AaInput.KEY_ENTER)
             ButtonAction.BACK -> key(AaInput.KEY_BACK)
             ButtonAction.HOME -> key(AaInput.KEY_HOME)
@@ -675,9 +675,33 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
         }
     }
 
+    /** Map Presentation wins while projected; otherwise Android Auto. */
     private fun key(code: Int) {
-        val sink = AaVideoBridge.keySink
-        if (sink == null) log("[BTN] no Android Auto session — key $code dropped") else sink(code)
+        val map = MapInputBridge.keySink
+        if (map != null) {
+            map(code)
+            return
+        }
+        val aa = AaVideoBridge.keySink
+        if (aa != null) {
+            aa(code)
+            return
+        }
+        log("[BTN] no Map/AA session — key $code dropped")
+    }
+
+    private fun scroll(delta: Int) {
+        val map = MapInputBridge.scrollSink
+        if (map != null) {
+            map(delta)
+            return
+        }
+        val aa = AaVideoBridge.scrollSink
+        if (aa != null) {
+            aa(delta)
+            return
+        }
+        log("[BTN] no Map/AA session — scroll $delta dropped")
     }
 
     private fun navigate(slot: Int) {
@@ -759,6 +783,8 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
         val held = heldFor(keyCode) ?: return
         lastKeyAt = SystemClock.elapsedRealtime()
         if (repeatCount > 0) {
+            // Setup → Hold detection off: ignore key-repeat so a long physical press stays a tap.
+            if (!ButtonTimingPrefs.holdsEnabled(context)) return
             if (!held.longFromRepeat &&
                 ButtonMap.get(context, held.longG) != ButtonAction.NONE
             ) {
@@ -787,8 +813,16 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
         held.downAt = 0L
         if (downAt == 0L) return // UP without a matching DOWN we own
         val heldMs = SystemClock.elapsedRealtime() - downAt
-        val long = heldMs >= ButtonTimingPrefs.longPressMs(context)
-        log("[BTN] ${held.name} held ${heldMs}ms → ${if (long) "long press" else "tap"}")
+        val holdsOn = ButtonTimingPrefs.holdsEnabled(context)
+        val long = holdsOn && heldMs >= ButtonTimingPrefs.longPressMs(context)
+        log(
+            "[BTN] ${held.name} held ${heldMs}ms → " +
+                when {
+                    long -> "long press"
+                    !holdsOn -> "tap (hold detection off)"
+                    else -> "tap"
+                },
+        )
         if (long) {
             taps[held.single]?.pending?.let(handler::removeCallbacks)
             taps[held.single]?.pending = null

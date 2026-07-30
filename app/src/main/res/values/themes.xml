@@ -22,38 +22,70 @@
 
     <style name="Theme.OpenCfMoto" parent="Base.Theme.OpenCfMoto" />
 
-    <!-- Primary CTA: tall, rounded, confident. -->
+    <!-- Primary CTA: tall, rounded, confident. Height grows with font scale. -->
     <style name="Widget.OpenCfMoto.Button.Connect" parent="Widget.Material3.Button">
-        <item name="android:layout_height">64dp</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/btn_connect_min_height</item>
+        <item name="android:textSize">@dimen/btn_connect_text</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">0.01</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
         <item name="cornerRadius">18dp</item>
         <item name="iconGravity">textStart</item>
-        <item name="iconPadding">10dp</item>
+        <item name="iconPadding">@dimen/btn_icon_padding</item>
     </style>
 
-    <!-- Secondary actions: tonal, subtle. -->
+    <!-- Secondary actions: tonal. Icon beside text (not above) so labels stay horizontal. -->
     <style name="Widget.OpenCfMoto.Button.Tonal" parent="Widget.Material3.Button.TonalButton">
         <item name="cornerRadius">14dp</item>
-        <item name="android:textSize">13sp</item>
-        <item name="iconGravity">textTop</item>
-        <item name="iconPadding">4dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/btn_tonal_min_height</item>
+        <item name="android:textSize">@dimen/btn_tonal_text</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">@dimen/btn_icon_padding</item>
         <item name="iconSize">20dp</item>
+    </style>
+
+    <!-- Icon-above tile (Scan / Map / Mirror). Uses auto-size so labels never go vertical. -->
+    <style name="Widget.OpenCfMoto.Button.Tile" parent="Widget.OpenCfMoto.Button.Tonal">
+        <item name="android:minHeight">@dimen/btn_tile_min_height</item>
+        <item name="android:textSize">@dimen/btn_tile_text</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="iconGravity">textTop</item>
+        <item name="iconPadding">@dimen/btn_tile_icon_padding</item>
+        <item name="autoSizeTextType">uniform</item>
+        <item name="autoSizeMinTextSize">@dimen/btn_tile_text_min</item>
+        <item name="autoSizeMaxTextSize">@dimen/btn_tile_text</item>
+        <item name="autoSizeStepGranularity">1sp</item>
     </style>
 
     <!-- Text/ghost actions for the log toolbar. -->
     <style name="Widget.OpenCfMoto.Button.Text" parent="Widget.Material3.Button.TextButton">
         <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconTint">@color/text_secondary</item>
+        <item name="iconPadding">6dp</item>
+        <item name="iconSize">18dp</item>
     </style>
 
     <!-- Segmented-control option (selection highlight is applied in code). -->
     <style name="Widget.OpenCfMoto.Segment" parent="Widget.Material3.Button.TonalButton">
         <item name="cornerRadius">12dp</item>
-        <item name="android:textSize">13sp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/btn_segment_text</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
-        <item name="android:minHeight">44dp</item>
+        <item name="android:minHeight">@dimen/btn_segment_min_height</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:ellipsize">end</item>
     </style>
 
     <style name="Card.OpenCfMoto" parent="Widget.Material3.CardView.Elevated">

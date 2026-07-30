@@ -1,6 +1,7 @@
 package dev.zanderp.opencfmoto
 
 import android.content.Context
+import androidx.annotation.StringRes
 
 /**
  * User-selectable video quality. Applied as a multiplier on top of each [BikeProfile]'s tuned
@@ -9,11 +10,13 @@ import android.content.Context
  *
  * Only the bitrate is scaled — resolution, H.264 profile and frame rate are left to the bike
  * profile, since those are the values documented as fragile end-to-end (black-screen risk).
+ *
+ * [label] stays English for logs; [labelRes] is what Setup shows.
  */
-enum class VideoQuality(val multiplier: Float, val label: String) {
-    SMOOTH(0.7f, "Smoother — less data/latency"),
-    BALANCED(1.0f, "Balanced (recommended)"),
-    SHARP(1.6f, "Sharper — more data"),
+enum class VideoQuality(val multiplier: Float, val label: String, @StringRes val labelRes: Int) {
+    SMOOTH(0.7f, "Smoother — less data/latency", R.string.pref_vq_smooth),
+    BALANCED(1.0f, "Balanced (recommended)", R.string.pref_vq_balanced),
+    SHARP(1.6f, "Sharper — more data", R.string.pref_vq_sharp),
 }
 
 /**
@@ -24,10 +27,10 @@ enum class VideoQuality(val multiplier: Float, val label: String) {
  *  - [FIT]     letterbox: whole AA image visible, black bars fill the leftover space.
  *  - [STRETCH] scale to the exact canvas; fills completely but distorts the aspect ratio.
  */
-enum class ScreenFit(val label: String) {
-    FILL("Fill — edge to edge (crops a little)"),
-    FIT("Fit — no cropping (black bars)"),
-    STRETCH("Stretch — fills, slight distortion"),
+enum class ScreenFit(val label: String, @StringRes val labelRes: Int) {
+    FILL("Fill — edge to edge (crops a little)", R.string.pref_fit_fill),
+    FIT("Fit — no cropping (black bars)", R.string.pref_fit_fit),
+    STRETCH("Stretch — fills, slight distortion", R.string.pref_fit_stretch),
 }
 
 /**
@@ -42,11 +45,11 @@ enum class ScreenFit(val label: String) {
  * of stuttering or dropping. [fps] here is the *starting* cap the controller adapts from. The fixed
  * modes disable the controller entirely and pin the rate, exactly as before.
  */
-enum class PowerMode(val fps: Int, val label: String) {
-    AUTO(30, "Auto — adapts to heat & signal"),
-    SMOOTH(30, "Smooth — 30 fps (most battery)"),
-    BALANCED(24, "Balanced — 24 fps (recommended)"),
-    SAVER(20, "Battery saver — 20 fps (coolest)"),
+enum class PowerMode(val fps: Int, val label: String, @StringRes val labelRes: Int) {
+    AUTO(30, "Auto — adapts to heat & signal", R.string.pref_power_auto),
+    SMOOTH(30, "Smooth — 30 fps (most battery)", R.string.pref_power_smooth),
+    BALANCED(24, "Balanced — 24 fps (recommended)", R.string.pref_power_balanced),
+    SAVER(20, "Battery saver — 20 fps (coolest)", R.string.pref_power_saver),
 }
 
 /**
@@ -61,12 +64,12 @@ enum class PowerMode(val fps: Int, val label: String) {
  * heavier and can black-screen on some embedded decoders — drop back to a smaller size or AUTO if
  * a bike rejects them.
  */
-enum class ResolutionMode(val label: String, val spec: AaVideoSpec?) {
-    AUTO("Auto — match your bike (recommended)", null),
-    LANDSCAPE_SD("Landscape · 800×480", AaVideoSpec(AaResolution.LANDSCAPE_800x480, dpi = 160)),
-    LANDSCAPE_HD("Landscape · 1280×720 (HD)", AaVideoSpec(AaResolution.LANDSCAPE_1280x720, dpi = 160)),
-    PORTRAIT_SD("Portrait · 720×1280", AaVideoSpec(AaResolution.PORTRAIT_720x1280, dpi = 240)),
-    PORTRAIT_HD("Portrait · 1080×1920 (HD)", AaVideoSpec(AaResolution.PORTRAIT_1080x1920, dpi = 240)),
+enum class ResolutionMode(val label: String, @StringRes val labelRes: Int, val spec: AaVideoSpec?) {
+    AUTO("Auto — match your bike (recommended)", R.string.pref_res_auto, null),
+    LANDSCAPE_SD("Landscape · 800×480", R.string.pref_res_land_sd, AaVideoSpec(AaResolution.LANDSCAPE_800x480, dpi = 160)),
+    LANDSCAPE_HD("Landscape · 1280×720 (HD)", R.string.pref_res_land_hd, AaVideoSpec(AaResolution.LANDSCAPE_1280x720, dpi = 160)),
+    PORTRAIT_SD("Portrait · 720×1280", R.string.pref_res_port_sd, AaVideoSpec(AaResolution.PORTRAIT_720x1280, dpi = 240)),
+    PORTRAIT_HD("Portrait · 1080×1920 (HD)", R.string.pref_res_port_hd, AaVideoSpec(AaResolution.PORTRAIT_1080x1920, dpi = 240)),
 }
 
 /**

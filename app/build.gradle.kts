@@ -20,8 +20,8 @@ android {
         applicationId = "com.andpower.opencfmoto450nk"
         minSdk = 29
         targetSdk = 36
-        versionCode = 33
-        versionName = "2.2.0-450nk"
+        versionCode = 37
+        versionName = "2.3.0-450nk"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -32,6 +32,13 @@ android {
             ?: System.getenv("ORS_API_KEY")
             ?: ""
         buildConfigField("String", "ORS_API_KEY", "\"$orsDefaultKey\"")
+
+        // Anonymous telemetry Worker base URL (no trailing slash). Empty disables uploads.
+        // Override: -PtelemetryUrl=https://….workers.dev  or TELEMETRY_URL env / gradle.properties
+        val telemetryUrl = (project.findProperty("telemetryUrl") as String?)
+            ?: System.getenv("TELEMETRY_URL")
+            ?: ""
+        buildConfigField("String", "TELEMETRY_URL", "\"$telemetryUrl\"")
     }
 
     buildTypes {
@@ -47,6 +54,12 @@ android {
 
     buildFeatures {
         buildConfig = true
+    }
+
+    // Wireless Android Auto needs the packaged aa_privkey (same as prior releases).
+    lint {
+        disable += "PackagedPrivateKey"
+        checkReleaseBuilds = true
     }
 }
 

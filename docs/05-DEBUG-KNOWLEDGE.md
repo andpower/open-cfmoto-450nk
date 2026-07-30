@@ -25,8 +25,11 @@ behavior, the actual data flow between components, and the Android Auto black-sc
 2. `AndroidAutoService` (foreground service) starts: creates `VideoPipeline(compositor=true)` →
    `AaCompositor` (input surface up, **no output canvas yet**) → `AaReceiver` listening on :5288.
    Pipeline published to `AaVideoBridge.pipeline`.
-3. `AaSelfMode.trigger()` launches Google AA (activity launch is permission-denied → **broadcast
-   fallback** does the work; this is normal, not an error).
+3. `AaSelfMode.trigger()` launches Google AA. On AA 16.4+ the activity is not exported
+   (`Permission Denial`) → **broadcast fallback 1** (`WirelessStartupReceiver`). On AA 17.4+ that
+   is often ignored too → **broadcast fallback 2**
+   (`WifiBluetoothReceiver` / `START_WIRELESS_PROJECTION` with a BT MAC). MainActivity also
+   re-triggers once after ~4.5s if AA video never arrives. This is normal, not a hard error.
 4. Google AA connects to :5288 → AAP version + SSL handshake → video channel negotiated → AA H.264
    flows into `VideoDecoder`, which decodes into the compositor's input surface.
 5. When decode fps ≥ 25, `AaReceiver` fires `AaVideoBridge.onSteadyVideo` **once**.

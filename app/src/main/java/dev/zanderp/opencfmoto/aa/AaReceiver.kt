@@ -8,6 +8,7 @@ package dev.zanderp.opencfmoto.aa
 
 import android.content.Context
 import dev.zanderp.opencfmoto.AaVideoBridge
+import dev.zanderp.opencfmoto.BikeWifi
 import dev.zanderp.opencfmoto.NightPrefs
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
@@ -46,6 +47,7 @@ class AaReceiver(
         fallbackHeight = ServiceDiscoveryResponse.AA_HEIGHT
         onFpsChanged = { fps ->
             log("[AA] decode fps=$fps")
+            AaVideoBridge.aaDecoding = true
             if (!steadyVideoFired && fps >= 25) {
                 steadyVideoFired = true
                 log("[AA] steady video reached (fps=$fps) — signalling ready for bike hand-off")
@@ -61,13 +63,31 @@ class AaReceiver(
         AaLog.sink = log
         ConscryptInitializer.initialize()
 
+        // Loopback listen must not ride a dead bike Network bind (ENONET after Wi‑Fi loss).
+        BikeWifi.unbindIfNoBikeNetwork(context)
         try {
             serverSocket = ServerSocket(PORT).apply { reuseAddress = true }
             log("[AA] WirelessServer listening on :$PORT")
         } catch (e: Exception) {
-            log("[AA] failed to bind :$PORT — ${e.message}")
-            running = false
-            return
+            val msg = e.message.orEmpty()
+            if (msg.contains("ENONET", ignoreCase = true) ||
+                msg.contains("Network is unreachable", ignoreCase = true)
+            ) {
+                log("[AA] bind :$PORT hit stale network ($msg) — clearing bind and retrying")
+                BikeWifi.unbindProcess(context = context)
+                try {
+                    serverSocket = ServerSocket(PORT).apply { reuseAddress = true }
+                    log("[AA] WirelessServer listening on :$PORT (after unbind)")
+                } catch (e2: Exception) {
+                    log("[AA] failed to bind :$PORT — ${e2.message}")
+                    running = false
+                    return
+                }
+            } else {
+                log("[AA] failed to bind :$PORT — $msg")
+                running = false
+                return
+            }
         }
 
         registerNsd()
@@ -99,6 +119,8 @@ class AaReceiver(
 
     fun stop() {
         running = false
+        AaVideoBridge.aaSessionLive = false
+        AaVideoBridge.aaDecoding = false
         AaVideoBridge.touchSink = null
         AaVideoBridge.keySink = null
         AaVideoBridge.scrollSink = null
@@ -143,6 +165,8 @@ class AaReceiver(
         t.onQuit = { clean ->
             val userExit = t.wasUserExit
             log("[AA] transport quit (clean=$clean, userExit=$userExit)")
+            AaVideoBridge.aaSessionLive = false
+            AaVideoBridge.aaDecoding = false
             AaVideoBridge.touchSink = null
             AaVideoBridge.keySink = null
             AaVideoBridge.scrollSink = null
@@ -157,6 +181,9 @@ class AaReceiver(
             try { onSessionEnded?.invoke(userExit) } catch (_: Exception) {}
         }
         transport = t
+        AaVideoBridge.aaSessionLive = true
+        AaVideoBridge.aaDecoding = false
+        steadyVideoFired = false
 
         // Bike touchscreen → Android Auto: EasyConnProber decodes dash touches (PXC cmdType 32) and
         // calls this sink with raw bike-canvas coords + a normalised action. Letterbox-map into AA

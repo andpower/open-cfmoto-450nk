@@ -351,7 +351,7 @@
             <Button
                 android:id="@+id/gpx_end_bar"
                 android:layout_width="wrap_content"
-                android:layout_height="52dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="8dp"
                 android:background="@drawable/bg_end_pill"
@@ -361,7 +361,8 @@
                 android:textAllCaps="false"
                 android:textColor="#FF8A80"
                 android:textSize="17sp"
-                android:textStyle="bold" />
+                android:textStyle="bold" 
+                    android:minHeight="48dp"/>
         </LinearLayout>
 
         <TextView
@@ -805,6 +806,7 @@
                     android:imeOptions="actionSearch"
                     android:inputType="text"
                     android:maxLines="1"
+                    android:singleLine="true"
                     android:textColor="#202124"
                     android:textColorHint="#80868B"
                     android:textSize="17sp" />
@@ -839,6 +841,8 @@
             android:id="@+id/gpx_search_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
             android:paddingHorizontal="16dp"
             android:paddingBottom="4dp"
             android:textColor="#5F6368"
@@ -847,12 +851,16 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:clipChildren="true"
+            android:clipToPadding="true">
 
             <LinearLayout
                 android:id="@+id/gpx_search_results"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:clipChildren="true"
+                android:clipToPadding="true"
                 android:orientation="vertical"
                 android:paddingBottom="24dp" />
         </ScrollView>
@@ -893,7 +901,7 @@
             <Button
                 android:id="@+id/gpx_park"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:text="@string/layout_park_here_1224919"
                 android:textAllCaps="false" />
@@ -901,7 +909,7 @@
             <Button
                 android:id="@+id/gpx_go_home"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:text="@string/layout_go_home_19445d7"
                 android:textAllCaps="false" />
@@ -909,7 +917,7 @@
             <Button
                 android:id="@+id/gpx_set_home"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:text="@string/layout_set_home_here_cbe5861"
                 android:textAllCaps="false" />
@@ -917,7 +925,7 @@
             <Button
                 android:id="@+id/gpx_recalc"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:text="@string/layout_recenter_recalc_9cf8012"
                 android:textAllCaps="false" />
@@ -925,7 +933,7 @@
             <Button
                 android:id="@+id/gpx_record"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:text="@string/layout_record_ride_a926a70"
                 android:textAllCaps="false" />
@@ -933,7 +941,7 @@
             <Button
                 android:id="@+id/gpx_create_circuit"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:text="@string/layout_circuit_there_and_back_6e252b7"
                 android:textAllCaps="false" />
@@ -958,7 +966,7 @@
             <Button
                 android:id="@+id/gpx_north"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:text="@string/layout_heading_up_a479fd5"
                 android:textAllCaps="false" />
@@ -966,7 +974,7 @@
             <Button
                 android:id="@+id/gpx_mute"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:text="@string/layout_voice_3091c84"
                 android:textAllCaps="false" />
@@ -980,19 +988,21 @@
                 <Button
                     android:id="@+id/gpx_zoom_out"
                     android:layout_width="0dp"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="－"
-                    android:textSize="18sp" />
+                    android:text="@string/dash_str"
+                    android:textSize="18sp" 
+                    android:minHeight="48dp"/>
 
                 <Button
                     android:id="@+id/gpx_zoom_in"
                     android:layout_width="0dp"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
                     android:layout_weight="1"
-                    android:text="＋"
-                    android:textSize="18sp" />
+                    android:text="@string/dash_str_2"
+                    android:textSize="18sp" 
+                    android:minHeight="48dp"/>
             </LinearLayout>
 
             <include layout="@layout/include_gpx_dash_settings" />
@@ -1000,7 +1010,7 @@
             <Button
                 android:id="@+id/gpx_menu_close"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/layout_close_bbfa773"
                 android:textAllCaps="false" />

@@ -8,12 +8,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <TextView
-        android:id="@+id/hint"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="#99000000"
+        android:orientation="vertical"
         android:paddingHorizontal="16dp"
         android:paddingTop="12dp"
         android:paddingBottom="14dp"
@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="88dp"
+        android:layout_marginBottom="120dp"
         android:background="#88000000"
         android:orientation="horizontal"
         android:padding="6dp">

@@ -32,6 +32,13 @@ android {
             ?: System.getenv("ORS_API_KEY")
             ?: ""
         buildConfigField("String", "ORS_API_KEY", "\"$orsDefaultKey\"")
+
+        // Anonymous telemetry Worker base URL (no trailing slash). Empty disables uploads.
+        // Override: -PtelemetryUrl=https://….workers.dev  or TELEMETRY_URL env / gradle.properties
+        val telemetryUrl = (project.findProperty("telemetryUrl") as String?)
+            ?: System.getenv("TELEMETRY_URL")
+            ?: "https://opencfmoto-telemetry.hello-3d9.workers.dev"
+        buildConfigField("String", "TELEMETRY_URL", "\"$telemetryUrl\"")
     }
 
     buildTypes {
@@ -47,6 +54,12 @@ android {
 
     buildFeatures {
         buildConfig = true
+    }
+
+    // Wireless Android Auto needs the packaged aa_privkey (same as prior releases).
+    lint {
+        disable += "PackagedPrivateKey"
+        checkReleaseBuilds = true
     }
 }
 

@@ -38,6 +38,7 @@ class BikeProfileSelectTest {
 
     @Test
     fun buttonDefaultsMatchHandlebarLayout() {
+        // Universal all-bike model: single = knob, ×2 = D-pad ←/→, Select = OK / ×2 Back.
         assertEquals(ButtonAction.KNOB_BACK, ButtonGesture.NAV_BACK.default)
         assertEquals(ButtonAction.KNOB_FORWARD, ButtonGesture.NAV_FWD.default)
         assertEquals(ButtonAction.SELECT, ButtonGesture.SELECT_PRESS.default)

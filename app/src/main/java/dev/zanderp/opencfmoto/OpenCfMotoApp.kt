@@ -18,6 +18,10 @@ class OpenCfMotoApp : Application() {
         CrashGuard.hydrateLogBus(this)
         AppHttp.init(this)
         try {
+            AnonymousTelemetry.onAppStart(this)
+        } catch (_: Exception) {
+        }
+        try {
             MapLibre.getInstance(this)
             // Pin MapLibre style/tile HTTP to cellular while the process is bound to bike Wi‑Fi.
             org.maplibre.android.module.http.HttpRequestUtil.setOkHttpClient(AppHttp.mapLibreOkHttpClient())

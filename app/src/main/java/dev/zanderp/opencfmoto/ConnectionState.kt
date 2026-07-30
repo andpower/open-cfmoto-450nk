@@ -1,5 +1,7 @@
 package dev.zanderp.opencfmoto
 
+import androidx.annotation.StringRes
+
 /**
  * Coarse, process-global view of what the app is currently doing, so the UI can show a single
  * human-readable status line (instead of making users read the raw log) and so the reconnect
@@ -7,19 +9,21 @@ package dev.zanderp.opencfmoto
  *
  * Lives as a process global like [AaVideoBridge] / [BikeProfileHolder]: the foreground service,
  * the prober, and the activity all publish transitions here and the activity observes them.
+ *
+ * [labelRes] is what the UI shows (localized). [logLabel] stays English for shared logs / support.
  */
-enum class Phase(val label: String, val busy: Boolean) {
-    IDLE("Ready", false),
-    STARTING_AA("Starting Android Auto…", true),
-    AA_VIDEO_LIVE("Android Auto live — joining bike…", true),
-    JOINING_WIFI("Connecting to bike Wi-Fi…", true),
-    PXC_CONNECTING("Linking to dashboard…", true),
-    STREAMING("Connected — projecting to dash", false),
-    MIRRORING("Mirroring screen to dash", false),
-    RECONNECTING("Link dropped — reconnecting…", true),
-    WAITING_FOR_BIKE("Bike out of range — waiting…", true),
-    STOPPED("Stopped", false),
-    ERROR("Error — see logs", false),
+enum class Phase(@StringRes val labelRes: Int, val logLabel: String, val busy: Boolean) {
+    IDLE(R.string.conn_ready, "Ready", false),
+    STARTING_AA(R.string.conn_starting_aa, "Starting Android Auto…", true),
+    AA_VIDEO_LIVE(R.string.conn_aa_video_live, "Android Auto live — joining bike…", true),
+    JOINING_WIFI(R.string.conn_joining_wifi, "Connecting to bike Wi-Fi…", true),
+    PXC_CONNECTING(R.string.conn_pxc_connecting, "Linking to dashboard…", true),
+    STREAMING(R.string.conn_streaming, "Connected — projecting to dash", false),
+    MIRRORING(R.string.conn_mirroring, "Mirroring screen to dash", false),
+    RECONNECTING(R.string.conn_reconnecting, "Link dropped — reconnecting…", true),
+    WAITING_FOR_BIKE(R.string.conn_waiting_for_bike, "Bike out of range — waiting…", true),
+    STOPPED(R.string.conn_stopped, "Stopped", false),
+    ERROR(R.string.conn_error, "Error — see logs", false),
 }
 
 object ConnectionState {
@@ -45,7 +49,7 @@ object ConnectionState {
         phase = newPhase
         if (newDetail != null) detail = newDetail
         val d = detail
-        val text = if (d.isBlank()) newPhase.label else "${newPhase.label} — $d"
+        val text = if (d.isBlank()) newPhase.logLabel else "${newPhase.logLabel} — $d"
         LogBus.log("[state] $text")
         try {
             listener?.invoke(newPhase, d)

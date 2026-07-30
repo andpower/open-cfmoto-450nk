@@ -45,3 +45,19 @@ motoplay_shot.png
 release-notes-*.md
 .kotlin/
 
+# Private / proprietary local tooling — never publish.
+# Entire tools/ tree (Discord MCP, onboarding bots, corpus dumps, scripts).
+/tools/
+tools/
+
+# Discord ops / MCP setup notes (local only).
+docs/DISCORD-MCP-SETUP.md
+docs/**/*DISCORD*
+docs/**/*discord-mcp*
+docs/**/*discord-ops*
+
+# Cursor / agent local scratch that must not ship.
+.cursor/
+agent-tools/
+**/mcp.json
+

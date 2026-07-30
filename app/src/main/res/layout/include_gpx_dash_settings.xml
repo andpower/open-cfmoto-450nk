@@ -414,7 +414,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:layout_weight="1"
-            android:text="30" />
+            android:text="@string/dashset_30" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/gpx_circuit_60"
@@ -423,7 +423,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="4dp"
             android:layout_weight="1"
-            android:text="60" />
+            android:text="@string/dashset_60" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/gpx_circuit_100"
@@ -432,7 +432,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_weight="1"
-            android:text="100" />
+            android:text="@string/dashset_100" />
     </LinearLayout>
 
     <!-- Legacy cycle-button IDs kept gone so leftover findViewById refs stay safe. -->

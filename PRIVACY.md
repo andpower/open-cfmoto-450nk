@@ -1,12 +1,12 @@
 # OpenCfMoto — Privacy & Permissions
 
-_Last updated: 2026-07-16_
+_Last updated: 2026-07-29_
 
 OpenCfMoto is a **local-first** app. It connects your phone to a CFMoto MotoPlay
 dashboard (T-Box) over the bike's own Wi-Fi and projects Android Auto or your
-screen to the dash. It has **no user accounts, no analytics, no ads, and no
-backend servers** operated by the project. Everything the app produces stays on
-your phone unless *you* choose to share it.
+screen to the dash. It has **no user accounts and no ads**. Bike profiles, trip
+logs, and full diagnostic logs stay on your phone unless *you* choose to share
+them.
 
 This document explains what the app can access, why, and where data goes.
 
@@ -15,10 +15,13 @@ This document explains what the app can access, why, and where data goes.
 ## Summary
 
 - **No account, no sign-in.** The app never asks who you are.
-- **No telemetry.** The project does not collect usage data, crash reports, or
-  screen content. Nothing is uploaded to us — we don't run any server.
-- **Your data stays on the device** (bike profiles, trip logs, diagnostic logs).
-- Two things *do* leave the phone, and only to third parties, not to us:
+- **Optional anonymous telemetry (default on).** A random UUID, app version, and
+  (when something breaks) a redacted crash/error snippet may be sent to a
+  Cloudflare Worker operated for this project — so we can see roughly how many
+  phones use the app and fix crashes. Turn it off anytime under
+  **Setup → Privacy → Anonymous usage & crash reports**.
+- **Your ride data stays on the device** (bike profiles, trip GPS logs).
+- Other traffic that leaves the phone (not to us as “who you are”):
   - **Map tiles** for the trip map are fetched from **OpenStreetMap** servers.
   - **Android Auto** content (Maps/Waze/media) is handled by Google's Android
     Auto app under Google's own terms — OpenCfMoto only relays its video to the
@@ -80,7 +83,26 @@ control it:
 
 ---
 
-## Data that leaves the phone (to third parties, not to us)
+## Anonymous telemetry (optional)
+
+When **Anonymous usage & crash reports** is on (Setup → Privacy):
+
+| Sent | Not sent |
+| --- | --- |
+| Random UUID generated on the phone | Name, email, Google account |
+| App version / Android API level / UI locale | Bike SSID, Wi‑Fi password, QR secrets |
+| Occasional “still installed” heartbeat | GPS trip routes or destinations |
+| Redacted crash stack / short error text | Dash video, camera frames, contacts |
+
+If the phone has no internet (or is only on the bike SoftAP), events stay in a
+small local queue and upload later over cellular/home Wi‑Fi. Turning the toggle
+**Off** stops uploads and clears the outbound queue.
+
+The ingest service is a Cloudflare Worker + D1 database for this project
+([opencfmoto-telemetry](https://github.com/zanderp/opencfmoto-telemetry)).
+Aggregates (unique UUIDs, versions, crash counts) are used for maintenance only.
+
+## Data that leaves the phone (other)
 
 - **OpenStreetMap tiles:** Opening a trip's map downloads map imagery from
   OpenStreetMap tile servers for the area of your route. Those requests reach

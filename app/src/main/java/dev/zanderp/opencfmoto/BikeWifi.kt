@@ -60,13 +60,20 @@ object BikeWifi {
     private const val REJOIN_FAST_MS = 300L
     private const val REJOIN_BASE_MS = 2500L
     private const val REJOIN_MAX_MS = 15000L
+    /** After a failed *first* join (picker canceled / timed out), wait before re-prompting. */
+    private const val FIRST_JOIN_RETRY_MS = 4_000L
     /**
      * Must be passed to [ConnectivityManager.requestNetwork]. Without a timeout the request can
      * wait forever after the bike AP dies — none of onAvailable/onLost/onUnavailable fire — so
      * ignition-cycle reconnect stalls until the rider toggles something. open-cflink hit 7+ min
      * hangs without this.
+     *
+     * First acquisition needs a long window: Android shows a "choose a device" dialog and if we
+     * time out while it's open the system says "The app canceled the request to choose a device."
+     * Silent re-joins (already approved) can stay short.
      */
-    private const val JOIN_TIMEOUT_MS = 12_000
+    private const val FIRST_JOIN_TIMEOUT_MS = 90_000
+    private const val REJOIN_TIMEOUT_MS = 12_000
 
     fun join(
         context: Context,
@@ -104,6 +111,32 @@ object BikeWifi {
         registerCallback()
     }
 
+    /**
+     * Mode switches (AA↔Map↔Mirror) must keep bike Wi‑Fi and only rebuild PXC.
+     * If we're already process-bound to [ssid], fire [onAvailable] immediately — do not
+     * unregister/re-request (that added multi-second stalls and "already running" races).
+     */
+    fun reuseOrJoin(
+        context: Context,
+        ssid: String,
+        psk: String,
+        onAvailable: (Network) -> Unit,
+        onLost: () -> Unit,
+        log: (String) -> Unit,
+    ) {
+        val net = currentNetwork
+        if (active && net != null && this.ssid.equals(ssid, ignoreCase = true)) {
+            this.onAvailableCb = onAvailable
+            this.onLostCb = onLost
+            this.logCb = log
+            rebindProcessToBike(context)
+            log("Wi-Fi already bound: $ssid — skipping re-join (mode switch)")
+            onAvailable(net)
+            return
+        }
+        join(context, ssid, psk, onAvailable, onLost, log)
+    }
+
     private fun registerCallback() {
         val cm = cm ?: return
         val req = request ?: return
@@ -135,21 +168,35 @@ object BikeWifi {
                 logCb?.invoke("Wi-Fi lost: $network")
                 currentNetwork = null
                 linkLogged = false
+                // Drop the process bind immediately. Leaving it pinned to a dead Network causes
+                // ENONET on loopback binds (AA :5288) and probes until the rider taps Stop.
+                unbindProcess()
                 onLostCb?.invoke()
                 if (active) scheduleRejoin()
             }
 
             override fun onUnavailable() {
+                val timeoutSec = (if (firstDelivered) REJOIN_TIMEOUT_MS else FIRST_JOIN_TIMEOUT_MS) / 1000
                 logCb?.invoke(
-                    "Wi-Fi join unavailable after ${JOIN_TIMEOUT_MS / 1000}s " +
-                        "(bike off, out of range, or declined) — will retry",
+                    "Wi-Fi join unavailable after ${timeoutSec}s " +
+                        "(bike off, out of range, declined, or system picker timed out) — will retry",
                 )
+                // Join timed out with no live Network — make sure we aren't still pinned to a
+                // previous dead bike AP (resume / auto-connect path).
+                if (currentNetwork == null) unbindProcess()
                 if (active) scheduleRejoin()
             }
         }
         callback = cb
-        // Timeout is mandatory — see JOIN_TIMEOUT_MS.
-        cm.requestNetwork(req, cb, JOIN_TIMEOUT_MS)
+        // Timeout is mandatory — see FIRST_JOIN_TIMEOUT_MS / REJOIN_TIMEOUT_MS.
+        val timeoutMs = if (firstDelivered) REJOIN_TIMEOUT_MS else FIRST_JOIN_TIMEOUT_MS
+        if (!firstDelivered) {
+            logCb?.invoke(
+                "→ approve the phone's Wi‑Fi / device picker if it appears " +
+                    "(do not leave it open past ${FIRST_JOIN_TIMEOUT_MS / 1000}s)",
+            )
+        }
+        cm.requestNetwork(req, cb, timeoutMs)
     }
 
     @Volatile private var linkLogged = false
@@ -174,10 +221,14 @@ object BikeWifi {
     private fun scheduleRejoin() {
         if (!active) return
         rejoinAttempts++
-        // First attempt is near-instant to beat the phone settling on a saved (home) network and the
-        // dash timing out; later attempts back off and cap so we don't hammer the framework.
-        val delay = if (rejoinAttempts <= 1) REJOIN_FAST_MS
-        else minOf(REJOIN_BASE_MS * (rejoinAttempts - 1), REJOIN_MAX_MS)
+        // Before the first successful join, never use the near-instant retry — that cancels the
+        // system device picker mid-tap ("app canceled the request to choose a device").
+        // After firstDelivered, first attempt is near-instant to beat home-Wi‑Fi / dash timeout.
+        val delay = when {
+            !firstDelivered -> FIRST_JOIN_RETRY_MS
+            rejoinAttempts <= 1 -> REJOIN_FAST_MS
+            else -> minOf(REJOIN_BASE_MS * (rejoinAttempts - 1), REJOIN_MAX_MS)
+        }
         handler.postDelayed({
             if (!active) return@postDelayed
             logCb?.invoke("re-requesting bike Wi-Fi (attempt $rejoinAttempts) …")
@@ -240,9 +291,34 @@ object BikeWifi {
         callback = null
         firstDelivered = false
         linkLogged = false
-        cm.bindProcessToNetwork(null)
+        unbindProcess(cm)
         currentNetwork = null
         log("Wi-Fi released")
+    }
+
+    /**
+     * Clear process→Network binding so loopback / cellular sockets work again.
+     * Safe to call when already unbound. Used after bike Wi‑Fi loss and before AA :5288 bind.
+     */
+    fun unbindProcess(cmIn: ConnectivityManager? = null, context: Context? = null) {
+        val cm = cmIn
+            ?: this.cm
+            ?: context?.applicationContext
+                ?.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+            ?: return
+        try {
+            cm.bindProcessToNetwork(null)
+        } catch (_: Exception) {
+        }
+    }
+
+    /**
+     * If we aren't on a live bike [Network], ensure the process isn't stuck on a stale bind
+     * (ENONET on ServerSocket / localhost). No-op when [currentNetwork] is set.
+     */
+    fun unbindIfNoBikeNetwork(context: Context) {
+        if (currentNetwork != null) return
+        unbindProcess(context = context)
     }
 
     /**

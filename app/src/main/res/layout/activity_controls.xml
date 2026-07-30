@@ -263,7 +263,7 @@
                         android:layout_width="28dp"
                         android:layout_height="wrap_content"
                         android:gravity="end"
-                        android:text="8"
+                        android:text="@string/controls_8"
                         android:textColor="@color/text_primary"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -292,7 +292,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="4dp"
                         android:layout_weight="1"
-                        android:text="▲" />
+                        android:text="@string/controls_str" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_knob_fwd"
@@ -319,7 +319,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        android:text="◀" />
+                        android:text="@string/controls_str_2" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_select"
@@ -337,7 +337,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
-                        android:text="▶" />
+                        android:text="@string/controls_str_3" />
                 </LinearLayout>
 
                 <!-- down -->
@@ -360,7 +360,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="4dp"
                         android:layout_weight="1"
-                        android:text="▼" />
+                        android:text="@string/controls_str_4" />
 
                     <Space
                         android:layout_width="0dp"

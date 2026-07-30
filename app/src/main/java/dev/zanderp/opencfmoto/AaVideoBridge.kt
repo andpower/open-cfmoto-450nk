@@ -12,6 +12,15 @@ object AaVideoBridge {
     @Volatile var pipeline: VideoPipeline? = null
 
     /**
+     * True while an AAP session is up on :5288 (handshake started / video may be flowing).
+     * Used to avoid re-firing self-mode broadcasts that would kill a healthy AA session.
+     */
+    @Volatile var aaSessionLive: Boolean = false
+
+    /** True once we have decoded at least one AA video fps sample this session. */
+    @Volatile var aaDecoding: Boolean = false
+
+    /**
      * Until this elapsedRealtime, AA is starting guidance / media sink audio. The button bridge
      * still holds AVRCP (no yield to music apps); this flag is informational for logs / timing.
      */

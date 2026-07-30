@@ -42,6 +42,7 @@ class SetupActivity : AppCompatActivity() {
     private lateinit var resDesc: TextView
     private lateinit var themeDesc: TextView
     private lateinit var dblTapDesc: TextView
+    private lateinit var holdsDesc: TextView
     private lateinit var holdDesc: TextView
     private lateinit var nonTouchDesc: TextView
     private lateinit var forceTouchDesc: TextView
@@ -77,6 +78,7 @@ class SetupActivity : AppCompatActivity() {
         resDesc = findViewById(R.id.res_desc)
         themeDesc = findViewById(R.id.theme_desc)
         dblTapDesc = findViewById(R.id.dbltap_desc)
+        holdsDesc = findViewById(R.id.holds_desc)
         holdDesc = findViewById(R.id.hold_desc)
         nonTouchDesc = findViewById(R.id.nontouch_desc)
         forceTouchDesc = findViewById(R.id.forcetouch_desc)
@@ -113,6 +115,11 @@ class SetupActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.dbltap_fast).setOnClickListener { setDoubleTap(DoubleTapDelay.FAST) }
         findViewById<MaterialButton>(R.id.dbltap_normal).setOnClickListener { setDoubleTap(DoubleTapDelay.NORMAL) }
         findViewById<MaterialButton>(R.id.dbltap_slow).setOnClickListener { setDoubleTap(DoubleTapDelay.SLOW) }
+        findViewById<MaterialButton>(R.id.dbltap_very_slow).setOnClickListener {
+            setDoubleTap(DoubleTapDelay.VERY_SLOW)
+        }
+        findViewById<MaterialButton>(R.id.holds_on).setOnClickListener { setHoldsEnabled(true) }
+        findViewById<MaterialButton>(R.id.holds_off).setOnClickListener { setHoldsEnabled(false) }
         findViewById<MaterialButton>(R.id.hold_short).setOnClickListener { setLongPress(LongPressDelay.SHORT) }
         findViewById<MaterialButton>(R.id.hold_normal).setOnClickListener { setLongPress(LongPressDelay.NORMAL) }
         findViewById<MaterialButton>(R.id.hold_long).setOnClickListener { setLongPress(LongPressDelay.LONG) }
@@ -140,6 +147,8 @@ class SetupActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.transport_p2p).setOnClickListener { setTransport(WifiTransport.P2P) }
         findViewById<MaterialButton>(R.id.secrets_on).setOnClickListener { setSecrets(true) }
         findViewById<MaterialButton>(R.id.secrets_off).setOnClickListener { setSecrets(false) }
+        findViewById<MaterialButton>(R.id.telemetry_on).setOnClickListener { setTelemetry(true) }
+        findViewById<MaterialButton>(R.id.telemetry_off).setOnClickListener { setTelemetry(false) }
         findViewById<MaterialButton>(R.id.settings_share).setOnClickListener { shareSettingsJson() }
         findViewById<MaterialButton>(R.id.settings_import).setOnClickListener {
             importSettingsLauncher.launch(arrayOf("application/json", "text/*", "*/*"))
@@ -309,6 +318,18 @@ class SetupActivity : AppCompatActivity() {
         ).show()
     }
 
+    private fun setTelemetry(on: Boolean) {
+        AppSettings.setAnonymousTelemetry(this, on)
+        refreshOptions()
+        if (on) AnonymousTelemetry.onAppStart(this)
+        Toast.makeText(
+            this,
+            if (on) getString(R.string.setup_anonymous_telemetry_on)
+            else getString(R.string.setup_anonymous_telemetry_off),
+            Toast.LENGTH_SHORT,
+        ).show()
+    }
+
     private fun toast(msg: String) =
         Toast.makeText(this, uiText("$msg (applies next connect)"), Toast.LENGTH_SHORT).show()
 
@@ -332,6 +353,7 @@ class SetupActivity : AppCompatActivity() {
         val res = VideoPrefs.resolution(this)
         val theme = NightPrefs.theme(this)
         val dbl = ButtonTimingPrefs.doubleTap(this)
+        val holdsOn = ButtonTimingPrefs.holdsEnabled(this)
         val hold = ButtonTimingPrefs.longPress(this)
         val language = AppCompatDelegate.getApplicationLocales().get(0)?.language.orEmpty()
         highlight(language,
@@ -386,7 +408,11 @@ class SetupActivity : AppCompatActivity() {
         highlight(dbl,
             R.id.dbltap_fast to DoubleTapDelay.FAST,
             R.id.dbltap_normal to DoubleTapDelay.NORMAL,
-            R.id.dbltap_slow to DoubleTapDelay.SLOW)
+            R.id.dbltap_slow to DoubleTapDelay.SLOW,
+            R.id.dbltap_very_slow to DoubleTapDelay.VERY_SLOW)
+        highlight(holdsOn,
+            R.id.holds_on to true,
+            R.id.holds_off to false)
         highlight(hold,
             R.id.hold_short to LongPressDelay.SHORT,
             R.id.hold_normal to LongPressDelay.NORMAL,
@@ -428,6 +454,12 @@ class SetupActivity : AppCompatActivity() {
                 else "Off — passwords and serials are redacted (recommended)",
             )
         highlight(secrets, R.id.secrets_on to true, R.id.secrets_off to false)
+        val telemetry = AppSettings.anonymousTelemetry(this)
+        findViewById<android.widget.TextView>(R.id.telemetry_desc).text =
+            getString(R.string.setup_anonymous_telemetry_desc)
+        findViewById<android.widget.TextView>(R.id.telemetry_id).text =
+            getString(R.string.setup_anonymous_id, AnonymousTelemetry.anonUuidForDisplay(this))
+        highlight(telemetry, R.id.telemetry_on to true, R.id.telemetry_off to false)
     }
 
     /** Refresh the Bluetooth pairing status line shown in the helper card. */

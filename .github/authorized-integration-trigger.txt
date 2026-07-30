@@ -1,2 +1,0 @@
-OpenCfMoto 450NK upstream 2.0.6 integration authorized by Andrés.
-This file only retriggers the branch-restricted integration workflow and is removed before merge.

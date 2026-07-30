@@ -6,11 +6,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def replace_once(text: str, old: str, new: str, label: str) -> str:
-    if new in text:
-        return text
     count = text.count(old)
+    if count == 0:
+        if new in text:
+            return text
+        raise RuntimeError(f"{label}: source and replacement are both missing")
     if count != 1:
-        raise RuntimeError(f"{label}: expected one match, found {count}")
+        raise RuntimeError(f"{label}: expected one source match, found {count}")
     return text.replace(old, new, 1)
 
 

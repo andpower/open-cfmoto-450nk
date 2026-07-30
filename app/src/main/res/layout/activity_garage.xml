@@ -75,6 +75,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="@string/layout_scan_new_bike_495a919"
-        app:icon="@drawable/ic_qr" />
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/garage_scan"
+            style="@style/Widget.OpenCfMoto.Button.Tonal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:text="@string/layout_scan_new_bike_495a919"
+            app:icon="@drawable/ic_qr" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/garage_manual"
+            style="@style/Widget.OpenCfMoto.Button.Tonal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:text="@string/garage_enter_wi_fi_manually" />
+    </LinearLayout>
 </LinearLayout>

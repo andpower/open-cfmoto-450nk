@@ -240,30 +240,52 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/layout_setup_cdd7bb2" />
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_devices"
-                    style="@style/Widget.OpenCfMoto.Button.Text"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/layout_garage_f614ac3" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_setup"
+                        style="@style/Widget.OpenCfMoto.Button.Text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:text="@string/layout_setup_cdd7bb2" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_trip"
-                    style="@style/Widget.OpenCfMoto.Button.Text"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/layout_trip_9dda9aa" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_devices"
+                        style="@style/Widget.OpenCfMoto.Button.Text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:text="@string/layout_garage_f614ac3" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/layout_logs_126dd3b" />
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_trip"
+                        style="@style/Widget.OpenCfMoto.Button.Text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:text="@string/layout_trip_9dda9aa" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_toggle_log"
+                        style="@style/Widget.OpenCfMoto.Button.Text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:text="@string/layout_logs_126dd3b" />
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout

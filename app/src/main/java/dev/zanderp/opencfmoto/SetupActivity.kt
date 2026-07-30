@@ -257,6 +257,16 @@ class SetupActivity : AppCompatActivity() {
         Toast.makeText(this, uiText("Double-tap delay: ${uiText(delay.label)}"), Toast.LENGTH_SHORT).show()
     }
 
+    private fun setHoldsEnabled(on: Boolean) {
+        ButtonTimingPrefs.setHoldsEnabled(this, on)
+        refreshOptions()
+        Toast.makeText(
+            this,
+            uiText(if (on) "Hold gestures enabled" else "Hold gestures disabled"),
+            Toast.LENGTH_SHORT,
+        ).show()
+    }
+
     private fun setLongPress(delay: LongPressDelay) {
         ButtonTimingPrefs.setLongPress(this, delay)
         refreshOptions()
@@ -366,6 +376,7 @@ class SetupActivity : AppCompatActivity() {
         resDesc.text = uiText(res.label)
         themeDesc.text = uiText(theme.label)
         dblTapDesc.text = uiText(dbl.label)
+        holdsDesc.text = getString(R.string.holds_desc)
         holdDesc.text = uiText(hold.label)
         nonTouchDesc.text = uiText(
             if (AppSettings.forceNonTouch(this))

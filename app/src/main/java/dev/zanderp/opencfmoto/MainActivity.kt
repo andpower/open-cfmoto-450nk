@@ -430,9 +430,6 @@ class MainActivity : AppCompatActivity() {
             iconPadding = 2
             setPadding(0, paddingTop, 0, paddingBottom)
         }
-        (findViewById<View>(R.id.btn_aa_start) as? MaterialButton)?.asIconTopTile(R.drawable.ic_qr)
-        (findViewById<View>(R.id.btn_gpx) as? MaterialButton)?.asIconTopTile(R.drawable.ic_place)
-        (findViewById<View>(R.id.btn_mirror_start) as? MaterialButton)?.asIconTopTile(R.drawable.ic_cast)
         (findViewById<View>(R.id.btn_aa_stop) as? MaterialButton)?.setIconResource(R.drawable.ic_stop)
         (findViewById<View>(R.id.btn_hud_view) as? MaterialButton)?.apply {
             setIconResource(R.drawable.ic_cast)
@@ -815,7 +812,7 @@ class MainActivity : AppCompatActivity() {
 
     /** Update the big status header + Connect button label from a [ConnectionState] transition. */
     private fun renderStatus(phase: Phase, detail: String) {
-        statusView.text = uiText(phase.label)
+        statusView.text = getString(phase.labelRes)
         bikeView.text = if (detail.isNotBlank()) detail else bikeLabelText()
         if (phase == Phase.ERROR && detail.isNotBlank()) {
             try {
@@ -1579,7 +1576,7 @@ class MainActivity : AppCompatActivity() {
     private fun launchPendingMirrorApp() {
         val packageName = pendingAppPackage
         val className = pendingAppClass
-        val label = pendingAppLabel ?: packageName
+        val label = pendingAppLabel ?: packageName.orEmpty()
         if (packageName.isNullOrBlank() || className.isNullOrBlank()) {
             log("→ Apps failed: selected component was lost")
             Toast.makeText(this, uiText("The selected app was lost. Choose it again."), Toast.LENGTH_LONG).show()
@@ -1741,6 +1738,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
+        private const val APP_STREAM_POLL_MS = 250L
+        private const val APP_STREAM_START_TIMEOUT_MS = 25_000L
+        private const val APP_STREAM_POST_LAUNCH_CHECK_MS = 4_000L
+        private const val APP_STREAM_RECOVERY_CHECK_MS = 8_000L
+        private const val APP_STREAM_STALL_MS = 3_500L
         const val EXTRA_START_GPX = "start_gpx"
         /** When set with [EXTRA_START_GPX], join the bike even if not already live. */
         const val EXTRA_GPX_TO_BIKE = "gpx_to_bike"

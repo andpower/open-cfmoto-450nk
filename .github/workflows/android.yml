@@ -9,7 +9,7 @@ on:
       release_tag:
         description: Tag for the APK release
         required: true
-        default: v2.2.0-450nk
+        default: v2.3.0-450nk
 
 permissions:
   contents: write
@@ -52,18 +52,26 @@ jobs:
         if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ inputs.release_tag || 'v2.2.0-450nk' }}
+          RELEASE_TAG: ${{ inputs.release_tag || 'v2.3.0-450nk' }}
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             echo "Release $RELEASE_TAG already exists; leaving its APK unchanged."
           else
             gh release create "$RELEASE_TAG" OpenCfMoto-450NK.apk \
               --target "$GITHUB_SHA" \
-              --title "OpenCfMoto 450NK 2.2.0 — Español / English" \
-              --notes "Edición probada en 450NK con interfaz completa en español e inglés.
-          El idioma sigue al teléfono automáticamente o se puede elegir en Configuración:
-          Automático, Español o English. Incluye el lanzador de aplicaciones estacionadas,
-          selector de aplicaciones instaladas, proyección de pantalla completa, bloqueo por
-          movimiento y controles multimedia temporales desde el manillar. Usa su propio
-          identificador e ícono 450NK, por lo que puede instalarse junto al OpenCfMoto original."
+              --latest \
+              --title "OpenCfMoto 450NK 2.3.0 — Español / English" \
+              --notes "Actualización 450NK basada en OpenCfMoto 2.0.6.
+          
+          Incluye mejoras de inicio y reconexión de Android Auto, detección Wi-Fi AP/Wi-Fi Direct,
+          emparejamiento manual por SSID y contraseña, correcciones de Mapas/GPX, QR MotoFun/Moto Morini,
+          iconos y recursos bilingües.
+          
+          Corrige además la proyección de aplicaciones estacionadas: espera el enlace EasyConn y un cuadro
+          H.264 real antes de abrir la aplicación, controla el estado del stream, informa la etapa que falla
+          y reintenta una vez si la imagen se detiene.
+          
+          La edición conserva el identificador com.andpower.opencfmoto450nk, el logo 450NK, español/inglés
+          y puede convivir con OpenCfMoto original. Los contenidos DRM o FLAG_SECURE pueden mostrarse negros
+          por una restricción de Android."
           fi

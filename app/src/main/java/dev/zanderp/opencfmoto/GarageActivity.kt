@@ -87,7 +87,7 @@ class GarageActivity : AppCompatActivity() {
         findViewById<View>(R.id.garage_manual).setOnClickListener {
             ManualWifiPairing.show(this) { raw, qr ->
                 BikeMemory.save(this, raw, qr)
-                Toast.makeText(this, "Added ${BikeMemory.lastBikeName(this)}", Toast.LENGTH_SHORT)
+                Toast.makeText(this, uiText("Added ${BikeMemory.lastBikeName(this)}"), Toast.LENGTH_SHORT)
                     .show()
                 refresh()
             }

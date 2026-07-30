@@ -56,6 +56,9 @@ class MainActivity : AppCompatActivity() {
     private var pendingAppPackage: String? = null
     private var pendingAppClass: String? = null
     private var pendingAppLabel: String? = null
+    /** Cancels stale delayed launch/health tasks when the rider changes mode. */
+    private var appProjectionWaitToken = 0
+    private val appProjectionHandler = android.os.Handler(android.os.Looper.getMainLooper())
     /** Guards the "close the official CFMoto app" prompt so it shows once per error, not every redraw. */
     private var rivalPromptShown = false
     /** Guards the VPN kill-switch prompt so it shows once per error, not every redraw. */
@@ -101,7 +104,7 @@ class MainActivity : AppCompatActivity() {
             ConnectionState.set(Phase.MIRRORING, BikeMemory.lastBikeName(this) ?: qr.ssid)
             joinWifi(qr, gateOnAaSteady = false)
             if (pendingAppPackage != null) {
-                launchPendingMirrorApp()
+                waitForAppProjectionStream()
             } else {
                 // Same as startMirrorLink: single-app capture needs the shared app visible.
                 moveTaskToBack(true)
@@ -1502,11 +1505,75 @@ class MainActivity : AppCompatActivity() {
             applyProfile(saved)
             ConnectionState.set(Phase.MIRRORING, BikeMemory.lastBikeName(this) ?: saved.ssid)
             joinWifi(saved, gateOnAaSteady = false)
-            launchPendingMirrorApp()
+            waitForAppProjectionStream()
         } else {
             log("→ Apps: scan the dash QR before launching $label…")
             scanLauncher.launch(Intent(this, QrScanActivity::class.java))
         }
+    }
+
+    /**
+     * Do not open the selected app until the complete path is proven:
+     * MediaProjection → encoder → EasyConn handshake → TFT data requests → first delivered frame.
+     *
+     * Launching immediately after [joinWifi] raced the asynchronous Wi‑Fi/PXC setup. The selected
+     * app appeared on the phone while the dash still had no media channel, which looked like the app
+     * "couldn't be transmitted". [EasyConnProber.isStreaming] is only true after frame #1 is sent.
+     */
+    private fun waitForAppProjectionStream() {
+        val label = pendingAppLabel ?: return
+        val token = ++appProjectionWaitToken
+        val startedAt = android.os.SystemClock.elapsedRealtime()
+        var lastStageLogAt = 0L
+        log("→ Apps: waiting for confirmed TFT video before opening $label")
+        Toast.makeText(
+            this,
+            uiText("Preparing $label on the bike…"),
+            Toast.LENGTH_LONG,
+        ).show()
+
+        val poll = object : Runnable {
+            override fun run() {
+                if (token != appProjectionWaitToken || pendingAppPackage == null) return
+                val active = BikeLink.prober ?: prober
+                val elapsed = android.os.SystemClock.elapsedRealtime() - startedAt
+                val recentFrame = active.isStreaming && active.msSinceLastFrame() <= 2_500L
+
+                if (recentFrame) {
+                    log("→ Apps: TFT stream confirmed after ${elapsed}ms; opening $label")
+                    launchPendingMirrorApp()
+                    return
+                }
+
+                if (elapsed >= APP_STREAM_START_TIMEOUT_MS) {
+                    val stage = when {
+                        !active.isRunning -> "EasyConn did not start"
+                        active.msSinceLastFrame() == Long.MAX_VALUE -> "the TFT requested no video frame"
+                        else -> "the video stream stalled"
+                    }
+                    log("→ Apps failed before launch: $stage (${elapsed}ms)")
+                    Toast.makeText(
+                        applicationContext,
+                        uiText("Couldn't transmit $label: $stage. Open Logs and reconnect."),
+                        Toast.LENGTH_LONG,
+                    ).show()
+                    ConnectionState.set(Phase.ERROR, "Apps: $stage")
+                    stopEverything()
+                    return
+                }
+
+                if (elapsed - lastStageLogAt >= 2_000L) {
+                    lastStageLogAt = elapsed
+                    val phase = ConnectionState.phase
+                    log(
+                        "→ Apps: preparing $label — phase=$phase prober=${active.isRunning} " +
+                            "stream=${active.isStreaming} lastFrame=${active.msSinceLastFrame()}ms",
+                    )
+                }
+                appProjectionHandler.postDelayed(this, APP_STREAM_POLL_MS)
+            }
+        }
+        appProjectionHandler.post(poll)
     }
 
     private fun launchPendingMirrorApp() {
@@ -1539,6 +1606,7 @@ class MainActivity : AppCompatActivity() {
             )
             val mediaMode = if (changedMode) "media (temporary)" else "media"
             log("→ Apps: launched $label ($component); handlebar mode=$mediaMode")
+            verifyAppProjectionHealth(label)
             val drm = if (AppsCatalog.mayUseProtectedVideo(packageName)) {
                 " Protected video may appear black."
             } else {
@@ -1557,7 +1625,45 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /** Ensure whole-screen capture keeps feeding the TFT after the external app opens. */
+    private fun verifyAppProjectionHealth(label: String) {
+        val active = BikeLink.prober ?: prober
+        appProjectionHandler.postDelayed({
+            if (!active.isRunning) return@postDelayed
+            if (active.isStreaming && active.msSinceLastFrame() <= APP_STREAM_STALL_MS) {
+                log("→ Apps: $label stream healthy after launch")
+                return@postDelayed
+            }
+
+            log(
+                "→ Apps: $label stream stalled after launch " +
+                    "(stream=${active.isStreaming}, lastFrame=${active.msSinceLastFrame()}ms); reconnecting once",
+            )
+            Toast.makeText(
+                applicationContext,
+                uiText("The bike video stalled; reconnecting automatically…"),
+                Toast.LENGTH_LONG,
+            ).show()
+            active.forceReconnect()
+
+            appProjectionHandler.postDelayed({
+                val recovered = active.isStreaming && active.msSinceLastFrame() <= APP_STREAM_STALL_MS
+                if (recovered) {
+                    log("→ Apps: $label stream recovered")
+                } else {
+                    log("→ Apps: $label stream did not recover; rider should Stop and reconnect")
+                    Toast.makeText(
+                        applicationContext,
+                        uiText("The app is open, but the TFT video did not recover. Tap Stop and reconnect."),
+                        Toast.LENGTH_LONG,
+                    ).show()
+                }
+            }, APP_STREAM_RECOVERY_CHECK_MS)
+        }, APP_STREAM_POST_LAUNCH_CHECK_MS)
+    }
+
     private fun clearPendingApp() {
+        appProjectionWaitToken++
         pendingAppPackage = null
         pendingAppClass = null
         pendingAppLabel = null

@@ -12,7 +12,7 @@
     <string name="layout_favorites_markers_ae640e2" formatted="false">Favoritos y marcadores</string>
     <string name="layout_fill_7adb673" formatted="false">Rellenar</string>
     <string name="layout_fill_edge_to_edge_crops_e2fae65" formatted="false">Rellenar — de borde a borde (recorta un poco)</string>
-    <string name="layout_find_parking_715e689" formatted="false">Buscar estacionamiento</string>
+    <string name="layout_find_parking_715e689" formatted="false">Buscar parking</string>
     <string name="layout_fit_dab564d" formatted="false">Ajustar</string>
     <string name="layout_fit_route_ccd8672" formatted="false">Mostrar ruta completa</string>
     <string name="layout_follow_66587a7" formatted="false">Seguir</string>
@@ -34,7 +34,7 @@
     <string name="layout_handlebar_buttons_a7366b1" formatted="false">Botones del manillar</string>
     <string name="layout_handlebar_buttons_drive_android_auto_4b89f44" formatted="false">Los botones del manillar controlan Android Auto</string>
     <string name="layout_handlebar_media_call_buttons_5d62f5f" formatted="false">Botones multimedia/llamada del manillar</string>
-    <string name="layout_heading_up_a479fd5" formatted="false">Dirección hacia arriba</string>
+    <string name="layout_heading_up_a479fd5" formatted="false">Rumbo arriba</string>
     <string name="layout_high_b1a5954" formatted="false">Alto</string>
     <string name="layout_history_90ccd64" formatted="false">Historial</string>
     <string name="layout_hold_delay_81d656c" formatted="false">Demora de pulsación larga</string>
@@ -95,18 +95,18 @@
     <string name="layout_no_popular_shortcut_was_detected_0f111d2" formatted="false">No se detectó ningún acceso popular. Usá “Elegir otra aplicación instalada”.</string>
     <string name="layout_no_preset_shipped_defaults_your_699442c" formatted="false">Sin preajuste — valores originales o asignación personalizada</string>
     <string name="layout_no_rides_this_day_86103e0" formatted="false">No hay viajes este día.</string>
-    <string name="layout_off_e3de5ab" formatted="false">Desactivado</string>
+    <string name="layout_off_e3de5ab" formatted="false">No</string>
     <string name="layout_off_passwords_and_serials_are_195b12b" formatted="false">Desactivado — se ocultan contraseñas y números de serie (recomendado)</string>
     <string name="layout_off_use_the_bike_profile_3319bab" formatted="false">Desactivado — usar el perfil de la moto (1000 MT‑X conserva foco/control)</string>
     <string name="layout_off_use_the_bike_profile_73ad62c" formatted="false">Desactivado — usar el perfil de la moto (las pantallas táctiles conservan el tacto)</string>
     <string name="layout_offline_maps_119fc20" formatted="false">Mapas sin conexión</string>
     <string name="layout_ok_9ce3bd4" formatted="false">Aceptar</string>
-    <string name="layout_on_e0049a6" formatted="false">Activado</string>
+    <string name="layout_on_e0049a6" formatted="false">Sí</string>
     <string name="layout_on_screen_pad_7f359c7" formatted="false">Control en pantalla</string>
     <string name="layout_open_android_auto_settings_abdde39" formatted="false">Abrir configuración de Android Auto</string>
     <string name="layout_open_bluetooth_settings_9c5ff5b" formatted="false">Abrir configuración de Bluetooth</string>
     <string name="layout_open_gpx_on_map_b192edd" formatted="false">Abrir GPX en el mapa</string>
-    <string name="layout_open_map_pick_place_circuit_9e542f2" formatted="false">Abrí el mapa · elegí un lugar · Circuito de ida y vuelta</string>
+    <string name="layout_open_map_pick_place_circuit_9e542f2" formatted="false">Mapa · elegir lugar · ida y vuelta</string>
     <string name="layout_opencfmoto_28368d6" formatted="false">OpenCfMoto</string>
     <string name="layout_openrouteservice_api_key_061861a" formatted="false">Clave API de OpenRouteService</string>
     <string name="layout_p2p_2b36263" formatted="false">P2P</string>

@@ -26,6 +26,7 @@ fun Context.uiText(text: String): String {
         Regex("""^Couldn't open (.+)$""") to "No se pudo abrir $1",
         Regex("""^(.+) is missing or disabled$""") to "$1 no está instalada o está deshabilitada",
         Regex("""^(.+) is no longer available$""") to "$1 ya no está disponible",
+        Regex("""^(.+) ready$""") to "$1 lista",
         Regex("""^Update (.+)$""") to "Actualizar $1",
         Regex("""^Searching \"(.+)\" on the dash$""") to "Buscando «$1» en el tablero",
         Regex("""^Sent \"(.+)\" to Android Auto$""") to "Se envió «$1» a Android Auto",
@@ -432,6 +433,9 @@ private val SPANISH_EXACT = mapOf(
     "Keep left" to "Mantenete a la izquierda",
     "Keep right" to "Mantenete a la derecha",
     "Continue" to "Continuá",
+    "Launch on bike" to "Abrir en la moto",
+    "Something is holding the bike's link ports (10920-10922). Close any other CFMoto/EasyConnect app and reconnect." to
+        "Otra aplicación está usando la conexión de la moto (puertos 10920-10922). Cerrá cualquier otra aplicación CFMoto/EasyConnect y volvé a conectar.",
     "Go ahead" to "Seguí derecho",
     "To route" to "Hacia la ruta",
     "Arrive" to "Llegada",

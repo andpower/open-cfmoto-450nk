@@ -24,7 +24,9 @@
 
     <!-- Primary CTA: tall, rounded, confident. -->
     <style name="Widget.OpenCfMoto.Button.Connect" parent="Widget.Material3.Button">
-        <item name="android:layout_height">64dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">64dp</item>
+        <item name="android:minWidth">0dp</item>
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">0.01</item>
@@ -37,6 +39,11 @@
     <style name="Widget.OpenCfMoto.Button.Tonal" parent="Widget.Material3.Button.TonalButton">
         <item name="cornerRadius">14dp</item>
         <item name="android:textSize">13sp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:paddingLeft">6dp</item>
+        <item name="android:paddingRight">6dp</item>
         <item name="iconGravity">textTop</item>
         <item name="iconPadding">4dp</item>
         <item name="iconSize">20dp</item>
@@ -45,6 +52,11 @@
     <!-- Text/ghost actions for the log toolbar. -->
     <style name="Widget.OpenCfMoto.Button.Text" parent="Widget.Material3.Button.TextButton">
         <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:paddingRight">4dp</item>
     </style>
 
     <!-- Segmented-control option (selection highlight is applied in code). -->
@@ -54,6 +66,11 @@
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
         <item name="android:minHeight">44dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:paddingLeft">6dp</item>
+        <item name="android:paddingRight">6dp</item>
     </style>
 
     <style name="Card.OpenCfMoto" parent="Widget.Material3.CardView.Elevated">

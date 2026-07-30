@@ -2,6 +2,31 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+val signingStoreFile = providers.environmentVariable("SIGNING_STORE_FILE")
+    .orElse(providers.gradleProperty("signingStoreFile"))
+val signingStorePassword = providers.environmentVariable("SIGNING_STORE_PASSWORD")
+    .orElse(providers.gradleProperty("signingStorePassword"))
+val signingKeyAlias = providers.environmentVariable("SIGNING_KEY_ALIAS")
+    .orElse(providers.gradleProperty("signingKeyAlias"))
+val signingKeyPassword = providers.environmentVariable("SIGNING_KEY_PASSWORD")
+    .orElse(providers.gradleProperty("signingKeyPassword"))
+val releaseSigningRequested = gradle.startParameter.taskNames.any {
+    it.contains("Release", ignoreCase = true)
+}
+val missingSigningValues = listOf(
+    "SIGNING_STORE_FILE" to signingStoreFile.orNull,
+    "SIGNING_STORE_PASSWORD" to signingStorePassword.orNull,
+    "SIGNING_KEY_ALIAS" to signingKeyAlias.orNull,
+    "SIGNING_KEY_PASSWORD" to signingKeyPassword.orNull,
+).filter { it.second.isNullOrBlank() }.map { it.first }
+
+if (releaseSigningRequested && missingSigningValues.isNotEmpty()) {
+    throw GradleException(
+        "Release signing is incomplete. Missing: ${missingSigningValues.joinToString()}. " +
+            "Unsigned release APKs are intentionally blocked.",
+    )
+}
+
 android {
     namespace = "dev.zanderp.opencfmoto"
     androidResources {
@@ -20,8 +45,8 @@ android {
         applicationId = "com.andpower.opencfmoto450nk"
         minSdk = 29
         targetSdk = 36
-        versionCode = 33
-        versionName = "2.2.0-450nk"
+        versionCode = 34
+        versionName = "2.2.1-450nk"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -34,9 +59,25 @@ android {
         buildConfigField("String", "ORS_API_KEY", "\"$orsDefaultKey\"")
     }
 
+    signingConfigs {
+        create("permanentRelease") {
+            if (missingSigningValues.isEmpty()) {
+                storeFile = file(signingStoreFile.get())
+                storePassword = signingStorePassword.get()
+                keyAlias = signingKeyAlias.get()
+                keyPassword = signingKeyPassword.get()
+                enableV1Signing = true
+                enableV2Signing = true
+                enableV3Signing = true
+                enableV4Signing = true
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("permanentRelease")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }

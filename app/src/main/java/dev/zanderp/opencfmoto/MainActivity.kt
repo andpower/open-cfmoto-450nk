@@ -275,7 +275,7 @@ class MainActivity : AppCompatActivity() {
                         }
                         log("screen-capture armed (FGS up after ${tries * 100}ms) — $captureMode")
                         androidx.appcompat.app.AlertDialog.Builder(this@MainActivity)
-                            .setTitle(if (selectedApp == null) "Mirror ready" else "$selectedApp ready")
+                            .setTitle(uiText(if (selectedApp == null) "Mirror ready" else "$selectedApp ready"))
                             .setMessage(
                                 if (selectedApp == null) {
                                     "Entire screen — best for riding; phone stays awake while mirroring. " +
@@ -292,7 +292,7 @@ class MainActivity : AppCompatActivity() {
                                         "Use this mode only while parked. Protected video may appear black."
                                 },
                             )
-                            .setPositiveButton(if (selectedApp == null) "Continue" else "Launch on bike") { _, _ ->
+                            .setPositiveButton(uiText(if (selectedApp == null) "Continue" else "Launch on bike")) { _, _ ->
                                 if (selectedApp == null) startMirrorLink() else startAppMirrorLink()
                             }
                             .setNegativeButton(uiText("Cancel")) { _, _ ->
@@ -838,7 +838,16 @@ class MainActivity : AppCompatActivity() {
             }
             .setNegativeButton(uiText("Dismiss"), null)
             .setCancelable(true)
-            .apply { if (!installed) setMessage("Something is holding the bike's link ports (10920-10922). Close any other CFMoto/EasyConnect app and reconnect.") }
+            .apply {
+                if (!installed) {
+                    setMessage(
+                        uiText(
+                            "Something is holding the bike's link ports (10920-10922). " +
+                                "Close any other CFMoto/EasyConnect app and reconnect.",
+                        ),
+                    )
+                }
+            }
             .show()
     }
 

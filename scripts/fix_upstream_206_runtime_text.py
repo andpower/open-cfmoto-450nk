@@ -72,8 +72,17 @@ def patch_ui_text() -> None:
     path.write_text(text, encoding="utf-8")
 
 
+def patch_locale_config() -> None:
+    """Keep AGP automatic locale generation; remove upstream's manual manifest reference."""
+    path = ROOT / "app/src/main/AndroidManifest.xml"
+    text = path.read_text(encoding="utf-8")
+    text = text.replace('        android:localeConfig="@xml/locales_config"\n', '')
+    path.write_text(text, encoding="utf-8")
+
+
 if __name__ == "__main__":
     patch_manual_pairing()
     patch_garage()
     patch_ui_text()
-    print("Upstream 2.0.6 runtime strings wrapped and translated")
+    patch_locale_config()
+    print("Upstream 2.0.6 runtime strings and locale configuration adapted")

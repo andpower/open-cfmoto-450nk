@@ -72,6 +72,16 @@ jobs:
             python3 scripts/validate_translations.py
           fi
 
+      - name: Commit integration snapshot for iterative CI
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "450NK 2.3.0: import upstream 2.0.6 and fix app projection"
+          fi
+          git push origin HEAD:agent/upstream-2.0.6-app-projection-fix
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
@@ -83,15 +93,3 @@ jobs:
 
       - name: Unit tests and APK build
         run: ./gradlew testDebugUnitTest assembleDebug
-
-      - name: Commit and push validated result
-        shell: bash
-        run: |
-          set -euo pipefail
-          git add -A
-          if git diff --cached --quiet; then
-            echo "No integration changes to commit."
-            exit 0
-          fi
-          git commit -m "450NK 2.3.0: import upstream 2.0.6 and fix app projection"
-          git push origin HEAD:agent/upstream-2.0.6-app-projection-fix

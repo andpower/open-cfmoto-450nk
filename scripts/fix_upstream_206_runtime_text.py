@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Wrap OpenCfMoto 2.0.5/2.0.6 runtime strings in the 450NK bilingual UI bridge."""
+import runpy
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -85,4 +86,5 @@ if __name__ == "__main__":
     patch_garage()
     patch_ui_text()
     patch_locale_config()
-    print("Upstream 2.0.6 runtime strings and locale configuration adapted")
+    runpy.run_path(str(ROOT / "scripts/fix_merged_206_build.py"), run_name="__main__")
+    print("Upstream 2.0.6 runtime strings, resources, layouts, and locale configuration adapted")

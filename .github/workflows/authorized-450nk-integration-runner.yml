@@ -1,0 +1,101 @@
+name: Authorized 450NK integration runner
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: authorized-450nk-integration
+  cancel-in-progress: false
+
+jobs:
+  integrate:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.head_ref == 'agent/upstream-2.0.6-app-projection-fix'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out authorized head branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/upstream-2.0.6-app-projection-fix
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge upstream 2.0.6 and apply 450NK fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if grep -q 'versionName = "2.3.0-450nk"' app/build.gradle.kts && \
+             grep -q 'private fun waitForAppProjectionStream()' app/src/main/java/dev/zanderp/opencfmoto/MainActivity.kt; then
+            echo "Authorized integration already applied."
+            exit 0
+          fi
+
+          git remote remove upstream 2>/dev/null || true
+          git remote add upstream https://github.com/zanderp/open-cfmoto.git
+          git fetch --no-tags upstream main
+
+          set +e
+          git merge --no-edit --no-ff -X ours upstream/main
+          merge_status=$?
+          set -e
+
+          if [ "$merge_status" -ne 0 ]; then
+            echo "Resolving remaining add/add or binary conflicts in favor of the existing 450NK edition."
+            while IFS= read -r file; do
+              [ -n "$file" ] || continue
+              git checkout --ours -- "$file"
+              git add -- "$file"
+            done < <(git diff --name-only --diff-filter=U)
+
+            if git diff --name-only --diff-filter=U | grep -q .; then
+              echo "Unresolved merge conflicts remain:"
+              git diff --name-only --diff-filter=U
+              exit 1
+            fi
+            git commit --no-edit
+          fi
+
+          python3 scripts/integrate_upstream_206.py
+
+      - name: Validate translations
+        run: |
+          if [ -f scripts/validate_translations.py ]; then
+            python3 scripts/validate_translations.py
+          fi
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Unit tests and debug APK
+        run: ./gradlew testDebugUnitTest assembleDebug
+
+      - name: Commit and push validated integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No new integration changes to commit."
+            exit 0
+          fi
+          git commit -m "450NK 2.3.0: import upstream 2.0.6 and fix app projection"
+          git push origin HEAD:agent/upstream-2.0.6-app-projection-fix

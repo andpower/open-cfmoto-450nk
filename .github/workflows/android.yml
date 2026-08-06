@@ -9,7 +9,7 @@ on:
       release_tag:
         description: Tag for the APK release
         required: true
-        default: v2.3.0-450nk
+        default: v2.3.1-450nk
 
 permissions:
   contents: write
@@ -35,13 +35,52 @@ jobs:
       - name: Validate English and Spanish UI resources
         run: python3 scripts/validate_translations.py
 
-      - name: Run unit tests and build APK
-        run: ./gradlew testDebugUnitTest assembleDebug
+      - name: Run unit tests
+        run: ./gradlew testDebugUnitTest
 
-      - name: Name 450NK APK
-        run: cp app/build/outputs/apk/debug/app-debug.apk OpenCfMoto-450NK.apk
+      - name: Build debug APK for branches and pull requests
+        if: github.ref != 'refs/heads/main' && github.event_name != 'workflow_dispatch'
+        run: ./gradlew assembleDebug
 
-      - name: Upload APK artifact
+      - name: Restore permanent release key
+        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+        env:
+          ANDROID_SIGNING_BUNDLE_BASE64: ${{ secrets.ANDROID_SIGNING_BUNDLE_BASE64 }}
+        run: |
+          test -n "$ANDROID_SIGNING_BUNDLE_BASE64"
+          mkdir -p "$RUNNER_TEMP/opencfmoto-signing"
+          printf '%s' "$ANDROID_SIGNING_BUNDLE_BASE64" | base64 --decode > "$RUNNER_TEMP/opencfmoto-signing.tar.gz"
+          tar -xzf "$RUNNER_TEMP/opencfmoto-signing.tar.gz" -C "$RUNNER_TEMP/opencfmoto-signing"
+          chmod 600 "$RUNNER_TEMP/opencfmoto-signing/"*
+
+      - name: Build permanently signed release APK
+        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+        run: |
+          SIGNING_PASSWORD="$(tr -d '\r\n' < "$RUNNER_TEMP/opencfmoto-signing/OpenCfMoto-450NK-signing-password.txt")"
+          SIGNING_STORE_FILE="$RUNNER_TEMP/opencfmoto-signing/OpenCfMoto-450NK-permanent-signing.p12" \
+          SIGNING_STORE_PASSWORD="$SIGNING_PASSWORD" \
+          SIGNING_KEY_ALIAS="opencfmoto450nk" \
+          SIGNING_KEY_PASSWORD="$SIGNING_PASSWORD" \
+            ./gradlew assembleRelease
+
+      - name: Name debug APK
+        if: github.ref != 'refs/heads/main' && github.event_name != 'workflow_dispatch'
+        run: cp app/build/outputs/apk/debug/app-debug.apk OpenCfMoto-450NK-debug.apk
+
+      - name: Name signed release APK
+        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+        run: cp app/build/outputs/apk/release/app-release.apk OpenCfMoto-450NK.apk
+
+      - name: Upload debug APK artifact
+        if: github.ref != 'refs/heads/main' && github.event_name != 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenCfMoto-450NK-debug
+          path: OpenCfMoto-450NK-debug.apk
+          if-no-files-found: error
+
+      - name: Upload signed APK artifact
+        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
           name: OpenCfMoto-450NK
@@ -49,29 +88,25 @@ jobs:
           if-no-files-found: error
 
       - name: Publish GitHub release
-        if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+        if: github.event_name == 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ inputs.release_tag || 'v2.3.0-450nk' }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            echo "Release $RELEASE_TAG already exists; leaving its APK unchanged."
-          else
-            gh release create "$RELEASE_TAG" OpenCfMoto-450NK.apk \
-              --target "$GITHUB_SHA" \
-              --latest \
-              --title "OpenCfMoto 450NK 2.3.0 — Español / English" \
-              --notes "Actualización 450NK basada en OpenCfMoto 2.0.6.
-          
-          Incluye mejoras de inicio y reconexión de Android Auto, detección Wi-Fi AP/Wi-Fi Direct,
-          emparejamiento manual por SSID y contraseña, correcciones de Mapas/GPX, QR MotoFun/Moto Morini,
-          iconos y recursos bilingües.
-          
-          Corrige además la proyección de aplicaciones estacionadas: espera el enlace EasyConn y un cuadro
-          H.264 real antes de abrir la aplicación, controla el estado del stream, informa la etapa que falla
-          y reintenta una vez si la imagen se detiene.
-          
-          La edición conserva el identificador com.andpower.opencfmoto450nk, el logo 450NK, español/inglés
-          y puede convivir con OpenCfMoto original. Los contenidos DRM o FLAG_SECURE pueden mostrarse negros
-          por una restricción de Android."
+            echo "Release $RELEASE_TAG already exists; refusing to replace its APK."
+            exit 1
           fi
+          sha256sum OpenCfMoto-450NK.apk > OpenCfMoto-450NK.apk.sha256
+          gh release create "$RELEASE_TAG" OpenCfMoto-450NK.apk OpenCfMoto-450NK.apk.sha256 \
+            --target "$GITHUB_SHA" \
+            --latest \
+            --title "OpenCfMoto 450NK 2.3.1 — firma permanente" \
+            --notes "Primera versión 450NK con firma permanente para permitir actualizaciones directas futuras.
+
+          Mantiene la base OpenCfMoto 2.0.6, la corrección de proyección de aplicaciones estacionadas,
+          el identificador com.andpower.opencfmoto450nk, el ícono propio y la interfaz Español / English.
+
+          Debido a que las APK anteriores fueron compilaciones debug con firmas efímeras, puede ser necesaria
+          una última desinstalación antes de instalar 2.3.1. Desde esta versión, las actualizaciones publicadas
+          con la misma clave podrán instalarse encima."

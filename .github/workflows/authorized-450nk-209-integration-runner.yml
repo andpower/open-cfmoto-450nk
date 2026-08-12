@@ -1,0 +1,110 @@
+name: Authorized 450NK upstream 2.0.9 integration
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: authorized-450nk-209-integration
+  cancel-in-progress: false
+
+jobs:
+  integrate:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.head_ref == 'agent/upstream-2.0.9-450nk-hybrid-controls'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out authorized 450NK branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/upstream-2.0.9-450nk-hybrid-controls
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge exact OpenCfMoto 2.0.9 and preserve 450NK edition
+        shell: bash
+        run: |
+          set -euo pipefail
+          UPSTREAM_209=12823111b059f09261b49b85def6b23bdd834ab8
+
+          git remote remove upstream 2>/dev/null || true
+          git remote add upstream https://github.com/zanderp/open-cfmoto.git
+          git fetch --no-tags upstream main
+
+          if git merge-base --is-ancestor "$UPSTREAM_209" HEAD 2>/dev/null && \
+             grep -q 'versionName = "2.4.0-450nk"' app/build.gradle.kts && \
+             grep -q 'nk450HybridControls' app/src/main/java/dev/zanderp/opencfmoto/MediaButtonBridge.kt; then
+            echo "OpenCfMoto 2.0.9 + 450NK patch already integrated."
+          else
+            set +e
+            git merge --no-edit --no-ff -X ours "$UPSTREAM_209"
+            merge_status=$?
+            set -e
+
+            if [ "$merge_status" -ne 0 ]; then
+              echo "Resolving remaining conflicts in favor of the existing 450NK edition."
+              while IFS= read -r file; do
+                [ -n "$file" ] || continue
+                git checkout --ours -- "$file"
+                git add -- "$file"
+              done < <(git diff --name-only --diff-filter=U)
+
+              if git diff --name-only --diff-filter=U | grep -q .; then
+                echo "Unresolved merge conflicts remain:"
+                git diff --name-only --diff-filter=U
+                exit 1
+              fi
+              git commit --no-edit
+            fi
+
+            python3 scripts/integrate_upstream_209_450nk.py
+          fi
+
+      - name: Validate edition invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'applicationId = "com.andpower.opencfmoto450nk"' app/build.gradle.kts
+          grep -q 'versionName = "2.4.0-450nk"' app/build.gradle.kts
+          grep -q 'const val REPO = "andpower/open-cfmoto-450nk"' app/src/main/java/dev/zanderp/opencfmoto/UpdateChecker.kt
+          grep -q 'handleNk450VolumeChange' app/src/main/java/dev/zanderp/opencfmoto/MediaButtonBridge.kt
+          grep -q 'dispatchNk450NativeTrack' app/src/main/java/dev/zanderp/opencfmoto/MediaButtonBridge.kt
+          grep -q 'v2.4.0-450nk' .github/workflows/android.yml
+
+      - name: Validate English and Spanish UI resources
+        run: python3 scripts/validate_translations.py
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Unit tests and debug APK
+        run: ./gradlew testDebugUnitTest assembleDebug
+
+      - name: Commit and push validated integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No integration changes left to commit."
+            exit 0
+          fi
+          git commit -m "OpenCfMoto 450NK 2.4.0: upstream 2.0.9 and hybrid controls"
+          git push origin HEAD:agent/upstream-2.0.9-450nk-hybrid-controls

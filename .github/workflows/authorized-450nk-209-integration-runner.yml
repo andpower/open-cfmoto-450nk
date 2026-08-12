@@ -68,8 +68,16 @@ jobs:
               git commit --no-edit
             fi
 
+            # These shared infrastructure files have no 450NK-only feature code; take the complete
+            # 2.0.9 implementations rather than retaining incompatible halves from same-file merges.
+            git checkout "$UPSTREAM_209" -- \
+              app/src/main/java/dev/zanderp/opencfmoto/AndroidAutoService.kt \
+              app/src/main/java/dev/zanderp/opencfmoto/ButtonTimingPrefs.kt
+
             python3 scripts/integrate_upstream_209_450nk.py
             python3 scripts/fix_locale_config_209.py
+            python3 scripts/import_upstream_209_resources.py
+            python3 scripts/fix_upstream_209_semantic_merge.py
           fi
 
       - name: Validate edition invariants
@@ -81,6 +89,7 @@ jobs:
           grep -q 'const val REPO = "andpower/open-cfmoto-450nk"' app/src/main/java/dev/zanderp/opencfmoto/UpdateChecker.kt
           grep -q 'handleNk450VolumeChange' app/src/main/java/dev/zanderp/opencfmoto/MediaButtonBridge.kt
           grep -q 'dispatchNk450NativeTrack' app/src/main/java/dev/zanderp/opencfmoto/MediaButtonBridge.kt
+          grep -q 'Nk450VolumeGestureDetector(doubleTapWindowMs =' app/src/main/java/dev/zanderp/opencfmoto/MediaButtonBridge.kt
           grep -q 'v2.4.0-450nk' .github/workflows/android.yml
           ! grep -q 'generateLocaleConfig = true' app/build.gradle.kts
 

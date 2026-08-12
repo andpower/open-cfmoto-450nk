@@ -69,6 +69,7 @@ jobs:
             fi
 
             python3 scripts/integrate_upstream_209_450nk.py
+            python3 scripts/fix_locale_config_209.py
           fi
 
       - name: Validate edition invariants
@@ -81,6 +82,7 @@ jobs:
           grep -q 'handleNk450VolumeChange' app/src/main/java/dev/zanderp/opencfmoto/MediaButtonBridge.kt
           grep -q 'dispatchNk450NativeTrack' app/src/main/java/dev/zanderp/opencfmoto/MediaButtonBridge.kt
           grep -q 'v2.4.0-450nk' .github/workflows/android.yml
+          ! grep -q 'generateLocaleConfig = true' app/build.gradle.kts
 
       - name: Validate English and Spanish UI resources
         run: python3 scripts/validate_translations.py

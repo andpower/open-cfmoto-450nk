@@ -88,10 +88,10 @@ jobs:
           if-no-files-found: error
 
       - name: Publish GitHub release
-        if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+        if: github.event_name == 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ inputs.release_tag || 'v2.3.1-450nk' }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             echo "Release $RELEASE_TAG already exists; leaving it unchanged."
@@ -102,11 +102,4 @@ jobs:
             --target "$GITHUB_SHA" \
             --latest \
             --title "OpenCfMoto 450NK 2.3.1 — firma permanente" \
-            --notes "Primera versión 450NK con firma permanente para permitir actualizaciones directas futuras.
-
-          Mantiene la base OpenCfMoto 2.0.6, la corrección de proyección de aplicaciones estacionadas,
-          el identificador com.andpower.opencfmoto450nk, el ícono propio y la interfaz Español / English.
-
-          Debido a que las APK anteriores fueron compilaciones debug con firmas efímeras, puede ser necesaria
-          una última desinstalación antes de instalar 2.3.1. Desde esta versión, las actualizaciones publicadas
-          con la misma clave podrán instalarse encima."
+            --notes "Release manual durante la integración de upstream 2.0.9."

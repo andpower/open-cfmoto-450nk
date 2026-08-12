@@ -149,6 +149,36 @@ bridge = bridge.replace(
 write(bridge_path, bridge)
 
 
+# ── Keep the new upstream Teach-my-handlebar UI bilingual ───────────────────────────────────────
+mapping_path = "app/src/main/java/dev/zanderp/opencfmoto/ButtonMappingActivity.kt"
+mapping = read(mapping_path)
+for english in (
+    "▲/▼ marked present — volume pin stays on",
+    "▲/▼ absent — phone volume no longer pinned",
+    "Presence reset — will auto-probe again",
+):
+    old = f'Toast.makeText(this, "{english}", Toast.LENGTH_SHORT).show()'
+    new = f'Toast.makeText(this, uiText("{english}"), Toast.LENGTH_SHORT).show()'
+    require(old in mapping or new in mapping, f"Could not localize Teach-my-handlebar text: {english}")
+    mapping = mapping.replace(old, new, 1)
+write(mapping_path, mapping)
+
+ui_text_path = "app/src/main/java/dev/zanderp/opencfmoto/UiText.kt"
+ui_text = read(ui_text_path)
+translations = {
+    "▲/▼ marked present — volume pin stays on": "▲/▼ marcados como presentes — se mantiene el control detectado",
+    "▲/▼ absent — phone volume no longer pinned": "▲/▼ marcados como ausentes — el volumen del teléfono queda libre",
+    "Presence reset — will auto-probe again": "Detección reiniciada — se comprobará automáticamente otra vez",
+}
+map_marker = "private val SPANISH_EXACT = mapOf(\n"
+require(map_marker in ui_text, "Could not find SPANISH_EXACT map")
+for english, spanish in translations.items():
+    entry = f'    "{english}" to "{spanish}",\n'
+    if entry not in ui_text:
+        ui_text = ui_text.replace(map_marker, map_marker + entry, 1)
+write(ui_text_path, ui_text)
+
+
 # ── Release workflow ─────────────────────────────────────────────────────────────────────────────
 workflow_path = ".github/workflows/android.yml"
 workflow = read(workflow_path)
@@ -170,5 +200,6 @@ require('versionName = "2.4.0-450nk"' in read(gradle_path), "Version patch did n
 require('const val REPO = "andpower/open-cfmoto-450nk"' in read(update_path), "Update checker points elsewhere")
 require("handleNk450VolumeChange" in read(bridge_path), "450NK hybrid control patch missing")
 require("dispatchNk450NativeTrack" in read(bridge_path), "450NK long-press media forwarding missing")
+require('uiText("▲/▼ marked present — volume pin stays on")' in read(mapping_path), "Teach UI localization patch missing")
 require("v2.4.0-450nk" in read(workflow_path), "Release workflow not updated")
 print("Applied OpenCfMoto 2.0.9 + 450NK edition invariants for 2.4.0-450nk")

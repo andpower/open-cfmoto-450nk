@@ -36,12 +36,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          UPSTREAM_STABLE=26726f1021951732b5d51d8b04307334aa51228c
+          EXPECTED_STABLE=26726f1021951732b5d51d8b04307334aa51228c
 
           git remote remove upstream 2>/dev/null || true
           git remote add upstream https://github.com/zanderp/open-cfmoto.git
           git fetch --no-tags upstream main
-          git cat-file -e "$UPSTREAM_STABLE^{commit}"
+          git fetch --force upstream refs/tags/v2.0.13:refs/tags/upstream-v2.0.13
+          UPSTREAM_STABLE="$(git rev-parse 'refs/tags/upstream-v2.0.13^{commit}')"
+          test "$UPSTREAM_STABLE" = "$EXPECTED_STABLE"
 
           if git merge-base --is-ancestor "$UPSTREAM_STABLE" HEAD 2>/dev/null && \
              grep -q 'versionName = "2.4.0-450nk"' app/build.gradle.kts && \
@@ -69,8 +71,6 @@ jobs:
               git commit --no-edit
             fi
 
-            # Never replace AndroidAutoService wholesale: the 450NK edition carries the parked Apps
-            # staged EasyConn/H.264 readiness and reconnect fix in that file.
             python3 scripts/integrate_upstream_209_450nk.py
             python3 scripts/fix_locale_config_209.py
             python3 scripts/import_upstream_209_resources.py
@@ -84,24 +84,16 @@ jobs:
           grep -q 'applicationId = "com.andpower.opencfmoto450nk"' app/build.gradle.kts
           grep -q 'versionName = "2.4.0-450nk"' app/build.gradle.kts
           grep -q 'const val REPO = "andpower/open-cfmoto-450nk"' app/src/main/java/dev/zanderp/opencfmoto/UpdateChecker.kt
-
-          # Exact 450NK physical-control contract:
-          # short ▲/▼ = real volume (never pinned/restored), hold = track, double = MotoPlay navigation.
           grep -q '450NK hybrid — short rocker presses remain real volume' app/src/main/java/dev/zanderp/opencfmoto/MediaButtonBridge.kt
           grep -q 'handleNk450VolumeChange' app/src/main/java/dev/zanderp/opencfmoto/MediaButtonBridge.kt
           grep -q 'dispatchNk450NativeTrack' app/src/main/java/dev/zanderp/opencfmoto/MediaButtonBridge.kt
           grep -q 'Nk450VolumeGestureDetector(doubleTapWindowMs =' app/src/main/java/dev/zanderp/opencfmoto/MediaButtonBridge.kt
-
-          # Custom parked Apps functionality must survive the upstream merge.
           test -f app/src/main/java/dev/zanderp/opencfmoto/AppMirrorSession.kt
           test -f app/src/main/java/dev/zanderp/opencfmoto/AppsActivity.kt
           test -f app/src/main/java/dev/zanderp/opencfmoto/ProjectionService.kt
           test -f app/src/main/res/layout/activity_apps.xml
-
-          # Stable 2.0.13 functionality we specifically need.
           grep -q '5277' app/src/main/java/dev/zanderp/opencfmoto/aa/AaReceiver.kt
           grep -q 'winningTransport' app/src/main/java/dev/zanderp/opencfmoto/BikeMemory.kt
-
           grep -q 'v2.4.0-450nk' .github/workflows/android.yml
           ! grep -q 'generateLocaleConfig = true' app/build.gradle.kts
 

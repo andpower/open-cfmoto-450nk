@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Repair same-file semantic conflicts after merging stable 2.0.13 into the 450NK edition."""
 from pathlib import Path
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -82,19 +83,19 @@ if ".asIconTopTile(" in main and "fun MaterialButton.asIconTopTile" not in main:
     helper = '''        fun MaterialButton.asIconTopTile(iconRes: Int) {\n            setIconResource(iconRes)\n            iconGravity = MaterialButton.ICON_GRAVITY_TOP\n            iconPadding = resources.getDimensionPixelSize(R.dimen.btn_tile_icon_padding)\n            maxLines = 1\n            isSingleLine = true\n        }\n'''
     main = main.replace(marker, helper + marker, 1)
 
-# Diagnostic until all stable 2.0.13 enum additions are normalized. This prints only source context
-# into CI logs; no secrets or runtime data are involved.
-needle = "when (BikeProfile.detectMode(qr))"
-scan = 0
-while True:
-    hit = main.find(needle, scan)
-    if hit < 0:
-        break
-    line_start = main.rfind("\n", 0, hit)
-    print("--- BikeProfile.detectMode merge context ---")
-    print(main[max(0, line_start - 220):min(len(main), hit + 900)])
-    scan = hit + len(needle)
-
+# The retained QR transport helper has a GRIFFIN_FIXED mode. Stable upstream added code around the
+# same when blocks, so make Griffin follow the normal Wi-Fi path instead of leaving an incomplete
+# enum when. This is the conservative behavior: fixed-credential Griffin units are neither KTM
+# sharing nor Voge tethering and use the same normal/compat connection machinery as DEFAULT.
+if "BikeProfile.Mode.GRIFFIN_FIXED" in main and not re.search(
+    r"BikeProfile\.Mode\.GRIFFIN_FIXED,\s*\n\s*BikeProfile\.Mode\.DEFAULT ->",
+    main,
+):
+    main = re.sub(
+        r"(?m)^(\s*)BikeProfile\.Mode\.DEFAULT -> \{",
+        r"\1BikeProfile.Mode.GRIFFIN_FIXED,\n\1BikeProfile.Mode.DEFAULT -> {",
+        main,
+    )
 write(main_path, main)
 
 

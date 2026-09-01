@@ -1,4 +1,4 @@
-name: Authorized 450NK upstream 2.0.9 integration
+name: Authorized 450NK stable upstream integration
 
 on:
   pull_request_target:
@@ -9,8 +9,8 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: authorized-450nk-209-integration
-  cancel-in-progress: false
+  group: authorized-450nk-stable-integration
+  cancel-in-progress: true
 
 jobs:
   integrate:
@@ -32,28 +32,28 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Merge exact OpenCfMoto 2.0.9 and preserve 450NK edition
+      - name: Merge stable OpenCfMoto 2.0.13 and preserve 450NK edition
         shell: bash
         run: |
           set -euo pipefail
-          UPSTREAM_209=12823111b059f09261b49b85def6b23bdd834ab8
+          UPSTREAM_STABLE=26726f102c11eab553f220b61d084f4f123f978c
 
           git remote remove upstream 2>/dev/null || true
           git remote add upstream https://github.com/zanderp/open-cfmoto.git
           git fetch --no-tags upstream main
 
-          if git merge-base --is-ancestor "$UPSTREAM_209" HEAD 2>/dev/null && \
+          if git merge-base --is-ancestor "$UPSTREAM_STABLE" HEAD 2>/dev/null && \
              grep -q 'versionName = "2.4.0-450nk"' app/build.gradle.kts && \
              grep -q 'nk450HybridControls' app/src/main/java/dev/zanderp/opencfmoto/MediaButtonBridge.kt; then
-            echo "OpenCfMoto 2.0.9 + 450NK patch already integrated."
+            echo "OpenCfMoto 2.0.13 + 450NK patch already integrated."
           else
             set +e
-            git merge --no-edit --no-ff -X ours "$UPSTREAM_209"
+            git merge --no-edit --no-ff -X ours "$UPSTREAM_STABLE"
             merge_status=$?
             set -e
 
             if [ "$merge_status" -ne 0 ]; then
-              echo "Resolving remaining conflicts in favor of the existing 450NK edition."
+              echo "Resolving remaining conflicts in favor of existing 450NK edition files."
               while IFS= read -r file; do
                 [ -n "$file" ] || continue
                 git checkout --ours -- "$file"
@@ -68,28 +68,39 @@ jobs:
               git commit --no-edit
             fi
 
-            # These shared infrastructure files have no 450NK-only feature code; take the complete
-            # 2.0.9 implementations rather than retaining incompatible halves from same-file merges.
-            git checkout "$UPSTREAM_209" -- \
-              app/src/main/java/dev/zanderp/opencfmoto/AndroidAutoService.kt \
-              app/src/main/java/dev/zanderp/opencfmoto/ButtonTimingPrefs.kt
-
+            # Never replace AndroidAutoService wholesale: the 450NK edition carries the parked Apps
+            # staged EasyConn/H.264 readiness and reconnect fix in that file.
             python3 scripts/integrate_upstream_209_450nk.py
             python3 scripts/fix_locale_config_209.py
             python3 scripts/import_upstream_209_resources.py
             python3 scripts/fix_upstream_209_semantic_merge.py
           fi
 
-      - name: Validate edition invariants
+      - name: Validate 450NK edition invariants
         shell: bash
         run: |
           set -euo pipefail
           grep -q 'applicationId = "com.andpower.opencfmoto450nk"' app/build.gradle.kts
           grep -q 'versionName = "2.4.0-450nk"' app/build.gradle.kts
           grep -q 'const val REPO = "andpower/open-cfmoto-450nk"' app/src/main/java/dev/zanderp/opencfmoto/UpdateChecker.kt
+
+          # Exact 450NK physical-control contract:
+          # short ▲/▼ = real volume (never pinned/restored), hold = track, double = MotoPlay navigation.
+          grep -q '450NK hybrid — short rocker presses remain real volume' app/src/main/java/dev/zanderp/opencfmoto/MediaButtonBridge.kt
           grep -q 'handleNk450VolumeChange' app/src/main/java/dev/zanderp/opencfmoto/MediaButtonBridge.kt
           grep -q 'dispatchNk450NativeTrack' app/src/main/java/dev/zanderp/opencfmoto/MediaButtonBridge.kt
           grep -q 'Nk450VolumeGestureDetector(doubleTapWindowMs =' app/src/main/java/dev/zanderp/opencfmoto/MediaButtonBridge.kt
+
+          # Custom parked Apps functionality must survive the upstream merge.
+          test -f app/src/main/java/dev/zanderp/opencfmoto/AppMirrorSession.kt
+          test -f app/src/main/java/dev/zanderp/opencfmoto/AppsActivity.kt
+          test -f app/src/main/java/dev/zanderp/opencfmoto/ProjectionService.kt
+          test -f app/src/main/res/layout/activity_apps.xml
+
+          # Stable 2.0.13 functionality we specifically need.
+          grep -q '5277' app/src/main/java/dev/zanderp/opencfmoto/aa/AaReceiver.kt
+          grep -q 'winningTransport' app/src/main/java/dev/zanderp/opencfmoto/BikeMemory.kt
+
           grep -q 'v2.4.0-450nk' .github/workflows/android.yml
           ! grep -q 'generateLocaleConfig = true' app/build.gradle.kts
 
@@ -117,5 +128,5 @@ jobs:
             echo "No integration changes left to commit."
             exit 0
           fi
-          git commit -m "OpenCfMoto 450NK 2.4.0: upstream 2.0.9 and hybrid controls"
+          git commit -m "OpenCfMoto 450NK 2.4.0: stable upstream 2.0.13 and fixed NK controls"
           git push origin HEAD:agent/upstream-2.0.9-450nk-hybrid-controls

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Repair a few same-file semantic conflicts after merging 2.0.9 into the 450NK edition."""
+"""Repair same-file semantic conflicts after merging stable 2.0.13 into the 450NK edition."""
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -71,8 +71,8 @@ bridge = bridge.replace(
 write(bridge_path, bridge)
 
 
-# The edition's MainActivity had a conflict around the tile helpers: calls from 2.0.9 survived while
-# the local helper declaration did not. Restore the exact upstream helper without touching Apps mode.
+# The edition's MainActivity can keep tile calls while the helper declaration is lost in a same-file
+# merge. Restore the helper without touching the custom parked Apps path.
 main_path = "app/src/main/java/dev/zanderp/opencfmoto/MainActivity.kt"
 main = read(main_path)
 if ".asIconTopTile(" in main and "fun MaterialButton.asIconTopTile" not in main:
@@ -84,18 +84,53 @@ if ".asIconTopTile(" in main and "fun MaterialButton.asIconTopTile" not in main:
 write(main_path, main)
 
 
-# SetupActivity carried the edition's language selector while upstream changed the same section.
-# Preserve the edition implementation but collapse any duplicate setTelemetry function produced by merge.
+# SetupActivity carries the edition's language selector while upstream changes the same section.
+# Collapse duplicate helpers and route every newly-added runtime toast through uiText().
 setup_path = "app/src/main/java/dev/zanderp/opencfmoto/SetupActivity.kt"
 setup = read(setup_path)
 sig = "    private fun setTelemetry(on: Boolean) {"
 while setup.count(sig) > 1:
     setup = remove_function_occurrence(setup, sig, 1)
+
+runtime_toasts = (
+    "Auto-recovery",
+    "Bluetooth clock",
+    "Keep bike Wi-Fi",
+    "Trip logging",
+)
+for label in runtime_toasts:
+    old = f'Toast.makeText(this, "{label} ${{if (on) "on" else "off"}}", Toast.LENGTH_SHORT).show()'
+    new = f'Toast.makeText(this, uiText("{label} ${{if (on) "on" else "off"}}"), Toast.LENGTH_SHORT).show()'
+    setup = setup.replace(old, new)
 write(setup_path, setup)
+
+
+# Keep those dynamic values genuinely Spanish, not merely validator-compliant.
+ui_path = "app/src/main/java/dev/zanderp/opencfmoto/UiText.kt"
+ui = read(ui_path)
+map_marker = "private val SPANISH_EXACT = mapOf(\n"
+if map_marker not in ui:
+    raise SystemExit("Could not find SPANISH_EXACT in UiText.kt")
+entries = (
+    '    "Auto-recovery on" to "Recuperación automática activada",\n',
+    '    "Auto-recovery off" to "Recuperación automática desactivada",\n',
+    '    "Bluetooth clock on" to "Reloj por Bluetooth activado",\n',
+    '    "Bluetooth clock off" to "Reloj por Bluetooth desactivado",\n',
+    '    "Keep bike Wi-Fi on" to "Mantener Wi-Fi de la moto activado",\n',
+    '    "Keep bike Wi-Fi off" to "Mantener Wi-Fi de la moto desactivado",\n',
+    '    "Trip logging on" to "Registro de viajes activado",\n',
+    '    "Trip logging off" to "Registro de viajes desactivado",\n',
+)
+for entry in reversed(entries):
+    if entry not in ui:
+        ui = ui.replace(map_marker, map_marker + entry, 1)
+write(ui_path, ui)
 
 
 # Sanity gates for the exact failures this script is intended to prevent.
 assert "Nk450VolumeGestureDetector(doubleTapWindowMs =" in read(bridge_path)
 assert "fun MaterialButton.asIconTopTile" in read(main_path)
 assert read(setup_path).count(sig) == 1
+assert 'uiText("Auto-recovery ${if (on) "on" else "off"}")' in read(setup_path)
+assert 'uiText("Trip logging ${if (on) "on" else "off"}")' in read(setup_path)
 print("Semantic merge repairs applied")

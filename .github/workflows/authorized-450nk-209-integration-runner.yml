@@ -36,7 +36,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          EXPECTED_STABLE=26726f1021951732b5d51d8b04307334aa51228c
+          EXPECTED_STABLE=26726f102c11eab553f220b61d084f4f123f978c
 
           git remote remove upstream 2>/dev/null || true
           git remote add upstream https://github.com/zanderp/open-cfmoto.git

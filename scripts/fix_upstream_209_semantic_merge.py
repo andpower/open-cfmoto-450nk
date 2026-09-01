@@ -81,6 +81,20 @@ if ".asIconTopTile(" in main and "fun MaterialButton.asIconTopTile" not in main:
         raise SystemExit("Could not locate MainActivity tile calls")
     helper = '''        fun MaterialButton.asIconTopTile(iconRes: Int) {\n            setIconResource(iconRes)\n            iconGravity = MaterialButton.ICON_GRAVITY_TOP\n            iconPadding = resources.getDimensionPixelSize(R.dimen.btn_tile_icon_padding)\n            maxLines = 1\n            isSingleLine = true\n        }\n'''
     main = main.replace(marker, helper + marker, 1)
+
+# Diagnostic until all stable 2.0.13 enum additions are normalized. This prints only source context
+# into CI logs; no secrets or runtime data are involved.
+needle = "when (BikeProfile.detectMode(qr))"
+scan = 0
+while True:
+    hit = main.find(needle, scan)
+    if hit < 0:
+        break
+    line_start = main.rfind("\n", 0, hit)
+    print("--- BikeProfile.detectMode merge context ---")
+    print(main[max(0, line_start - 220):min(len(main), hit + 900)])
+    scan = hit + len(needle)
+
 write(main_path, main)
 
 

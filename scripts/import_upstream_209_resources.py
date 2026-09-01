@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Merge resource IDs added by upstream 2.0.9 without deleting 450NK-specific strings."""
+"""Merge resource IDs added by stable upstream 2.0.13 without deleting 450NK-specific strings."""
 from __future__ import annotations
 
 from copy import deepcopy
@@ -8,7 +8,7 @@ import subprocess
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
-UPSTREAM = "12823111b059f09261b49b85def6b23bdd834ab8"
+UPSTREAM = "26726f102c11eab553f220b61d084f4f123f978c"
 
 
 def git_show(path: str) -> bytes:

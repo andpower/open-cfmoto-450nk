@@ -62,7 +62,6 @@ def remove_function_occurrence(text: str, signature: str, occurrence: int) -> st
     raise SystemExit(f"Unclosed function: {signature}")
 
 
-# Kotlin trailing-lambda syntax would bind the lambda to the final Int parameter. Name the callback.
 bridge_path = "app/src/main/java/dev/zanderp/opencfmoto/MediaButtonBridge.kt"
 bridge = read(bridge_path)
 bridge = bridge.replace(
@@ -72,8 +71,6 @@ bridge = bridge.replace(
 write(bridge_path, bridge)
 
 
-# The edition's MainActivity can keep tile calls while the helper declaration is lost in a same-file
-# merge. Restore the helper without touching the custom parked Apps path.
 main_path = "app/src/main/java/dev/zanderp/opencfmoto/MainActivity.kt"
 main = read(main_path)
 if ".asIconTopTile(" in main and "fun MaterialButton.asIconTopTile" not in main:
@@ -83,11 +80,10 @@ if ".asIconTopTile(" in main and "fun MaterialButton.asIconTopTile" not in main:
     helper = '''        fun MaterialButton.asIconTopTile(iconRes: Int) {\n            setIconResource(iconRes)\n            iconGravity = MaterialButton.ICON_GRAVITY_TOP\n            iconPadding = resources.getDimensionPixelSize(R.dimen.btn_tile_icon_padding)\n            maxLines = 1\n            isSingleLine = true\n        }\n'''
     main = main.replace(marker, helper + marker, 1)
 
-# The retained QR transport helper has a GRIFFIN_FIXED mode. Stable upstream added code around the
-# same when blocks, so make Griffin follow the normal Wi-Fi path instead of leaving an incomplete
-# enum when. This is the conservative behavior: fixed-credential Griffin units are neither KTM
-# sharing nor Voge tethering and use the same normal/compat connection machinery as DEFAULT.
-if "BikeProfile.Mode.GRIFFIN_FIXED" in main and not re.search(
+# The retained QR transport helper's enum contains GRIFFIN_FIXED. Treat it as the normal Wi-Fi
+# path, both on first connect and recovery. Add the branch beside DEFAULT wherever the merge left
+# DEFAULT alone; this also makes the when exhaustive on current Kotlin.
+if not re.search(
     r"BikeProfile\.Mode\.GRIFFIN_FIXED,\s*\n\s*BikeProfile\.Mode\.DEFAULT ->",
     main,
 ):
@@ -99,8 +95,6 @@ if "BikeProfile.Mode.GRIFFIN_FIXED" in main and not re.search(
 write(main_path, main)
 
 
-# SetupActivity carries the edition's language selector while upstream changes the same section.
-# Collapse duplicate helpers and route every newly-added runtime toast through uiText().
 setup_path = "app/src/main/java/dev/zanderp/opencfmoto/SetupActivity.kt"
 setup = read(setup_path)
 sig = "    private fun setTelemetry(on: Boolean) {"
@@ -120,7 +114,6 @@ for label in runtime_toasts:
 write(setup_path, setup)
 
 
-# Keep those dynamic values genuinely Spanish, not merely validator-compliant.
 ui_path = "app/src/main/java/dev/zanderp/opencfmoto/UiText.kt"
 ui = read(ui_path)
 map_marker = "private val SPANISH_EXACT = mapOf(\n"
@@ -142,7 +135,6 @@ for entry in reversed(entries):
 write(ui_path, ui)
 
 
-# Sanity gates for the exact failures this script is intended to prevent.
 assert "Nk450VolumeGestureDetector(doubleTapWindowMs =" in read(bridge_path)
 assert "fun MaterialButton.asIconTopTile" in read(main_path)
 assert read(setup_path).count(sig) == 1

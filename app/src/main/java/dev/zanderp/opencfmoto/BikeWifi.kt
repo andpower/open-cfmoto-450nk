@@ -37,6 +37,7 @@ object BikeWifi {
     private var callback: ConnectivityManager.NetworkCallback? = null
     private var request: NetworkRequest? = null
     private val handler = Handler(Looper.getMainLooper())
+    private var appContext: Context? = null
 
     var currentNetwork: Network? = null
         private set
@@ -88,6 +89,7 @@ object BikeWifi {
         handler.removeCallbacksAndMessages(null)
         callback?.let { try { cm.unregisterNetworkCallback(it) } catch (_: Exception) {} }
 
+        this.appContext = context.applicationContext
         this.cm = cm
         this.ssid = ssid
         this.onAvailableCb = onAvailable
@@ -129,8 +131,7 @@ object BikeWifi {
             this.onAvailableCb = onAvailable
             this.onLostCb = onLost
             this.logCb = log
-            rebindProcessToBike(context)
-            log("Wi-Fi already bound: $ssid — skipping re-join (mode switch)")
+            log("Wi-Fi already joined: $ssid — skipping re-join (mode switch)")
             onAvailable(net)
             return
         }
@@ -145,14 +146,16 @@ object BikeWifi {
         val cb = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 currentNetwork = network
-                cm.bindProcessToNetwork(network)
-                // Keep cellular requested so map/routing can pin off the bike AP (no uplink).
+                // Do not bindProcessToNetwork here. Binding the process to the bike AP removes
+                // the 127.0.0.1 route (AaReceiver.connectLoopback). That dropped AA ~500ms after
+                // a successful handshake on DIRECT-go-CFMOTO / 800NK before video went steady.
+                // [BikeLink] / [EasyConnProber] call [rebindProcessToBike] when PXC actually starts.
                 AppHttp.ensureCellularUplink()
                 rejoinAttempts = 0
                 logLinkOnce(network)
                 if (!firstDelivered) {
                     firstDelivered = true
-                    logCb?.invoke("Wi-Fi joined: $ssid (network=$network, bound)")
+                    logCb?.invoke("Wi-Fi joined: $ssid (network=$network, bind deferred until AA video)")
                     onAvailableCb?.invoke(network)
                 } else {
                     logCb?.invoke("Wi-Fi re-acquired: $ssid — restarting bike link on fresh network")
@@ -181,6 +184,19 @@ object BikeWifi {
                     "Wi-Fi join unavailable after ${timeoutSec}s " +
                         "(bike off, out of range, declined, or system picker timed out) — will retry",
                 )
+                // First join often means the system Wi‑Fi / Nearby picker was ignored — surface it.
+                if (!firstDelivered) {
+                    logCb?.invoke(
+                        "→ TAP the phone's Wi‑Fi / device picker NOW (SSID of the bike), " +
+                            "or join that network in Settings → Wi‑Fi, then Connect again",
+                    )
+                    try {
+                        val detail = appContext?.getString(R.string.conn_detail_wifi_picker)
+                            ?: "approve the Wi‑Fi / device picker, then Connect again"
+                        ConnectionState.set(Phase.ERROR, detail)
+                    } catch (_: Exception) {
+                    }
+                }
                 // Join timed out with no live Network — make sure we aren't still pinned to a
                 // previous dead bike AP (resume / auto-connect path).
                 if (currentNetwork == null) unbindProcess()
@@ -280,6 +296,30 @@ object BikeWifi {
     }
 
     private const val FRESH_SCAN_US = 30_000_000L  // 30s
+
+    /**
+     * End the session Wi-Fi: full teardown, or [park] (stay associated) when the rider
+     * enabled Setup → keep bike Wi-Fi after disconnect.
+     */
+    fun releaseSession(context: Context, log: (String) -> Unit) {
+        if (AppSettings.keepWifiAfterDisconnect(context)) {
+            park(context, log)
+            BikeWifiP2p.park(log)
+        } else {
+            leave(context, log)
+            BikeWifiP2p.stop(log)
+        }
+    }
+
+    /**
+     * Keep the SoftAP association (callback stays registered) but unbind the process so
+     * cellular / maps work. Some dashes forget the clock the moment the group drops.
+     */
+    fun park(context: Context, log: (String) -> Unit) {
+        val cm = this.cm ?: (context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager)
+        unbindProcess(cm)
+        log("Wi-Fi kept after disconnect (dash clock) — process unbound, SoftAP still associated")
+    }
 
     fun leave(context: Context, log: (String) -> Unit) {
         active = false

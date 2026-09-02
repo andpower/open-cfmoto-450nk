@@ -1,8 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--Missing OpenCfMoto 2.0.6 resources; local 450NK overrides win.-->
+    <string name="app_name">Open CfMoto</string>
+    <string name="about_copyright">© 2026 Alexandru</string>
+    <string name="about_copyright_body">Maintained by Alexandru (zanderp). Free software under the GNU AGPL v3 or later — see LICENSE and NOTICE in the repository for the full copyright and attribution text.</string>
+    <string name="about_license_body">You may use, study, share, and modify this app under the AGPL. If you redistribute a modified version (including as a network service), you must offer the complete corresponding source under the same license.</string>
+    <string name="about_credits">Built on the open-cfmoto community lineage:\n\n• dcoletto / coletz — original QR &amp; EasyConn work\n• BojanJ — Android Auto receiver integration\n• richardbizik — 1000 MT‑X support\n• ionutradu252 / open-cflink — handlebar controls, margins, reconnect &amp; polish\n• eugen0309 — Wi‑Fi Direct / CL‑C450 path\n• headunit-revived — Android Auto projection stack (AGPL)\n\nAnd everyone who tested bikes, shared logs, and filed issues.</string>
+    <string name="about_disclaimer">OpenCfMoto is an independent community project. It is not affiliated with, endorsed by, or sponsored by CFMOTO, Carbit, Google, Android Auto, or other brands that license EasyConnect-style dashes (including Voge, Zontes, Moto Morini, Benelli, QJ Motor, Morbidelli, and Longjia). CFMOTO, MotoPlay, EasyConn, Carbit, Android, Android Auto, and related marks are trademarks of their respective owners. Use at your own risk — set your route before you ride.</string>
+    <string name="supported_bikes_intro">Works with CFMoto MotoPlay / EasyConnect and other Carbit-framework dashes that show a pairing QR. No T‑BOX required. US and international — if you see the QR, try Connect.</string>
+    <string name="supported_bikes_confirmed_title">Confirmed with OpenCfMoto</string>
+    <string name="supported_bikes_confirmed">CFMoto: 800MT (MT‑X / Explore / Explore GT) · 1000 MT‑X · 800NK (US CRCP) · 800NK Advanced · 450SR (+ SR‑S / TC) · 450CL‑C / CL‑C450 · 150SC scooter\nOther: Voge DS800 Rally · Moto Morini X-Cape 649 · Moto Morini X-Cape 700 · Moto Morini Seiemmezzo · Morbidelli T1002VX</string>
     <string name="supported_bikes_other_title">Other brands (Carbit / EasyConnect)</string>
-    <string name="supported_bikes_other">Same Carbit QR path — try Connect if the dash shows a pairing QR. Report results in Discord.\nVoge (DS800 Rally confirmed) · Moto Morini (X-Cape 649 / 700 / Seiemmezzo confirmed; MotoFun) · Zontes · Benelli (e.g. TRK 702 / 702X) · QJ Motor (600SX / 550SX testing; Fort 4.0) · Morbidelli / MBP (T1002VX confirmed)</string>
+    <string name="supported_bikes_other">Same Carbit QR path — try Connect if the dash shows a pairing QR. Report results in Discord.\nVoge (DS800 Rally confirmed) · Moto Morini (X-Cape 649 / 700 / Seiemmezzo confirmed; MotoFun) · Zontes · Benelli (e.g. TRK 702 / 702X) · QJ Motor (600SX / 550SX testing; Fort 4.0) · Morbidelli / MBP (T1002VX confirmed) · Longjia (e.g. V-Bob 650; MotoFUN / Carbit Ride — unconfirmed)</string>
+    <string name="supported_bikes_full_title">Full list — known CFMoto EasyConnect / MotoPlay dashes</string>
+    <string name="supported_bikes_full">Naked:  125NK · 450NK · 675NK · 800NK · 800NK Advanced · 800NK Sport · 800NK (US CRCP)\nSport:  300SR · 450SR · 450SR‑S · 450SR TC · 500SR VOOM · 675SR · 675SR‑R\nTouring / Adv:  450MT · 700MT · 700MT Adventure · 800MT‑X · 800MT Explore · 800MT Explore GT · 1000 MT‑X\nCruiser:  450CL‑C · CL‑C450\nScooter:  150SC\nATV / SSV (TFT):  CFORCE 800 · CFORCE 850 Touring · CFORCE 1000 · CFORCE 1000 Touring · GOES Terrox 1000 / Gladiator G3 1000\nOther:  U10 Pro (where the dash offers the QR)</string>
+    <string name="supported_bikes_unlikely_title">Usually no projection QR</string>
+    <string name="supported_bikes_unlikely">800MT Sport · 800MT Touring · 450SR World Champion Edition · 700CL‑X (Adventure / Heritage / Sport) · PAPIO — unless your unit shows the QR anyway.</string>
+    <string name="supported_bikes_footer">Full list online: github.com/zanderp/open-cfmoto → docs/SUPPORTED-BIKES.md — report new bikes in Discord.</string>
     <string name="about_about">About</string>
     <string name="about_wireless_android_auto_for_carbit_easyconnect_das">Wireless Android Auto for Carbit / EasyConnect dashes (CFMoto MotoPlay and siblings).</string>
     <string name="about_community_support">Community &amp; support</string>
@@ -195,7 +208,7 @@
     <string name="setup_grant_permissions">Grant permissions</string>
     <string name="setup_app_settings">App settings</string>
     <string name="setup_3_head_unit_mode_in_android_auto">3. Head-unit mode in Android Auto</string>
-    <string name="setup_in_android_auto_settings_tap_version_10_times_to">In Android Auto settings, tap "Version" ~10 times to unlock Developer settings, then turn ON "Add new cars to Android Auto" / "Unknown sources". (Can\'t be checked automatically.)</string>
+    <string name="setup_in_android_auto_settings_tap_version_10_times_to">In Android Auto settings, tap &quot;Version&quot; ~10 times to unlock Developer settings, then turn ON &quot;Add new cars to Android Auto&quot; / &quot;Unknown sources&quot;. (Can\'t be checked automatically.)</string>
     <string name="setup_android_auto_settings">Android Auto settings</string>
     <string name="setup_screen_display">Screen &amp; display</string>
     <string name="setup_video_quality">Video quality</string>
@@ -347,6 +360,8 @@
     <string name="row_saved_place_name_e_g_home">Name (e.g. Home)</string>
     <string name="row_saved_place_address_or_place">Address or place</string>
     <string name="dash_cancel">Cancel</string>
+
+    <!-- Connection phases (Main status line) -->
     <string name="conn_ready">Ready</string>
     <string name="conn_starting_aa">Starting Android Auto…</string>
     <string name="conn_aa_video_live">Android Auto live — joining bike…</string>
@@ -360,6 +375,8 @@
     <string name="conn_error">Error — see logs</string>
     <string name="conn_detail_connect_failed">Connect failed — see Logs / Share Logs</string>
     <string name="conn_detail_auto_connect_failed">Auto-connect failed — see Logs</string>
+
+    <!-- MainActivity dynamic / dialogs -->
     <string name="main_hide_logs">Hide logs</string>
     <string name="main_connect_to">Connect to %1$s</string>
     <string name="main_no_bike_paired">No bike paired yet — tap Connect to scan the dash QR</string>
@@ -379,6 +396,8 @@
     <string name="main_mirror_ready_title">Mirror ready</string>
     <string name="main_rival_title">Official CFMoto app is in the way</string>
     <string name="main_bike_search_hint">Bike dash search — type here</string>
+
+    <!-- Notifications -->
     <string name="notif_aa_channel">Android Auto receiver</string>
     <string name="notif_aa_title">OpenCfMoto — Android Auto</string>
     <string name="notif_aa_reconnecting">Reconnecting to the bike dash…</string>
@@ -393,6 +412,8 @@
     <string name="notif_media_channel">Bike button control</string>
     <string name="notif_media_title">Android Auto control</string>
     <string name="notif_media_text">Bike buttons drive Android Auto</string>
+
+    <!-- Setup preference descriptions (enums) -->
     <string name="pref_vq_smooth">Smoother — less data/latency</string>
     <string name="pref_vq_balanced">Balanced (recommended)</string>
     <string name="pref_vq_sharp">Sharper — more data</string>
@@ -417,6 +438,8 @@
     <string name="setup_toast_dbl_tap">Double-tap delay: %1$s</string>
     <string name="setup_toast_hold">Hold delay: %1$s</string>
     <string name="setup_toast_transport">Wi‑Fi transport: %1$s</string>
+
+    <!-- Privacy / anonymous telemetry -->
     <string name="setup_privacy">Privacy</string>
     <string name="setup_anonymous_telemetry">Anonymous usage &amp; crash reports</string>
     <string name="setup_anonymous_telemetry_desc">Sends a random device id, app version, and (if any) crash/error text to the OpenCfMoto project so we can see how many phones use the app and fix crashes. No account, no GPS routes, no Wi‑Fi passwords, no bike name. Off = nothing is uploaded.</string>

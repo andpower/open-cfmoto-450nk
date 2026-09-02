@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
@@ -34,11 +35,17 @@ class QrScanActivity : AppCompatActivity() {
     private val handled = AtomicBoolean(false)
     private var camera: Camera? = null
 
+    private val photoPicker = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) decodePhoto(uri)
+    }
+
     private val cameraPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) startCamera() else {
-            Toast.makeText(this, uiText("Camera permission required"), Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Camera permission required", Toast.LENGTH_LONG).show()
             finish()
         }
     }
@@ -46,6 +53,9 @@ class QrScanActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qr_scan)
+        findViewById<Button>(R.id.btn_qr_photo).setOnClickListener {
+            photoPicker.launch("image/*")
+        }
         findViewById<Button>(R.id.btn_manual_wifi).setOnClickListener {
             ManualWifiPairing.show(this) { raw, _ ->
                 if (!handled.compareAndSet(false, true)) return@show
@@ -87,7 +97,7 @@ class QrScanActivity : AppCompatActivity() {
                 )
                 setupZoomButtons()
             } catch (e: Exception) {
-                findViewById<TextView>(R.id.hint).text = uiText("Camera bind failed: ${e.message}")
+                findViewById<TextView>(R.id.hint).text = "Camera bind failed: ${e.message}"
             }
         }, ContextCompat.getMainExecutor(this))
     }
@@ -103,6 +113,31 @@ class QrScanActivity : AppCompatActivity() {
         val state = cam.cameraInfo.zoomState.value ?: return
         val clamped = ratio.coerceIn(state.minZoomRatio, state.maxZoomRatio)
         cam.cameraControl.setZoomRatio(clamped)
+    }
+
+    private fun decodePhoto(uri: Uri) {
+        if (!handled.compareAndSet(false, true)) return
+        try {
+            val image = InputImage.fromFilePath(this, uri)
+            scanner.process(image)
+                .addOnSuccessListener { barcodes ->
+                    val qr = barcodes.firstOrNull { it.format == Barcode.FORMAT_QR_CODE }?.rawValue
+                    if (qr != null) {
+                        setResult(RESULT_OK, Intent().putExtra(RESULT_QR, qr))
+                        finish()
+                    } else {
+                        handled.set(false)
+                        Toast.makeText(this, getString(R.string.main_invalid_qr), Toast.LENGTH_LONG).show()
+                    }
+                }
+                .addOnFailureListener {
+                    handled.set(false)
+                    Toast.makeText(this, it.message ?: "QR photo failed", Toast.LENGTH_LONG).show()
+                }
+        } catch (e: Exception) {
+            handled.set(false)
+            Toast.makeText(this, e.message ?: "QR photo failed", Toast.LENGTH_LONG).show()
+        }
     }
 
     @SuppressLint("UnsafeOptInUsageError")

@@ -61,6 +61,11 @@ class VideoPipeline(
      * its canvas size (so the encoder matches the bike, not a hardcoded resolution).
      */
     private val compositor: Boolean = false,
+    /**
+     * Optional density for [createOwnVirtualDisplay]. Ride MO OEM map uses **187 dpi** on a
+     * 1024×464 `NaviVirtualDisplay` (not the scaled TARGET_DASH_WIDTH_DP heuristic).
+     */
+    private val ownDisplayDensityDpi: Int? = null,
 ) {
     private val main = Handler(Looper.getMainLooper())
     private var codec: MediaCodec? = null
@@ -96,6 +101,21 @@ class VideoPipeline(
     // When set, the drain loop discards encoder output until the next keyframe, so the first frame a
     // freshly-attached bike client receives is a full SPS+PPS+IDR. See onBikeDataStart().
     @Volatile private var awaitKeyframe = false
+
+    /** Latest Annex-B SPS/PPS from the encoder (null until [BUFFER_FLAG_CODEC_CONFIG]). */
+    fun codecConfigBytes(): ByteArray? = codecConfig
+
+    /** Ask the running encoder for an immediate IDR (no queue flush). */
+    fun requestKeyframe(reason: String = "manual") {
+        try {
+            codec?.setParameters(android.os.Bundle().apply {
+                putInt(MediaCodec.PARAMETER_KEY_REQUEST_SYNC_FRAME, 0)
+            })
+            log("[VIDEO] requested IDR ($reason)")
+        } catch (e: Exception) {
+            log("[VIDEO] requestKeyframe($reason) failed: $e")
+        }
+    }
 
     // Diagnostic: dump the exact Annex-B H.264 access units we send to the bike into a .h264 file so
     // the stream can be inspected off-device (ffprobe/ffmpeg). Bounded to DUMP_CAP frames so it never
@@ -150,16 +170,26 @@ class VideoPipeline(
             val profile = BikeProfileHolder.active
             // Map / GPX Presentation changes every pan/GPS tick — give H.264 more bits + shorter GOP
             // so motion doesn't smear into block artifacts on the bike (phone preview skips encode).
-            val mapBoost = GpxSession.active
+            // Skip FREE_RIDE 1.35× boost when the profile already targets a low OEM rate (e.g. Morini 10 fps / 2 Mbit).
+            val mapBoost = GpxSession.active && profile.videoFrameRate >= 30
             val bitrate = (VideoPrefs.bitrateFor(context, profile) * if (mapBoost) 1.35f else 1f).toInt()
             val iframeSec = if (mapBoost) {
                 maxOf(1, profile.videoIFrameIntervalSec / 2)
             } else {
                 profile.videoIFrameIntervalSec
             }
+            // Ride MO: color 0x7F000789 (= COLOR_FormatSurface) + bitrate-mode=2 (CBR).
+            val colorFmt = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
             fun baseFormat() = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, w, h).apply {
-                setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
+                setInteger(MediaFormat.KEY_COLOR_FORMAT, colorFmt)
                 setInteger(MediaFormat.KEY_BIT_RATE, bitrate)
+                try {
+                    setInteger(
+                        MediaFormat.KEY_BITRATE_MODE,
+                        MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR,
+                    )
+                } catch (_: Exception) {
+                }
                 setInteger(MediaFormat.KEY_FRAME_RATE, profile.videoFrameRate)
                 setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, iframeSec)
                 // Surface-input encoders only emit on new buffers; a STATIC screen (e.g. mirror of
@@ -190,8 +220,9 @@ class VideoPipeline(
                     c.configure(fmt, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
                     log("[VIDEO] configured Baseline@3.1")
                 } else {
+                    // No KEY_PROFILE / KEY_LEVEL — matches Ride MO retained MediaFormat (vc61).
                     c.configure(baseFormat(), null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
-                    log("[VIDEO] configured default profile (Main/High)")
+                    log("[VIDEO] configured no explicit AVC profile/level (encoder default)")
                 }
             } catch (e: Exception) {
                 log("[VIDEO] encoder configure failed ($e) — retrying default profile")
@@ -203,7 +234,13 @@ class VideoPipeline(
             codec = c
             baseBitrate = bitrate; currentBitrate = bitrate
             encoderW = w; encoderH = h
-            log("[VIDEO] encoder started ${w}x${h} h264 ${profile.videoFrameRate}fps ${bitrate / 1000}kbps (${VideoPrefs.get(context).name.lowercase()})")
+            val outFmt = try { c.outputFormat.toString() } catch (_: Exception) { "?" }
+            log(
+                "[VIDEO] encoder started ${w}x${h} h264 ${profile.videoFrameRate}fps " +
+                    "${bitrate / 1000}kbps (${VideoPrefs.get(context).name.lowercase()}) " +
+                    "color=0x${Integer.toHexString(colorFmt)} bitrateMode=CBR(2)",
+            )
+            log("[VIDEO] MediaCodec outputFormat=$outFmt")
             maybeStartDump()
             if (drainThread == null) drainThread = thread(name = "video-drain", isDaemon = true) { drainLoop() }
             return true
@@ -218,13 +255,37 @@ class VideoPipeline(
      * at it. Called when the bike's REQ_CONFIG_CAPTURE dimensions are known. Idempotent; a later
      * different size is not re-applied live (logged instead).
      */
-    fun configureBikeCanvas(w: Int, h: Int) {
+    /**
+     * @param force when true, tear down an existing encoder and recreate at [w]×[h]
+     *   (Yunmo SoftAP learns the canvas from cmd 0x32 after AA may already have started).
+     */
+    fun configureBikeCanvas(w: Int, h: Int, force: Boolean = false) {
         if (!compositor) return
         if (codec != null) {
-            if (encoderW != w || encoderH != h) {
-                log("[VIDEO] bike canvas changed ${encoderW}x$encoderH → ${w}x$h — live resize unsupported, keeping ${encoderW}x$encoderH")
+            if (encoderW == w && encoderH == h) return
+            if (!force) {
+                log(
+                    "[VIDEO] bike canvas changed ${encoderW}x$encoderH → ${w}x$h — " +
+                        "live resize unsupported, keeping ${encoderW}x$encoderH",
+                )
+                return
             }
-            return
+            log("[VIDEO] bike canvas force-resize ${encoderW}x$encoderH → ${w}x$h")
+            try {
+                codec?.stop()
+            } catch (_: Exception) {}
+            try {
+                codec?.release()
+            } catch (_: Exception) {}
+            codec = null
+            try {
+                inputSurface?.release()
+            } catch (_: Exception) {}
+            inputSurface = null
+            encoderW = 0
+            encoderH = 0
+            codecConfig = null
+            frameQueue.clear()
         }
         if (!createEncoder(w, h)) return
         val src = BikeProfileHolder.aaVideo
@@ -265,8 +326,24 @@ class VideoPipeline(
             val metrics = context.resources.displayMetrics
             val density = metrics.densityDpi.coerceAtLeast(160)
             // Start the capture buffer at the physical display size; app-capture resize updates it.
-            val initW = metrics.widthPixels.coerceAtLeast(width).let { it - (it % 2) }
-            val initH = metrics.heightPixels.coerceAtLeast(height).let { it - (it % 2) }
+            // If Setup locked landscape/portrait but the phone has not finished rotating, swap so
+            // a portrait buffer is not letterboxed into a wide dash (1080×2436 → 170px strip).
+            var initW = metrics.widthPixels.coerceAtLeast(width).let { it - (it % 2) }
+            var initH = metrics.heightPixels.coerceAtLeast(height).let { it - (it % 2) }
+            val beforeW = initW
+            val beforeH = initH
+            when (VideoPrefs.mirrorShape(context, width, height)) {
+                MirrorShape.LANDSCAPE -> if (initH > initW) {
+                    val t = initW; initW = initH; initH = t
+                }
+                MirrorShape.PORTRAIT -> if (initW > initH) {
+                    val t = initW; initW = initH; initH = t
+                }
+                null -> Unit
+            }
+            if (initW != beforeW || initH != beforeH) {
+                log("[VIDEO] mirror buffer ${beforeW}x$beforeH → ${initW}x$initH (orientation lock)")
+            }
 
             val scaler = AaCompositor(log).also { it.start(initW, initH) }
             mirrorScaler = scaler
@@ -445,14 +522,22 @@ class VideoPipeline(
 
     private fun createOwnVirtualDisplay(): android.view.Display? {
         val dm = context.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
+        // Match Ride MO dumpsys: PRIVATE (default without PUBLIC) | PRESENTATION | OWN_CONTENT_ONLY.
+        // NEVER_BLANK is applied by the system for private virtual displays — not a create flag.
         val flags = DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY or
             DisplayManager.VIRTUAL_DISPLAY_FLAG_PRESENTATION
         // Scale density to the bike resolution so controls stay glanceable without crowding the panel.
         // Higher TARGET_DASH_WIDTH_DP → lower dpi → smaller chrome (~20% vs the old 720dp target).
-        val densityDpi = Math.round(160.0 * width / TARGET_DASH_WIDTH_DP).toInt().coerceIn(160, 640)
+        // OEM Yunmo path overrides via [ownDisplayDensityDpi] (187).
+        val densityDpi = ownDisplayDensityDpi
+            ?: Math.round(160.0 * width / TARGET_DASH_WIDTH_DP).toInt().coerceIn(160, 640)
         val vd = dm.createVirtualDisplay("OpenCfMoto", width, height, densityDpi, inputSurface, flags)
         virtualDisplay = vd
-        log("[VIDEO] own display ${width}x${height} @ ${densityDpi}dpi")
+        log(
+            "[VIDEO] own display ${width}x${height} @${densityDpi}dpi " +
+                "flags=0x${Integer.toHexString(flags)} " +
+                "(PRIVATE|PRESENTATION|OWN_CONTENT_ONLY; NEVER_BLANK via system)",
+        )
         return vd?.display ?: run { log("[VIDEO] virtualDisplay.display null"); null }
     }
 

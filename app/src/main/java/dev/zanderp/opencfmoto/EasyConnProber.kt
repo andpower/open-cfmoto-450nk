@@ -25,9 +25,9 @@ import kotlin.concurrent.thread
  * EasyConn / Carbit PXC client for CFMoto MotoPlay.
  *
  * Topology (verified in cfmoto-tcp-v5.log): the PHONE is the SERVER.
- *  1. Discover the bike (gateway 192.168.0.1, EasyConn mDNS advertises :10930).
+ *  1. Discover EasyConn via NSD `_EasyConn._tcp.`, else wake `:10930`, else nearby port scan.
  *  2. Open TCP servers on 10920, 10921, 10922 bound to our bike-network IP.
- *  3. Connect once to bike:10930 and send ECP_PXC_MDNS_RESPOND (cmd 0x70000010, JSON);
+ *  3. Send ECP_PXC_MDNS_RESPOND (cmd 0x70000010, JSON) to the discovered endpoint;
  *     bike replies {"status":true} and we close that socket.
  *  4. The bike then connects BACK to our listening ports and drives the PXC handshake
  *     (channel selects, CLIENT_INFO, SN check, heartbeats) — handled by [PxcHandshake].
@@ -44,7 +44,8 @@ class EasyConnProber(
         const val SPOOFED_PACKAGE = "com.cfmoto.cfmotointernational"
         private val LISTEN_PORTS = intArrayOf(PORT_PXC_CTRL, PORT_MEDIA_CTRL, PORT_MEDIA_DATA)
         /** How many times to auto re-probe after a link drop before giving up (user taps Connect). */
-        private const val MAX_RECONNECT_ATTEMPTS = 10
+        /** Cap before Phase.ERROR; watchdog [rearmFromError] resets this so a bike back in range recovers. */
+        private const val MAX_RECONNECT_ATTEMPTS = 20
         /** Proactive PXC heartbeat interval on each :10922 channel socket (CAR_CTRL + CAR_DATA). */
         private const val PXC_HEARTBEAT_INTERVAL_MS = 2000L
 
@@ -87,8 +88,9 @@ class EasyConnProber(
     @Volatile private var negW = 800
     @Volatile private var negH = 384
     @Volatile private var framesSent = 0
-    @Volatile private var touchMoves = 0
     @Volatile private var lastFrameAt = 0L
+    /** SoftAP Yunmo path (MOTOMORINI / X-Cape 1200) when EasyConn never answers. */
+    private var yunmo: YunmoLink? = null
 
     /** Live dash contacts: id → (x, y, lastSeenMs). Stale entries are evicted when UP is lost. */
     private val pointers = LinkedHashMap<Int, Triple<Int, Int, Long>>()
@@ -216,9 +218,9 @@ class EasyConnProber(
             return
         }
 
-        // 2. Send the probe (gives the bike our IP → it connects back).
+        // 2. Discover EasyConn (NSD → :10930 wake → nearby port scan), then MDNS_RESPOND.
         thread(name = "ec-probe", isDaemon = true) {
-            sendMdnsRespond(bikeIp, myIp, network)
+            discoverAndProbe(bikeIp, myIp, network)
         }
         startHeartbeatLog()
         stitchExec = java.util.concurrent.Executors.newSingleThreadScheduledExecutor { r ->
@@ -296,6 +298,8 @@ class EasyConnProber(
         probed = false
         everConnected = false
         reprobing = false
+        try { yunmo?.stop() } catch (_: Exception) {}
+        yunmo = null
         // Only stop the pipeline if we created it; the shared Android Auto pipeline is owned
         // by AndroidAutoService and must outlive a bike disconnect.
         if (ownsVideo) video?.stop()
@@ -324,11 +328,15 @@ class EasyConnProber(
     val isRunning: Boolean get() = running
 
     /** True once at least one frame has been delivered to the dash this session. */
-    val isStreaming: Boolean get() = running && framesSent > 0
+    val isStreaming: Boolean
+        get() = running && (framesSent > 0 || (yunmo?.framesSent ?: 0) > 0)
 
     /** Milliseconds since the last frame was sent to the dash (Long.MAX_VALUE if none yet). */
-    fun msSinceLastFrame(): Long =
-        if (lastFrameAt == 0L) Long.MAX_VALUE else System.currentTimeMillis() - lastFrameAt
+    fun msSinceLastFrame(): Long {
+        val yAt = yunmo?.lastFrameAt ?: 0L
+        val at = maxOf(lastFrameAt, yAt)
+        return if (at == 0L) Long.MAX_VALUE else System.currentTimeMillis() - at
+    }
 
     /**
      * Force a clean reconnect: drop every live bike socket. Each read loop then ends and, once the
@@ -337,9 +345,21 @@ class EasyConnProber(
      */
     fun forceReconnect() {
         val n = activeClients.size
-        log("[watchdog] forcing reconnect — dropping $n live socket(s)")
+        val hadYunmo = yunmo != null
+        log(
+            "[watchdog] forcing reconnect — dropping $n live socket(s)" +
+                if (hadYunmo) " + Yunmo" else "",
+        )
         synchronized(activeClients) {
             for (s in activeClients.toList()) try { s.close() } catch (_: Exception) {}
+        }
+        // Yunmo SoftAP has no reverse-TCP clients in [activeClients]. Closing EasyConn
+        // sockets alone left X-Cape 1200 half-dead (kosalos: "dropping 0", yunmoFrames stuck).
+        if (hadYunmo) {
+            try { yunmo?.stop() } catch (_: Exception) {}
+            yunmo = null
+            probed = false
+            if (n == 0) onAllConnectionsClosed()
         }
     }
 
@@ -354,21 +374,131 @@ class EasyConnProber(
         onAllConnectionsClosed()
     }
 
-    /** Step 3: phone→bike probe. cmd 0x70000010 + JSON; expect 0x70000011 {"status":true}. */
-    private fun sendMdnsRespond(bikeIp: Inet4Address, myIp: Inet4Address, network: Network?) {
+    /**
+     * Find where EasyConn is listening, then send MDNS_RESPOND so the bike dials back.
+     * Order: NSD `_EasyConn._tcp.` → classic `:10930` on gateway → TCP scan 10915–10935.
+     */
+    private fun discoverAndProbe(bikeIp: Inet4Address, myIp: Inet4Address, network: Network?) {
+        BikeWifi.rebindProcessToBike(context)
+
+        val nsd = EasyConnDiscovery.discoverNsd(context, log)
+        if (!running) return
+        if (nsd != null) {
+            probeTarget(nsd.host, nsd.port, myIp, network, attempts = 3)
+            if (probed) return
+            // SoftAP: wake sometimes only re-arms mDNS — try NSD once more before falling through.
+            log("[DISC] NSD endpoint did not accept probe — re-discovering…")
+            BikeWifi.rebindProcessToBike(context)
+            val nsd2 = EasyConnDiscovery.discoverNsd(context, log)
+            if (!running) return
+            if (nsd2 != null) {
+                probeTarget(nsd2.host, nsd2.port, myIp, network, attempts = 3)
+                if (probed) return
+            }
+        }
+
+        // Classic wake port on the SoftAP / P2P gateway.
+        probeTarget(bikeIp, BIKE_PROBE_PORT, myIp, network, attempts = 5)
+        if (probed || !running) return
+
+        // Peer alive but :10930 closed (common on Morini SoftAP) — scan nearby ports.
+        val open = EasyConnDiscovery.scanOpenPorts(
+            bikeIp, network, myIp, ::openOnBikeNetwork, log,
+        )
+        if (!running) return
+        val ordered = open.sortedBy { if (it == BIKE_PROBE_PORT) 0 else 1 }
+        for (port in ordered) {
+            if (!running || probed) break
+            probeTarget(bikeIp, port, myIp, network, attempts = 2)
+        }
+        if (probed || !running) return
+
+        if (!everConnected) {
+            // X-Cape 1200 / MOTOMORINI SoftAP speaks Yunmo on :8200, not EasyConn :10930.
+            if (tryYunmoFallback(bikeIp, network)) return
+
+            // Kove / Thinkerride SoftAP: neither EasyConn nor Yunmo — log open ports for RE.
+            if (running) {
+                EasyConnDiscovery.scanThinkerridePorts(
+                    bikeIp, network, myIp, ::openOnBikeNetwork, log,
+                )
+            }
+
+            val bindErr = BikeWifi.testBikeSocketBind(context)
+            if (BikeWifi.isVpnBindBlocked(context, bindErr)) {
+                log("!! VPN kill-switch blocked bike bind after probe failure: ${bindErr?.message}")
+                ConnectionState.set(Phase.ERROR, "VPN kill-switch blocking bike Wi‑Fi")
+            } else if (BikeWifi.isVpnActive(context)) {
+                log("!! probe never reached the bike; an internet VPN is also active " +
+                    "(${BikeWifi.vpnNetworksSummary(context)}). If this keeps happening, turn the VPN " +
+                    "off or allow LAN — not treating as hard VPN error (bind still works).")
+            } else {
+                log(
+                    "!! SoftAP is up but EasyConn never answered (NSD empty, :$BIKE_PROBE_PORT " +
+                        "refused, nearby ports quiet) and Yunmo :${YunmoFrame.DEFAULT_PORT} also failed. " +
+                        "Keep Nav QR open on the dash. If this is Kove/Thinkerride, check " +
+                        "[DISC] thinkerride-scan in Share Logs.",
+                )
+                ConnectionState.set(
+                    Phase.ERROR,
+                    context.getString(R.string.conn_detail_easyconn_offline),
+                )
+            }
+        }
+    }
+
+    /** Try MOTOMORINI Yunmo TCP after EasyConn discovery fails. */
+    private fun tryYunmoFallback(bikeIp: Inet4Address, network: Network?): Boolean {
+        if (!running) return false
+        log("[YUNMO] EasyConn quiet — trying SoftAP Yunmo ${bikeIp.hostAddress}:${YunmoFrame.DEFAULT_PORT}")
+        val link = YunmoLink(context, log)
+        link.onFrameSent = { lastFrameAt = System.currentTimeMillis() }
+        // Prefer AA coded size when known (kosalos log: 800×480); else negotiated / default.
+        val aa = BikeProfileHolder.aaVideo
+        val w = when {
+            aa.width >= 64 -> aa.width
+            negW >= 64 -> negW
+            else -> 800
+        }
+        val h = when {
+            aa.height >= 64 -> aa.height
+            negH >= 64 -> negH
+            else -> 480
+        }
+        val ok = link.connectAndStream(bikeIp, network, w, h)
+        if (!ok) {
+            link.stop()
+            return false
+        }
+        yunmo = link
+        probed = true
+        everConnected = true
+        // Seed lastFrameAt so stall watchdog doesn't fire on Long.MAX_VALUE before frame #1.
+        lastFrameAt = System.currentTimeMillis()
+        val sw = link.streamWidth.takeIf { it >= 16 } ?: w
+        val sh = link.streamHeight.takeIf { it >= 16 } ?: h
+        log("[YUNMO] *** linked — streaming AA/H264 over Yunmo (${sw}x${sh}) ***")
+        return true
+    }
+
+    /** Phone→bike probe. cmd 0x70000010 + JSON; expect 0x70000011 {"status":true}. */
+    private fun probeTarget(
+        host: Inet4Address,
+        port: Int,
+        myIp: Inet4Address,
+        network: Network?,
+        attempts: Int,
+    ) {
         var attempt = 0
-        while (running && attempt < 5 && !probed) {
+        while (running && attempt < attempts && !probed) {
             attempt++
             try {
-                // VPN clients often re-steal the process default after join — pin again each attempt.
                 BikeWifi.rebindProcessToBike(context)
-                log("[PROBE] connect #$attempt -> ${bikeIp.hostAddress}:$BIKE_PROBE_PORT")
+                log("[PROBE] connect #$attempt -> ${host.hostAddress}:$port")
                 // CRITICAL: do NOT Socket.bind(local) before Network.bindSocket — Android requires
-                // the socket unbound, and a prior bind makes bindSocket fail silently. With a VPN
-                // up that meant probes left via the tunnel and timed out to bike:10930. Prefer the
-                // network's SocketFactory (sockets are born on that Network and bypass VPN).
+                // the socket unbound. Prefer the network's SocketFactory (bypasses VPN).
                 val sock = openOnBikeNetwork(network, myIp)
-                sock.connect(InetSocketAddress(bikeIp, BIKE_PROBE_PORT), 3000)
+                sock.connect(InetSocketAddress(host, port), 3000)
                 sock.soTimeout = 5000
 
                 val json = JSONProbe()
@@ -393,8 +523,6 @@ class EasyConnProber(
                 if (probed) return
             } catch (e: VpnBypassBlockedException) {
                 log("!! ${e.message}")
-                // Already streaming / linked once this session — Map↔AA toggles can briefly break
-                // the bike Network handle; don't hard-fail the whole ride on a blip.
                 if (everConnected) {
                     log("!! ignoring VPN bind blip — bike already linked this session; will retry")
                 } else {
@@ -404,22 +532,7 @@ class EasyConnProber(
             } catch (e: Exception) {
                 log("[PROBE] failed: ${e.javaClass.simpleName}: ${e.message}")
             }
-            try { Thread.sleep(2000) } catch (_: InterruptedException) { return }
-        }
-        // Do NOT escalate to Phase.ERROR just because a VPN interface exists — that false-positive
-        // popped the "VPN is blocking the bike" dialog when probes failed for any reason (dash not
-        // on QR, brief Wi‑Fi blip, Maps/cellular race). Only hard-fail on confirmed EPERM + live VPN,
-        // and never after we already had a bike link this session.
-        if (!probed && running && !everConnected) {
-            val bindErr = BikeWifi.testBikeSocketBind(context)
-            if (BikeWifi.isVpnBindBlocked(context, bindErr)) {
-                log("!! VPN kill-switch blocked bike bind after probe failure: ${bindErr?.message}")
-                ConnectionState.set(Phase.ERROR, "VPN kill-switch blocking bike Wi‑Fi")
-            } else if (BikeWifi.isVpnActive(context)) {
-                log("!! probe never reached the bike; an internet VPN is also active " +
-                    "(${BikeWifi.vpnNetworksSummary(context)}). If this keeps happening, turn the VPN " +
-                    "off or allow LAN — not treating as hard VPN error (bind still works).")
-            }
+            try { Thread.sleep(750L * attempt) } catch (_: InterruptedException) { return }
         }
     }
 
@@ -517,15 +630,26 @@ class EasyConnProber(
             try {
                 while (running && liveConns.get() == 0 && reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
                     reconnectAttempts++
-                    val backoff = minOf(1000L * reconnectAttempts, 5000L)
-                    log("[reconnect] link lost — re-probing (attempt $reconnectAttempts) in ${backoff}ms")
+                    // Faster early retries (1s, 1.5s, 2s…) then cap — don't burn the budget on long waits.
+                    val backoff = minOf(500L + 500L * reconnectAttempts, 4_000L)
+                    log("[reconnect] link lost — re-probing (attempt $reconnectAttempts/$MAX_RECONNECT_ATTEMPTS) in ${backoff}ms")
                     try { Thread.sleep(backoff) } catch (_: InterruptedException) { return@thread }
                     if (!running || liveConns.get() > 0) return@thread
                     val bi = bikeIp; val mi = myIp
                     if (bi == null || mi == null) { log("[reconnect] no cached IPs — abort"); return@thread }
                     probed = false
                     framesSent = 0   // so the first frame after reconnect re-signals STREAMING
-                    sendMdnsRespond(bi, mi, network)
+                    try { yunmo?.stop() } catch (_: Exception) {}
+                    yunmo = null
+                    // Fast path for reconnect — classic wake → NSD → Yunmo SoftAP :8200.
+                    probeTarget(bi, BIKE_PROBE_PORT, mi, network, attempts = 2)
+                    if (!probed && running && liveConns.get() == 0) {
+                        val ep = EasyConnDiscovery.discoverNsd(context, log)
+                        if (ep != null) probeTarget(ep.host, ep.port, mi, network, attempts = 2)
+                    }
+                    if (!probed && running && liveConns.get() == 0) {
+                        tryYunmoFallback(bi, network)
+                    }
                     // Give the dash a moment to connect back before deciding to try again.
                     try { Thread.sleep(2500) } catch (_: InterruptedException) { return@thread }
                 }
@@ -783,8 +907,15 @@ class EasyConnProber(
 
         val aaId = aaIdFor(dashId)
 
-        if (action != 2 || (touchMoves++ % 30) == 0) {
-            log("[$tag] TOUCH ${if (action==0) "DOWN" else if (action==1) "UP" else "MOVE"} " +
+        if (action == 2) {
+            // Keep MOVE debug, but don't flood the buffer / UI under finger drag.
+            LogBus.logThrottled(
+                "touch-move-$tag",
+                "[$tag] TOUCH MOVE bike=($x,$y) ptr=$dashId of ${pointers.size} canvas=${negW}x$negH",
+                minIntervalMs = 400L,
+            )
+        } else {
+            log("[$tag] TOUCH ${if (action == 0) "DOWN" else "UP"} " +
                 "bike=($x,$y) ptr=$dashId of ${pointers.size} canvas=${negW}x$negH")
         }
 
@@ -953,7 +1084,12 @@ class EasyConnProber(
             while (running) {
                 try { Thread.sleep(5000) } catch (_: InterruptedException) { break }
                 i++
-                log("hb#$i probed=$probed video=${video != null} framesSent=$framesSent openServers=${servers.count { !it.isClosed }}")
+                val yFrames = yunmo?.framesSent ?: 0
+                log(
+                    "hb#$i probed=$probed video=${video != null} framesSent=$framesSent" +
+                        (if (yFrames > 0 || yunmo != null) " yunmoFrames=$yFrames" else "") +
+                        " openServers=${servers.count { !it.isClosed }}",
+                )
             }
         }
     }

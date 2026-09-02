@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/layout_map_ab478f3"
+            android:text="@string/gpx_map"
             android:textColor="@color/text_primary"
             android:textSize="26sp"
             android:textStyle="bold" />
@@ -30,7 +30,7 @@
             android:layout_marginTop="4dp"
             android:layout_marginBottom="12dp"
             android:lineSpacingExtra="2dp"
-            android:text="@string/layout_free_ride_gpx_search_poi_41dcb3d"
+            android:text="@string/gpx_free_ride_gpx_search_poi_on_the_dash_search_stay"
             android:textColor="@color/text_secondary"
             android:textSize="14sp" />
 
@@ -50,7 +50,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:letterSpacing="0.08"
-                    android:text="@string/layout_ride_09b04fb"
+                    android:text="@string/gpx_ride"
                     android:textAllCaps="true"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
@@ -61,7 +61,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="@string/layout_start_ride_project_to_bike_f63c8ff" />
+                    android:text="@string/gpx_start_ride" 
+                    android:minHeight="48dp"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/gpx_see_phone"
@@ -69,7 +70,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/layout_see_map_on_phone_no_b38d2c9" />
+                    android:text="@string/gpx_map_on_phone" 
+                    android:minHeight="48dp"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -89,7 +91,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:letterSpacing="0.08"
-                    android:text="@string/layout_search_poi_7746c49"
+                    android:text="@string/gpx_search_poi"
                     android:textAllCaps="true"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
@@ -99,7 +101,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:hint="@string/layout_search_openstreetmap_a592a37"
+                    android:hint="@string/gpx_search_openstreetmap"
                     android:imeOptions="actionSearch"
                     android:inputType="text"
                     android:maxLines="1"
@@ -125,7 +127,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/layout_search_bce0641" />
+                    android:text="@string/gpx_search" 
+                    android:minHeight="48dp"/>
 
                 <LinearLayout
                     android:id="@+id/gpx_results"
@@ -152,7 +155,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:letterSpacing="0.08"
-                    android:text="@string/layout_favorites_markers_ae640e2"
+                    android:text="@string/gpx_favorites_markers"
                     android:textAllCaps="true"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
@@ -169,7 +172,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:letterSpacing="0.08"
-                    android:text="@string/layout_history_90ccd64"
+                    android:text="@string/gpx_history"
                     android:textAllCaps="true"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
@@ -199,7 +202,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:letterSpacing="0.08"
-                    android:text="@string/layout_gpx_track_4b2cdb6"
+                    android:text="@string/gpx_gpx_track"
                     android:textAllCaps="true"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
@@ -210,14 +213,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="@string/layout_choose_gpx_file_3e4b6a6" />
+                    android:text="@string/gpx_choose_gpx_file" 
+                    android:minHeight="48dp"/>
 
                 <TextView
                     android:id="@+id/gpx_file_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/layout_no_file_selected_f76f1c1"
+                    android:text="@string/gpx_no_file_selected"
                     android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
 
@@ -228,7 +232,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:enabled="false"
-                    android:text="@string/layout_download_offline_maps_11b5531" />
+                    android:text="@string/gpx_download_offline_maps" 
+                    android:minHeight="48dp"/>
 
                 <ProgressBar
                     android:id="@+id/gpx_progress"
@@ -253,7 +258,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:enabled="false"
-                    android:text="@string/layout_open_gpx_on_map_b192edd" />
+                    android:text="@string/gpx_open_gpx_on_map" 
+                    android:minHeight="48dp"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/gpx_project"
@@ -262,7 +268,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:enabled="false"
-                    android:text="@string/layout_project_gpx_to_bike_d4383f0" />
+                    android:text="@string/gpx_project_gpx" 
+                    android:minHeight="48dp"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -282,7 +289,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:letterSpacing="0.08"
-                    android:text="@string/layout_map_settings_e45ed1e"
+                    android:text="@string/gpx_map_settings"
                     android:textAllCaps="true"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
@@ -291,7 +298,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:text="@string/layout_units_1274828"
+                    android:text="@string/gpx_units"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -310,7 +317,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_metric_b2bb760" />
+                        android:text="@string/gpx_metric" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/gpx_units_imperial"
@@ -319,7 +326,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_imperial_5d3908a" />
+                        android:text="@string/gpx_imperial" />
                 </LinearLayout>
 
                 <!-- Kept for code refs; segments replace the cycle button. -->
@@ -333,7 +340,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:text="@string/layout_map_theme_99bfadc"
+                    android:text="@string/controls_map_theme"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -352,7 +359,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_auto_c614ba7" />
+                        android:text="@string/controls_auto" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/gpx_theme_day"
@@ -361,7 +368,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_day_987b9ce" />
+                        android:text="@string/controls_day" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/gpx_theme_night"
@@ -370,7 +377,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_night_1097b55" />
+                        android:text="@string/controls_night" />
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
@@ -383,7 +390,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:text="@string/layout_voice_prompts_b3672d9"
+                    android:text="@string/gpx_voice_prompts"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -402,7 +409,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_on_e0049a6" />
+                        android:text="@string/gpx_on" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/gpx_voice_off"
@@ -411,7 +418,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_off_e3de5ab" />
+                        android:text="@string/res_off" />
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
@@ -424,7 +431,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:text="@string/layout_next_stop_details_1c6b7c2"
+                    android:text="@string/gpx_next_stop_details"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -443,7 +450,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_on_e0049a6" />
+                        android:text="@string/gpx_on" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/gpx_next_stop_off"
@@ -452,7 +459,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_off_e3de5ab" />
+                        android:text="@string/res_off" />
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
@@ -465,7 +472,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:text="@string/layout_auto_finish_on_arrive_4b7c098"
+                    android:text="@string/gpx_auto_finish_on_arrive"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -484,7 +491,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_on_e0049a6" />
+                        android:text="@string/gpx_on" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/gpx_auto_finish_off"
@@ -493,7 +500,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_off_e3de5ab" />
+                        android:text="@string/res_off" />
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
@@ -506,7 +513,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:text="@string/layout_dash_chrome_2fbb933"
+                    android:text="@string/gpx_dash_chrome"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -525,7 +532,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_dark_ae1ef01" />
+                        android:text="@string/gpx_dark" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/gpx_chrome_black"
@@ -534,7 +541,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_black_b406fb5" />
+                        android:text="@string/gpx_black" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/gpx_chrome_slate"
@@ -543,7 +550,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_slate_26d7b21" />
+                        android:text="@string/gpx_slate" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/gpx_chrome_forest"
@@ -552,7 +559,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_forest_f41c4e4" />
+                        android:text="@string/gpx_forest" />
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
@@ -565,7 +572,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:text="@string/layout_3d_buildings_a689e38"
+                    android:text="@string/gpx_3d_buildings"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -584,7 +591,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_on_e0049a6" />
+                        android:text="@string/gpx_on" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/gpx_buildings_off"
@@ -593,7 +600,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_off_e3de5ab" />
+                        android:text="@string/res_off" />
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
@@ -606,7 +613,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:text="@string/layout_route_mode_54b9671"
+                    android:text="@string/gpx_route_mode"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -615,7 +622,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="@string/layout_fast_quickest_roads_fun_twistier_25c5e6b"
+                    android:text="@string/gpx_fast_quickest_roads_fun_twistier_circuit_go_to_a"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
 
@@ -633,7 +640,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_fast_8db6a2f" />
+                        android:text="@string/gpx_fast" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/gpx_route_fun"
@@ -642,7 +649,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_fun_5f941ab" />
+                        android:text="@string/gpx_fun" />
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
@@ -651,13 +658,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@string/layout_open_map_pick_place_circuit_9e542f2" />
+                    android:text="@string/gpx_circuit" 
+                    android:minHeight="48dp"/>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:text="@string/layout_avoid_tolls_7194b98"
+                    android:text="@string/gpx_avoid_tolls"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -676,7 +684,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_on_e0049a6" />
+                        android:text="@string/gpx_on" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/gpx_avoid_tolls_off"
@@ -685,14 +693,14 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_off_e3de5ab" />
+                        android:text="@string/res_off" />
                 </LinearLayout>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:text="@string/layout_avoid_highways_a36e887"
+                    android:text="@string/gpx_avoid_highways"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -711,7 +719,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_on_e0049a6" />
+                        android:text="@string/gpx_on" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/gpx_avoid_hwy_off"
@@ -720,14 +728,14 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_off_e3de5ab" />
+                        android:text="@string/res_off" />
                 </LinearLayout>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:text="@string/layout_fun_circuit_length_b30a559"
+                    android:text="@string/gpx_fun_circuit_length"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -746,7 +754,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_30_km_8c81257" />
+                        android:text="@string/gpx_30_km" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/gpx_circuit_60"
@@ -755,7 +763,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_60_km_a8793ea" />
+                        android:text="@string/gpx_60_km" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/gpx_circuit_100"
@@ -764,7 +772,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_100_km_bdb1700" />
+                        android:text="@string/gpx_100_km" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -785,7 +793,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:letterSpacing="0.08"
-                    android:text="@string/layout_offline_maps_119fc20"
+                    android:text="@string/gpx_offline_maps"
                     android:textAllCaps="true"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
@@ -796,7 +804,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:lineSpacingExtra="2dp"
-                    android:text="@string/layout_download_an_area_to_ride_9c2d4c9"
+                    android:text="@string/gpx_download_an_area_to_ride_without_a_connection_li"
                     android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
 
@@ -804,7 +812,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:text="@string/layout_detail_7c9a7c0"
+                    android:text="@string/gpx_detail"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -823,7 +831,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_standard_2dfa660" />
+                        android:text="@string/gpx_standard" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/gpx_offline_detail_high"
@@ -832,7 +840,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_high_b1a5954" />
+                        android:text="@string/gpx_high" />
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
@@ -845,7 +853,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:text="@string/layout_radius_e5aaeaa"
+                    android:text="@string/gpx_radius"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -864,7 +872,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_10_km_61864f4" />
+                        android:text="@string/gpx_10_km" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/gpx_offline_radius_25"
@@ -873,7 +881,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_25_km_2950787" />
+                        android:text="@string/gpx_25_km" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/gpx_offline_radius_50"
@@ -882,7 +890,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_50_km_3fba185" />
+                        android:text="@string/gpx_50_km" />
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
@@ -897,7 +905,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="@string/layout_download_area_around_me_3fd380c" />
+                    android:text="@string/gpx_download_around_me" 
+                    android:minHeight="48dp"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/gpx_offline_track"
@@ -906,7 +915,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:enabled="false"
-                    android:text="@string/layout_download_area_around_gpx_7caa51b" />
+                    android:text="@string/gpx_download_around_gpx" 
+                    android:minHeight="48dp"/>
 
                 <ProgressBar
                     android:id="@+id/gpx_offline_progress"
@@ -929,7 +939,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="44dp"
                     android:layout_marginTop="8dp"
-                    android:text="@string/layout_clear_cached_bike_tiles_906ca3a" />
+                    android:text="@string/gpx_clear_cached_bike_tiles" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -949,7 +959,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:letterSpacing="0.08"
-                    android:text="@string/layout_routing_7d15dd1"
+                    android:text="@string/gpx_routing"
                     android:textAllCaps="true"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
@@ -959,7 +969,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:lineSpacingExtra="2dp"
-                    android:text="@string/layout_advanced_optional_personal_openrouteservice_key_8fee577"
+                    android:text="@string/gpx_advanced_optional_personal_openrouteservice_key_"
                     android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
 
@@ -969,7 +979,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:autofillHints="password"
-                    android:hint="@string/layout_openrouteservice_api_key_061861a"
+                    android:hint="@string/gpx_openrouteservice_api_key"
                     android:inputType="textNoSuggestions"
                     android:maxLines="1"
                     android:textColor="@color/text_primary"
@@ -981,7 +991,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="44dp"
                     android:layout_marginTop="8dp"
-                    android:text="@string/layout_save_routing_key_c702828" />
+                    android:text="@string/gpx_save_routing_key" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -1001,7 +1011,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:letterSpacing="0.08"
-                    android:text="@string/layout_extras_3b7782f"
+                    android:text="@string/gpx_extras"
                     android:textAllCaps="true"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
@@ -1012,7 +1022,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="@string/layout_mark_parking_here_bc67708" />
+                    android:text="@string/gpx_mark_parking_here" 
+                    android:minHeight="48dp"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/gpx_go_parked"
@@ -1021,7 +1032,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:enabled="false"
-                    android:text="@string/layout_navigate_to_parked_bike_b4ad33f" />
+                    android:text="@string/gpx_to_parked_bike" 
+                    android:minHeight="48dp"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/gpx_clear_parked"
@@ -1030,7 +1042,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:enabled="false"
-                    android:text="@string/layout_clear_parked_spot_2eee9d1" />
+                    android:text="@string/gpx_clear_parked_spot" 
+                    android:minHeight="48dp"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/gpx_set_home_hub"
@@ -1038,7 +1051,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/layout_set_home_here_cbe5861" />
+                    android:text="@string/gpx_set_home_here" 
+                    android:minHeight="48dp"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/gpx_go_home_hub"
@@ -1047,7 +1061,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:enabled="false"
-                    android:text="@string/layout_navigate_home_bebdb22" />
+                    android:text="@string/gpx_navigate_home" 
+                    android:minHeight="48dp"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/gpx_corridor_poi"
@@ -1056,7 +1071,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:enabled="false"
-                    android:text="@string/layout_download_roadside_poi_track_f2b7a91" />
+                    android:text="@string/gpx_download_roadside_poi" 
+                    android:minHeight="48dp"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/gpx_export_map"
@@ -1064,7 +1080,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/layout_export_map_data_6359115" />
+                    android:text="@string/gpx_export_map_data" 
+                    android:minHeight="48dp"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/gpx_import_map"
@@ -1072,7 +1089,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/layout_import_map_data_59a4bf4" />
+                    android:text="@string/gpx_import_map_data" 
+                    android:minHeight="48dp"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -1082,7 +1100,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp"
             android:lineSpacingExtra="2dp"
-            android:text="@string/layout_map_gpx_uses_maplibre_vector_cc8bd5c"
+            android:text="@string/gpx_map_gpx_uses_maplibre_vector_tiles_online_and_op"
             android:textColor="@color/text_secondary"
             android:textSize="12sp" />
     </LinearLayout>

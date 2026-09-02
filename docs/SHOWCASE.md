@@ -2,7 +2,7 @@
 
 Community photos of **OpenCfMoto / Android Auto** on real EasyConnect dashes.
 Full model list: [SUPPORTED-BIKES.md](SUPPORTED-BIKES.md). Send more in Discord
-[`#confirmed-working`](https://discord.gg/xRt5yZy2U) (model + year + photo).
+[`#confirmed-working`](https://discord.gg/KNTjJhmFZ6) (model + year + photo).
 
 Photos are curated from Discord (caption / thread context). Credits under each shot.
 
@@ -74,6 +74,22 @@ Scooter EasyConnect path — Android Auto navigation.
 
 *Source: Discord `#confirmed-working` — @farhandgreat1730*
 
+### 450NK
+
+2024 450NK — no T‑Box / no MotoPlay subscription; Android Auto Maps on the dash.
+
+![CFMoto 450NK](media/showcase/cfmoto-450nk/01.jpg)
+
+*Source: Discord `#confirmed-working` — @pretty.af*
+
+### GOES Terrox 1000 Pro
+
+CFORCE 1000 rebadge (ATV TFT) — Android Auto Maps; touchscreen + recommended settings.
+
+![GOES Terrox 1000](media/showcase/goes-terrox-1000/01.jpg)
+
+*Source: Discord `#confirmed-working` — @lacy18 (2026, Austria)*
+
 ---
 
 ## Other brands
@@ -118,16 +134,32 @@ Android Auto split (maps + media) on the Carbit dash.
 
 *Source: Discord `#confirmed-working` — @tutoscaldera (friend’s T1002V)*
 
+### QJ Motor SRK800RR
+
+2025 SRK800RR — Android Auto media + Maps (iOS QR path); handlebars need bike Bluetooth + Controls ON.
+
+![QJ Motor SRK800RR](media/showcase/qj-srk800rr/01.jpg)
+
+*Source: Discord `#confirmed-working` — @vimetiv*
+
+### QJ Motor SRK450RR / SRK250RD
+
+2026 SRK450RR and SRK250RD — Android Auto on a half-screen dash layout (unlike full-width 800RR).
+
+![QJ Motor SRK450RR](media/showcase/qj-srk450rr/01.jpg)
+
+*Source: Discord `#confirmed-working` — @chrrlees2 (same half-screen layout reported for SRK250RD)*
+
 ---
 
 ## Still looking for a clean still
 
 | Model | Notes |
 | --- | --- |
-| **GOES Terrox 1000** / **Gladiator G3 1000** | Confirmed — we have Discord video; need a clear still for this page |
-| **CFORCE 850 / 1000** | Confirmed — want a dash photo |
+| **CFORCE 850 / 1000** (CFMoto badge) | Confirmed — want a CFMoto-badged still (GOES Terrox now showcased) |
 | **800NK Advanced** · **450SR** · **450CL‑C** | Confirmed in docs — want showcase photos |
-| **QJ Motor 550/600SX** | In progress |
+| **QJ Motor 550/600SX** · **Fort 4.0** | In progress / EasyConnect TFT — want confirm + photo |
+| **Gladiator G3 1000** | Same as GOES Terrox — optional second brand still |
 
 ---
 

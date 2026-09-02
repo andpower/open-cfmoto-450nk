@@ -9,7 +9,7 @@ on:
       release_tag:
         description: Tag for the APK release
         required: true
-        default: v2.3.1-450nk
+        default: v2.4.0-450nk
 
 permissions:
   contents: write
@@ -71,6 +71,26 @@ jobs:
         if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
         run: cp app/build/outputs/apk/release/app-release.apk OpenCfMoto-450NK.apk
 
+      - name: Validate debug APK identity
+        if: github.ref != 'refs/heads/main' && github.event_name != 'workflow_dispatch'
+        run: |
+          AAPT="$(find "$ANDROID_HOME/build-tools" -type f -name aapt | sort -V | tail -1)"
+          BADGING="$("$AAPT" dump badging OpenCfMoto-450NK-debug.apk | head -1)"
+          echo "$BADGING"
+          grep -Fq "package: name='com.andpower.opencfmoto450nk' versionCode='77' versionName='2.4.0-450nk'" <<<"$BADGING"
+
+      - name: Validate signed release APK
+        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+        run: |
+          AAPT="$(find "$ANDROID_HOME/build-tools" -type f -name aapt | sort -V | tail -1)"
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -1)"
+          BADGING="$("$AAPT" dump badging OpenCfMoto-450NK.apk | head -1)"
+          VERIFY="$("$APKSIGNER" verify --verbose --print-certs OpenCfMoto-450NK.apk)"
+          echo "$BADGING"
+          echo "$VERIFY"
+          grep -Fq "package: name='com.andpower.opencfmoto450nk' versionCode='77' versionName='2.4.0-450nk'" <<<"$BADGING"
+          grep -Fqi "68d6c68651915fc7c598b53a7e0daecfa4f12075711960c8b004e07afdb05a84" <<<"${VERIFY//:/}"
+
       - name: Upload debug APK artifact
         if: github.ref != 'refs/heads/main' && github.event_name != 'workflow_dispatch'
         uses: actions/upload-artifact@v4
@@ -101,5 +121,5 @@ jobs:
           gh release create "$RELEASE_TAG" OpenCfMoto-450NK.apk OpenCfMoto-450NK.apk.sha256 \
             --target "$GITHUB_SHA" \
             --latest \
-            --title "OpenCfMoto 450NK 2.3.1 — firma permanente" \
-            --notes "Release manual durante la integración de upstream 2.0.9."
+            --title "OpenCfMoto 450NK 2.4.0 — Android Auto 17.4+" \
+            --notes "Android Auto 17.4+ por puerto 5277, base upstream 2.0.18-pre, perfil 450NK, Apps seguras en parado y firma permanente."

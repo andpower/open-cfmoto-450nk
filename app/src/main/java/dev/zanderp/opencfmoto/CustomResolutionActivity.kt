@@ -91,9 +91,9 @@ class CustomResolutionActivity : AppCompatActivity() {
     private fun refreshMatchNote() {
         val detected = VideoPrefs.detectedPanelSize(this)
         val detectedNote = if (detected != null) {
-            "Detected panel ${detected.first}×${detected.second} (from bike / profile)."
+            getString(R.string.res_detected_panel, detected.first, detected.second)
         } else {
-            "No panel size yet — connect once so the bike reports its screen; Auto will use it next time."
+            getString(R.string.res_no_panel_size_yet)
         }
 
         val coded = VideoPrefs.resolution(this).spec ?: BikeProfileHolder.aaVideo
@@ -107,20 +107,27 @@ class CustomResolutionActivity : AppCompatActivity() {
         }
         val marginNote = if (panel == null) {
             if (mode == MatchAspectMode.OFF) {
-                "Match aspect off — Screen fit letterbox/crop applies as before."
+                getString(R.string.res_match_aspect_off_note)
             } else {
-                "No margins until a panel size is known."
+                getString(R.string.res_no_margins_until_panel)
             }
         } else {
             val m = AaMargins.forAspect(coded, panel.first, panel.second)
             val uw = coded.width - m.marginW
             val uh = coded.height - m.marginH
             if (!m.any) {
-                "AA ${coded.width}×${coded.height} already matches this panel — margins 0 (no change)."
+                getString(R.string.res_aa_matches_panel, coded.width, coded.height)
             } else {
-                "AA coded ${coded.width}×${coded.height} → margins ${m.marginW}×${m.marginH}, " +
-                    "content ${uw}×${uh} (aspect ${"%.3f".format(uw.toDouble() / uh)}). " +
-                    "Fills the panel; Screen fit no longer matters while margins apply."
+                getString(
+                    R.string.res_aa_coded_margins,
+                    coded.width,
+                    coded.height,
+                    m.marginW,
+                    m.marginH,
+                    uw,
+                    uh,
+                    "%.3f".format(uw.toDouble() / uh),
+                )
             }
         }
         findViewById<TextView>(R.id.match_note).text = uiText("$detectedNote\n$marginNote")

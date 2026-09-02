@@ -3,6 +3,7 @@
 // Part of OpenCfMoto. Free software under the GNU AGPL v3 or later; see LICENSE and NOTICE.
 package dev.zanderp.opencfmoto
 
+import android.content.Context
 import android.net.Network
 import java.net.Inet4Address
 
@@ -20,6 +21,7 @@ import java.net.Inet4Address
  */
 object BikeLink {
     @Volatile var prober: EasyConnProber? = null
+    @Volatile private var appContext: Context? = null
 
     // ---- Android Auto → bike start coordination (parallel-startup gate) ----
     // The two slow steps used to be serial: wait for AA "steady video", THEN pop the Wi-Fi join
@@ -35,16 +37,30 @@ object BikeLink {
     /** Wi‑Fi Direct path: no [Network], so the prober binds/probes with these overrides. */
     @Volatile private var p2pBindIp: Inet4Address? = null
     @Volatile private var p2pGatewayIp: Inet4Address? = null
+    @Volatile private var aaDropRetried = false
 
     /** Reset the gate at the start of a fresh Android Auto connection attempt. */
     @Synchronized
-    fun beginHandoff() {
+    fun beginHandoff(context: Context? = null) {
+        if (context != null) appContext = context.applicationContext
         aaVideoSteady = false
         bikeNetwork = null
         networkReady = false
         proberStarted = false
         p2pBindIp = null
         p2pGatewayIp = null
+        aaDropRetried = false
+        AaVideoBridge.aaSessionSeen = false
+        // Leave the bike Network held, but unpin the process so AA can use 127.0.0.1.
+        appContext?.let { BikeWifi.unbindProcess(context = it) }
+    }
+
+    /** One extra self-mode trigger after AA attaches then dies before video is steady. */
+    @Synchronized
+    fun takeAaDropRetry(): Boolean {
+        if (aaDropRetried || aaVideoSteady) return false
+        aaDropRetried = true
+        return true
     }
 
     @Synchronized
@@ -75,8 +91,14 @@ object BikeLink {
         if (proberStarted || !aaVideoSteady || !networkReady) return
         val p = prober ?: return
         proberStarted = true
+        appContext?.let { ctx ->
+            if (BikeWifi.rebindProcessToBike(ctx)) {
+                LogBus.log("→ process bound to bike Wi-Fi (AA video is live)")
+            }
+        }
         LogBus.log("→ AA video + bike Wi-Fi both ready — starting EasyConn PXC flow …")
         ConnectionState.set(Phase.PXC_CONNECTING)
+        appContext?.let { DashClockBle.start(it) }
         try {
             p.start(bikeNetwork, gatewayOverride = p2pGatewayIp, bindIpOverride = p2pBindIp)
         } catch (e: Exception) {
@@ -109,6 +131,7 @@ object BikeLink {
         bikeNetwork = network
         networkReady = true
         proberStarted = true
+        appContext?.let { DashClockBle.start(it) }
         try {
             p.start(network)
         } catch (e: Exception) {

@@ -1,4 +1,4 @@
-plugins {
+﻿plugins {
     alias(libs.plugins.android.application)
 }
 
@@ -29,33 +29,55 @@ if (releaseSigningRequested && missingSigningValues.isNotEmpty()) {
 
 android {
     namespace = "dev.zanderp.opencfmoto"
-    androidResources {
-        generateLocaleConfig = true
-    }
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
         }
     }
 
+    // Slim is the default ship shape: arm64-only + R8. Opt out with -PslimApk=false (fat debug/CI).
+    val slimApk = (project.findProperty("slimApk") as String?)?.equals("false", ignoreCase = true) != true
+
     defaultConfig {
         applicationId = "com.andpower.opencfmoto450nk"
         minSdk = 29
         targetSdk = 36
-        versionCode = 38
-        versionName = "2.3.1-450nk"
+        versionCode = 77
+        versionName = "2.4.0-450nk"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        // Default OpenRouteService key used when the rider hasn't entered their own. Supply it via
+        // `-PorsApiKey=...`, an `orsApiKey` in gradle.properties, or the ORS_API_KEY env var so the
+        // key isn't hardcoded in source. Empty → routing falls back to the OSRM demo, then beeline.
         val orsDefaultKey = (project.findProperty("orsApiKey") as String?)
             ?: System.getenv("ORS_API_KEY")
             ?: ""
         buildConfigField("String", "ORS_API_KEY", "\"$orsDefaultKey\"")
 
+        // Anonymous telemetry Worker base URL (no trailing slash). Empty disables uploads.
+        // Override: -PtelemetryUrl=https://….workers.dev  or TELEMETRY_URL env / gradle.properties
         val telemetryUrl = (project.findProperty("telemetryUrl") as String?)
             ?: System.getenv("TELEMETRY_URL")
             ?: ""
         buildConfigField("String", "TELEMETRY_URL", "\"$telemetryUrl\"")
+
+        // Short git hash for Share Logs triage (configuration-cache safe).
+        val gitHash = providers.exec {
+            commandLine("git", "rev-parse", "--short", "HEAD")
+            workingDir(rootProject.projectDir)
+            isIgnoreExitValue = true
+        }.standardOutput.asText.map { text ->
+            val t = text.trim()
+            if (t.matches(Regex("[0-9a-f]{4,40}"))) t else "unknown"
+        }.orElse("unknown")
+        buildConfigField("String", "GIT_HASH", "\"${gitHash.get()}\"")
+
+        if (slimApk) {
+            ndk {
+                abiFilters += listOf("arm64-v8a")
+            }
+        }
     }
 
     signingConfigs {
@@ -75,9 +97,10 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("permanentRelease")
+            isMinifyEnabled = slimApk
+            isShrinkResources = slimApk
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("permanentRelease")
         }
     }
     compileOptions {
@@ -89,6 +112,7 @@ android {
         buildConfig = true
     }
 
+    // Wireless Android Auto needs the packaged aa_privkey (same as prior releases).
     lint {
         disable += "PackagedPrivateKey"
         checkReleaseBuilds = true
@@ -111,6 +135,7 @@ dependencies {
     implementation(libs.conscrypt.android)
     implementation(libs.osmdroid)
     implementation(libs.maplibre)
+    // Compile-time OkHttp for MapLibre cellular pin (MapLibre brings it as runtime only).
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)

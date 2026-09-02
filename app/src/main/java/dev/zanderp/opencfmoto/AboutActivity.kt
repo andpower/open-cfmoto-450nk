@@ -29,7 +29,7 @@ class AboutActivity : AppCompatActivity() {
         }
 
         findViewById<TextView>(R.id.about_version).text =
-            uiText("Version ${BuildConfig.VERSION_NAME}  ·  build ${BuildConfig.VERSION_CODE}")
+            "Version ${BuildConfig.VERSION_NAME}  ·  build ${BuildConfig.VERSION_CODE}"
 
         findViewById<MaterialButton>(R.id.btn_about_website).setOnClickListener {
             openUrl(URL_WEBSITE)
@@ -53,14 +53,14 @@ class AboutActivity : AppCompatActivity() {
         try {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
         } catch (_: Exception) {
-            Toast.makeText(this, uiText("Couldn't open link"), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Couldn't open link", Toast.LENGTH_SHORT).show()
         }
     }
 
     companion object {
         private const val URL_WEBSITE = "https://alexandru.rocks"
         private const val URL_GITHUB = "https://github.com/andpower/open-cfmoto-450nk"
-        private const val URL_DISCORD = "https://discord.gg/xRt5yZy2U"
+        private const val URL_DISCORD = "https://discord.gg/KNTjJhmFZ6"
         const val URL_KOFI = "https://ko-fi.com/alexandrupopa"
         private const val URL_NOTICE =
             "https://github.com/andpower/open-cfmoto-450nk/blob/main/NOTICE"

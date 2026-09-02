@@ -18,7 +18,7 @@
             android:id="@+id/map_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/layout_trip_9dda9aa"
+            android:text="@string/main_trip"
             android:textColor="@color/text_primary"
             android:textSize="20sp"
             android:textStyle="bold" />

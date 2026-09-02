@@ -115,5 +115,41 @@
     "jump": "https://discord.com/channels/1527320290726514748/1527379932894724096/1531791368819576962",
     "channel": "cw (main)",
     "content": "A friend of mine tested it on a Morbidelli T1002V, and it works fine"
+  },
+  {
+    "model": "qj-srk800rr",
+    "file": "PXL_20260730_1400194912.jpg",
+    "out": "01.jpg",
+    "author": "vimetiv",
+    "jump": "https://discord.com/channels/1527320290726514748/1527379932894724096/1532410039116239080",
+    "channel": "cw (main)",
+    "content": "Works on QJMOTOR SRK800RR 2025 but controls from handlebars are not working"
+  },
+  {
+    "model": "qj-srk450rr",
+    "file": "IMG-20260731-WA0016.jpg",
+    "out": "01.jpg",
+    "author": "chrrlees2",
+    "jump": "https://discord.com/channels/1527320290726514748/1527379932894724096/1532654325606776963",
+    "channel": "cw (main)",
+    "content": "Work on QJMOTOR SRK250RD and SRK450RR 2026. ... limit the screen half only unlike the 800RR"
+  },
+  {
+    "model": "cfmoto-450nk",
+    "file": "IMG_20260730_182446.jpg",
+    "out": "01.jpg",
+    "author": "pretty.af",
+    "jump": "https://discord.com/channels/1527320290726514748/1527379932894724096/1532335524763930685",
+    "channel": "cw (main)",
+    "content": "2024 450nk no tbox no motoplay subscription"
+  },
+  {
+    "model": "goes-terrox-1000",
+    "file": "20260729_204615.jpg",
+    "out": "01.jpg",
+    "author": "lacy18",
+    "jump": "https://discord.com/channels/1527320290726514748/1527379932894724096/1532097648511942686",
+    "channel": "cw (main)",
+    "content": "Goes terrox 1000 Pro modell, 2026, Austria Working perfect!"
   }
 ]

@@ -91,7 +91,23 @@ class ScreenMarginsActivity : AppCompatActivity() {
     }
 
     private fun refreshSummary() {
-        findViewById<TextView>(R.id.tv_margins_summary).text = ScreenMargins.summary()
+        findViewById<TextView>(R.id.tv_margins_summary).text = when {
+            !ScreenMargins.any -> getString(R.string.margins_summary_none)
+            !ScreenMargins.customised -> getString(
+                R.string.margins_summary_profile_default,
+                ScreenMargins.top,
+                ScreenMargins.bottom,
+                ScreenMargins.left,
+                ScreenMargins.right,
+            )
+            else -> getString(
+                R.string.margins_summary_custom,
+                ScreenMargins.top,
+                ScreenMargins.bottom,
+                ScreenMargins.left,
+                ScreenMargins.right,
+            )
+        }
     }
 
     companion object {

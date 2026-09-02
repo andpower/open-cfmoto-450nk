@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/layout_screen_margins_a189e22"
+            android:text="@string/margins_screen_margins"
             android:textColor="@color/text_primary"
             android:textSize="26sp"
             android:textStyle="bold" />
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="12dp"
-            android:text="@string/layout_inset_android_auto_from_each_1a97327"
+            android:text="@string/margins_inset_android_auto_from_each_edge_of_the_dash_pi"
             android:textColor="@color/text_secondary"
             android:textSize="14sp" />
 
@@ -42,7 +42,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/layout_top_cae0435"
+            android:text="@string/margins_top"
             android:textColor="@color/text_secondary"
             android:textSize="12sp" />
         <LinearLayout
@@ -69,7 +69,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="@string/layout_bottom_cce7f2f"
+            android:text="@string/margins_bottom"
             android:textColor="@color/text_secondary"
             android:textSize="12sp" />
         <LinearLayout
@@ -96,7 +96,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="@string/layout_left_8ae1c34"
+            android:text="@string/margins_left"
             android:textColor="@color/text_secondary"
             android:textSize="12sp" />
         <LinearLayout
@@ -123,7 +123,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="@string/layout_right_954daa8"
+            android:text="@string/margins_right"
             android:textColor="@color/text_secondary"
             android:textSize="12sp" />
         <LinearLayout
@@ -152,7 +152,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="@string/layout_reset_to_profile_default_69cbb3e" />
+            android:text="@string/margins_reset_to_profile_default" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_margins_done"
@@ -160,6 +160,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/layout_done_e9b450d" />
+            android:text="@string/about_done" />
     </LinearLayout>
 </ScrollView>

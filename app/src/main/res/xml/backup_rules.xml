@@ -2,4 +2,6 @@
 <full-backup-content>
     <!-- Contains the raw MotoPlay QR, including the bike Wi-Fi password. Never cloud-back it up. -->
     <exclude domain="sharedpref" path="opencfmoto_bike.xml" />
+    <!-- Ephemeral parked-app button mode must never survive a restore. -->
+    <exclude domain="sharedpref" path="app_mirror_session.xml" />
 </full-backup-content>

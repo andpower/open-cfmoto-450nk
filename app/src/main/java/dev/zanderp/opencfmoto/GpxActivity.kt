@@ -79,16 +79,16 @@ class GpxActivity : AppCompatActivity() {
         contentResolver.openInputStream(uri)?.use { input ->
             FileOutputStream(dest).use { output -> input.copyTo(output) }
         } ?: run {
-            Toast.makeText(this, uiText("Could not read file"), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Could not read file", Toast.LENGTH_SHORT).show()
             return@registerForActivityResult
         }
         val track = runCatching { GpxParser.parse(dest) }.getOrElse {
-            Toast.makeText(this, uiText("Invalid GPX: ${it.message}"), Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Invalid GPX: ${it.message}", Toast.LENGTH_LONG).show()
             dest.delete()
             return@registerForActivityResult
         }
         if (track.points.isEmpty() && track.waypoints.isEmpty()) {
-            Toast.makeText(this, uiText("GPX has no track points or waypoints"), Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "GPX has no track points or waypoints", Toast.LENGTH_LONG).show()
             dest.delete()
             return@registerForActivityResult
         }
@@ -110,7 +110,7 @@ class GpxActivity : AppCompatActivity() {
         corridorBtn.isEnabled = track.points.isNotEmpty()
         offlineTrackBtn.isEnabled = track.points.isNotEmpty() && !offlineBusy
         corridorPois = emptyList()
-        progressLabel.text = uiText("GPX ready — Open on map, or Project to bike when connected.")
+        progressLabel.text = "GPX ready — Open on map, or Project to bike when connected."
         progressBar.isVisible = false
         MapPlaces.pushHistory(
             this,
@@ -118,7 +118,7 @@ class GpxActivity : AppCompatActivity() {
         )
         refreshLists()
         LogBus.log("→ GPX loaded: $displayName (${track.points.size} points)")
-        Toast.makeText(this, uiText("GPX loaded — tap Open GPX on map"), Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "GPX loaded — tap Open GPX on map", Toast.LENGTH_LONG).show()
     }
 
     private val importMapLauncher = registerForActivityResult(
@@ -129,7 +129,7 @@ class GpxActivity : AppCompatActivity() {
             contentResolver.openInputStream(uri)?.bufferedReader()?.readText()
         }.getOrNull()
         if (text.isNullOrBlank()) {
-            Toast.makeText(this, uiText("Could not read file"), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Could not read file", Toast.LENGTH_SHORT).show()
             return@registerForActivityResult
         }
         val result = MapDataBackup.importJson(this, text)
@@ -194,13 +194,13 @@ class GpxActivity : AppCompatActivity() {
             MapPlaces.clearParked(this)
             refreshSettingsUi()
             refreshLists()
-            Toast.makeText(this, uiText("Parked spot cleared"), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Parked spot cleared", Toast.LENGTH_SHORT).show()
         }
         findViewById<MaterialButton>(R.id.gpx_set_home_hub).setOnClickListener {
             ensureLocationPermission()
             val near = lastKnown()
             if (near == null) {
-                Toast.makeText(this, uiText("Need a GPS fix to set Home"), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Need a GPS fix to set Home", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             MapPlaces.setHome(
@@ -209,7 +209,7 @@ class GpxActivity : AppCompatActivity() {
             )
             refreshSettingsUi()
             refreshLists()
-            Toast.makeText(this, uiText("Home saved"), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Home saved", Toast.LENGTH_SHORT).show()
         }
         findViewById<MaterialButton>(R.id.gpx_go_home_hub).setOnClickListener {
             val home = MapPlaces.home(this) ?: return@setOnClickListener
@@ -251,7 +251,7 @@ class GpxActivity : AppCompatActivity() {
         for (chip in NominatimSearch.POI_CHIPS) {
             chips.addView(
                 Chip(this).apply {
-                    text = uiText(chip.label)
+                    text = chip.label
                     isClickable = true
                     isCheckable = false
                     setOnClickListener { runPoi(chip) }
@@ -479,28 +479,30 @@ class GpxActivity : AppCompatActivity() {
         )
         refreshOfflineControls()
         refreshOfflineList()
-        corridorBtn.text = uiText(if (corridorPois.isEmpty()) {
-            "Download roadside POI (track)"
+        corridorBtn.text = if (corridorPois.isEmpty()) {
+            getString(R.string.gpx_download_roadside_poi_track)
         } else {
-            "Roadside POI ready (${corridorPois.size})"
-        })
+            getString(R.string.gpx_roadside_poi_ready, corridorPois.size)
+        }
         val parked = MapPlaces.parked(this)
         goParkedBtn.isEnabled = parked != null
-        goParkedBtn.text = uiText(if (parked != null) {
-            "Navigate to parked · ${parked.name}"
+        goParkedBtn.text = if (parked != null) {
+            getString(R.string.gpx_navigate_to_parked_name, parked.name)
         } else {
-            "Navigate to parked bike"
-        })
+            getString(R.string.gpx_navigate_to_parked_bike)
+        }
         findViewById<MaterialButton>(R.id.gpx_clear_parked).apply {
             isEnabled = parked != null
-            text = uiText("Clear parked spot")
+            text = getString(R.string.gpx_clear_parked_spot)
         }
         findViewById<MaterialButton>(R.id.gpx_park_here).text =
-            uiText(if (parked != null) "Update parking here" else "Mark parking here")
+            if (parked != null) getString(R.string.gpx_update_parking_here)
+            else getString(R.string.gpx_mark_parking_here)
         val home = MapPlaces.home(this)
         findViewById<MaterialButton>(R.id.gpx_go_home_hub).apply {
             isEnabled = home != null
-            text = uiText(if (home != null) "Navigate Home · ${home.name}" else "Navigate Home")
+            text = if (home != null) getString(R.string.gpx_navigate_home_name, home.name)
+            else getString(R.string.gpx_navigate_home)
         }
     }
 
@@ -508,7 +510,7 @@ class GpxActivity : AppCompatActivity() {
         ensureLocationPermission()
         val near = lastKnown()
         if (near == null) {
-            Toast.makeText(this, uiText("Need a GPS fix to mark parking"), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.gpx_need_gps_mark_parking), Toast.LENGTH_SHORT).show()
             return
         }
         val replacing = MapPlaces.parked(this) != null
@@ -520,7 +522,8 @@ class GpxActivity : AppCompatActivity() {
         refreshLists()
         Toast.makeText(
             this,
-            uiText(if (replacing) "Parking spot updated" else "Parking spot saved"),
+            if (replacing) getString(R.string.gpx_parking_spot_updated)
+            else getString(R.string.gpx_parking_spot_saved),
             Toast.LENGTH_SHORT,
         ).show()
     }
@@ -531,7 +534,7 @@ class GpxActivity : AppCompatActivity() {
     private fun downloadCorridorPois() {
         val track = parsed ?: return
         corridorBtn.isEnabled = false
-        progressLabel.text = uiText("Downloading roadside POI…")
+        progressLabel.text = getString(R.string.gpx_downloading_roadside_poi)
         OverpassClient.corridorPoisAsync(
             track.points,
             onResult = { list ->
@@ -540,11 +543,11 @@ class GpxActivity : AppCompatActivity() {
                     OfflinePoiIndex.setCorridorCache(list)
                     corridorBtn.isEnabled = true
                     refreshSettingsUi()
-                    progressLabel.text = uiText(if (list.isEmpty()) {
-                        "No roadside POI in corridor"
+                    progressLabel.text = if (list.isEmpty()) {
+                        getString(R.string.gpx_no_roadside_poi_in_corridor)
                     } else {
-                        "Roadside POI: ${list.size} (fuel, parking, food…)"
-                    })
+                        getString(R.string.gpx_roadside_poi_count, list.size)
+                    }
                     Toast.makeText(this, progressLabel.text, Toast.LENGTH_LONG).show()
                 }
             },
@@ -569,15 +572,15 @@ class GpxActivity : AppCompatActivity() {
             )
             val send = Intent(Intent.ACTION_SEND).apply {
                 type = "application/json"
-                putExtra(Intent.EXTRA_SUBJECT, "OpenCfMoto map data")
+                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.gpx_export_map_subject))
                 putExtra(Intent.EXTRA_STREAM, uri)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 clipData = android.content.ClipData.newUri(contentResolver, file.name, uri)
             }
-            startActivity(Intent.createChooser(send, "Export map data"))
+            startActivity(Intent.createChooser(send, getString(R.string.gpx_export_map_chooser)))
             LogBus.log("→ Map data exported: ${file.name}")
         } catch (e: Exception) {
-            Toast.makeText(this, uiText("Export failed: $e"), Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.gpx_export_failed, e.toString()), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -588,7 +591,16 @@ class GpxActivity : AppCompatActivity() {
         ProjectionHolder.projection?.let { try { it.stop() } catch (_: Exception) {} }
         ProjectionHolder.projection = null
         GpxSession.prepareFreeRide(overlays())
-        MapPlaces.pushHistory(this, MapPlace("Free ride", 0.0, 0.0, "mode", "Started free ride"))
+        MapPlaces.pushHistory(
+            this,
+            MapPlace(
+                getString(R.string.gpx_free_ride_place),
+                0.0,
+                0.0,
+                "mode",
+                getString(R.string.gpx_free_ride_started),
+            ),
+        )
         launchSession(toBike = true)
     }
 
@@ -615,14 +627,14 @@ class GpxActivity : AppCompatActivity() {
         val file = cachedFile ?: return
         if (DependencyPrompt.showForConnect(this, forScan = false)) return
         if (BikeMemory.lastQr(this) == null) {
-            Toast.makeText(this, uiText("No bike saved — opening on phone map instead"), Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.gpx_no_bike_open_phone_map), Toast.LENGTH_LONG).show()
             openGpxOnPhoneMap()
             return
         }
         if (!offlineReady) {
             Toast.makeText(
                 this,
-                uiText("Tip: download offline maps first if cellular will drop on the bike Wi‑Fi"),
+                getString(R.string.gpx_tip_download_offline_first),
                 Toast.LENGTH_LONG,
             ).show()
         }
@@ -691,10 +703,10 @@ class GpxActivity : AppCompatActivity() {
         val areas = OfflineAreasStore.list(this)
         offlineList.removeAllViews()
         val rasterMb = GpxOsmdroid.rasterCacheBytes(this) / (1024 * 1024)
-        offlineClearRasterBtn.text = uiText("Clear cached bike tiles (${rasterMb} MB)")
+        offlineClearRasterBtn.text = getString(R.string.gpx_clear_cached_bike_tiles_mb, rasterMb)
         if (areas.isEmpty()) {
             offlineList.addView(TextView(this).apply {
-                text = "No offline areas yet."
+                text = getString(R.string.gpx_no_offline_areas_yet)
                 setTextColor(ContextCompat.getColor(this@GpxActivity, R.color.text_secondary))
                 textSize = 13f
             })
@@ -708,7 +720,7 @@ class GpxActivity : AppCompatActivity() {
                 offlineList.removeAllViews()
                 if (areas.isEmpty()) {
                     offlineList.addView(TextView(this).apply {
-                        text = "No offline areas yet."
+                        text = getString(R.string.gpx_no_offline_areas_yet)
                         setTextColor(ContextCompat.getColor(this@GpxActivity, R.color.text_secondary))
                         textSize = 13f
                     })
@@ -717,6 +729,21 @@ class GpxActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun offlineAreaDetailText(
+        quality: String,
+        area: OfflineAreasStore.Area,
+        vectorMb: Long,
+    ): String = when {
+        area.vector && area.raster ->
+            getString(R.string.gpx_offline_area_detail_vector_raster, quality, vectorMb)
+        area.vector ->
+            getString(R.string.gpx_offline_area_detail_vector, quality, vectorMb)
+        area.raster ->
+            getString(R.string.gpx_offline_area_detail_raster, quality)
+        else ->
+            getString(R.string.gpx_offline_area_detail, quality)
     }
 
     private fun offlineRow(a: OfflineAreasStore.Area, vectorBytes: Long = 0L): LinearLayout {
@@ -729,21 +756,20 @@ class GpxActivity : AppCompatActivity() {
             setTextColor(ContextCompat.getColor(this@GpxActivity, R.color.text_primary))
             textSize = 15f
         })
-        val detail = if (a.zoomMax >= GpxOsmdroid.AREA_ZOOM_HIGH_MAX) "High" else "Standard"
+        val detail = if (a.zoomMax >= GpxOsmdroid.AREA_ZOOM_HIGH_MAX) {
+            getString(R.string.gpx_high)
+        } else {
+            getString(R.string.gpx_standard)
+        }
         val vmb = vectorBytes / (1024 * 1024)
         row.addView(TextView(this).apply {
-            text = buildString {
-                append(detail)
-                append(" detail")
-                if (a.vector) append(" · vector ${vmb} MB")
-                if (a.raster) append(" · raster on bike")
-            }
+            text = offlineAreaDetailText(detail, a, vmb)
             setTextColor(ContextCompat.getColor(this@GpxActivity, R.color.text_secondary))
             textSize = 12f
         })
         val actions = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
         actions.addView(MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
-            text = "Delete"
+            text = getString(R.string.gpx_delete)
             textSize = 12f
             isEnabled = !offlineBusy
             setOnClickListener { deleteOfflineArea(a) }
@@ -760,8 +786,8 @@ class GpxActivity : AppCompatActivity() {
                 refreshOfflineList()
                 Toast.makeText(
                     this,
-                    if (ok) "Deleted offline area \"${a.name}\"."
-                    else "Removed area record; some offline data may remain.",
+                    if (ok) getString(R.string.gpx_offline_area_deleted, a.name)
+                    else getString(R.string.gpx_offline_area_partial_delete),
                     Toast.LENGTH_LONG,
                 ).show()
             }
@@ -772,20 +798,20 @@ class GpxActivity : AppCompatActivity() {
         if (offlineBusy) return
         GpxOsmdroid.clearRasterCache(this)
         refreshOfflineList()
-        Toast.makeText(this, uiText("Cached bike tiles cleared"), Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.gpx_cached_bike_tiles_cleared), Toast.LENGTH_SHORT).show()
     }
 
     private fun downloadAreaAroundMe() {
         ensureLocationPermission()
         val near = lastKnown()
         if (near == null) {
-            Toast.makeText(this, uiText("Need a GPS fix to pick an area"), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.gpx_need_gps_pick_area), Toast.LENGTH_SHORT).show()
             return
         }
         val (lat, lon) = near
         val dLat = offlineRadiusKm / 111.32
         val dLon = offlineRadiusKm / (111.32 * Math.cos(Math.toRadians(lat)).coerceAtLeast(0.01))
-        val name = "Near me · ${offlineRadiusKm}km"
+        val name = getString(R.string.gpx_near_me_area_name, offlineRadiusKm)
         downloadOfflineArea(name, lat + dLat, lat - dLat, lon + dLon, lon - dLon)
     }
 
@@ -822,7 +848,7 @@ class GpxActivity : AppCompatActivity() {
         refreshOfflineControls()
         offlineAreaProgress.isVisible = true
         offlineAreaProgress.isIndeterminate = true
-        progressLabel.text = uiText("Downloading offline map for \"$name\"…")
+        progressLabel.text = getString(R.string.gpx_downloading_offline_map, name)
 
         val bounds = LatLngBounds.Builder()
             .include(LatLng(north, east))
@@ -844,7 +870,11 @@ class GpxActivity : AppCompatActivity() {
                     offlineAreaProgress.isIndeterminate = false
                     offlineAreaProgress.max = 100
                     offlineAreaProgress.progress = percent.coerceIn(0, 100)
-                    progressLabel.text = uiText("Offline map: $percent%  (${bytes / (1024 * 1024)} MB)")
+                    progressLabel.text = getString(
+                        R.string.gpx_offline_map_progress,
+                        percent.coerceIn(0, 100),
+                        bytes / (1024 * 1024),
+                    )
                 }
             },
             onDone = { ok, message ->
@@ -856,7 +886,7 @@ class GpxActivity : AppCompatActivity() {
                     // Map tiles done → also build the free on-device routing graph for this area.
                     runOnUiThread {
                         offlineAreaProgress.isIndeterminate = true
-                        progressLabel.text = uiText("Map ready — building offline routing…")
+                        progressLabel.text = getString(R.string.gpx_offline_map_building_routing)
                     }
                     kotlin.concurrent.thread(name = "offline-route-build") {
                         val routed = runCatching {
@@ -871,9 +901,9 @@ class GpxActivity : AppCompatActivity() {
                         }
                         runOnUiThread {
                             val msg = if (routed) {
-                                "Offline map + routing ready for \"$name\""
+                                getString(R.string.gpx_offline_map_routing_ready, name)
                             } else {
-                                "Offline map ready for \"$name\" (routing unavailable — try again with signal)"
+                                getString(R.string.gpx_offline_map_routing_unavailable, name)
                             }
                             finishOfflineArea(name, north, south, east, west, zMax, vector = true, raster = false, message = msg)
                         }
@@ -917,12 +947,12 @@ class GpxActivity : AppCompatActivity() {
     private fun runSearch() {
         val q = searchEdit.text?.toString().orEmpty()
         if (q.isBlank()) {
-            Toast.makeText(this, uiText("Type a place name"), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.gpx_type_place_name), Toast.LENGTH_SHORT).show()
             return
         }
         resultsBox.removeAllViews()
         resultsBox.addView(TextView(this).apply {
-            text = "Searching…"
+            text = getString(R.string.gpx_searching)
             setTextColor(ContextCompat.getColor(this@GpxActivity, R.color.text_secondary))
         })
         val near = lastKnown()
@@ -947,13 +977,13 @@ class GpxActivity : AppCompatActivity() {
     private fun runPoi(chip: NominatimSearch.PoiChip) {
         val near = lastKnown()
         if (near == null) {
-            Toast.makeText(this, uiText("Need a GPS fix for nearby POI"), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.gpx_need_gps_nearby_poi), Toast.LENGTH_SHORT).show()
             ensureLocationPermission()
             return
         }
         resultsBox.removeAllViews()
         resultsBox.addView(TextView(this).apply {
-            text = uiText("Finding ${uiText(chip.label)}…")
+            text = getString(R.string.gpx_finding_poi, chip.label)
             setTextColor(ContextCompat.getColor(this@GpxActivity, R.color.text_secondary))
         })
         val units = MapPrefs.units(this)
@@ -986,7 +1016,7 @@ class GpxActivity : AppCompatActivity() {
         resultsBox.removeAllViews()
         if (list.isEmpty()) {
             resultsBox.addView(TextView(this).apply {
-                text = "No results"
+                text = getString(R.string.gpx_no_results)
                 setTextColor(ContextCompat.getColor(this@GpxActivity, R.color.text_secondary))
             })
             return
@@ -1002,7 +1032,7 @@ class GpxActivity : AppCompatActivity() {
         val marks = MapPlaces.markers(this)
         if (favs.isEmpty() && marks.isEmpty()) {
             favBox.addView(TextView(this).apply {
-                text = "No favorites yet — star a search result."
+                text = getString(R.string.gpx_no_favorites_yet)
                 setTextColor(ContextCompat.getColor(this@GpxActivity, R.color.text_secondary))
                 textSize = 13f
             })
@@ -1018,7 +1048,7 @@ class GpxActivity : AppCompatActivity() {
             .filter { it.category != "mode" && it.category != "parking" }
         if (hist.isEmpty()) {
             historyBox.addView(TextView(this).apply {
-                text = "No history yet"
+                text = getString(R.string.gpx_no_history_yet)
                 setTextColor(ContextCompat.getColor(this@GpxActivity, R.color.text_secondary))
                 textSize = 13f
             })
@@ -1057,7 +1087,7 @@ class GpxActivity : AppCompatActivity() {
         val actions = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
         if (showGo && !(place.lat == 0.0 && place.lon == 0.0)) {
             actions.addView(MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
-                text = "Go"
+                text = getString(R.string.main_go)
                 textSize = 12f
                 setOnClickListener { navigateTo(place) }
             })
@@ -1068,14 +1098,14 @@ class GpxActivity : AppCompatActivity() {
                 textSize = 12f
                 setOnClickListener {
                     MapPlaces.addFavorite(this@GpxActivity, place)
-                    Toast.makeText(this@GpxActivity, uiText("Favorite saved"), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@GpxActivity, getString(R.string.gpx_favorite_saved), Toast.LENGTH_SHORT).show()
                     refreshLists()
                 }
             })
         }
         if (unfav) {
             actions.addView(MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
-                text = "Remove"
+                text = getString(R.string.gpx_remove)
                 textSize = 12f
                 setOnClickListener {
                     MapPlaces.removeFavorite(this@GpxActivity, place)
@@ -1085,22 +1115,22 @@ class GpxActivity : AppCompatActivity() {
         }
         if (showMarker) {
             actions.addView(MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
-                text = "Marker"
+                text = getString(R.string.gpx_marker_label)
                 textSize = 12f
                 setOnClickListener {
                     MapPlaces.addMarker(this@GpxActivity, place)
-                    Toast.makeText(this@GpxActivity, uiText("Marker saved"), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@GpxActivity, getString(R.string.gpx_marker_saved), Toast.LENGTH_SHORT).show()
                     refreshLists()
                 }
             })
         }
         if (unmark) {
             actions.addView(MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
-                text = "Delete"
+                text = getString(R.string.gpx_delete)
                 textSize = 12f
                 setOnClickListener {
                     MapPlaces.deletePlace(this@GpxActivity, place)
-                    Toast.makeText(this@GpxActivity, uiText("Deleted"), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@GpxActivity, getString(R.string.gpx_deleted), Toast.LENGTH_SHORT).show()
                     refreshSettingsUi()
                     refreshLists()
                 }

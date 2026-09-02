@@ -19,7 +19,7 @@
         <ImageView
             android:layout_width="26dp"
             android:layout_height="26dp"
-            android:contentDescription="@string/layout_garage_f614ac3"
+            android:contentDescription="@string/garage_garage"
             android:src="@drawable/ic_devices"
             android:tint="@color/brand_orange" />
 
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="10dp"
-            android:text="@string/layout_garage_f614ac3"
+            android:text="@string/garage_garage"
             android:textColor="@color/text_primary"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:paddingHorizontal="20dp"
         android:paddingBottom="4dp"
-        android:text="@string/layout_each_bike_keeps_its_own_7549579"
+        android:text="@string/garage_each_bike_keeps_its_own_name_photo_screen_fit_re"
         android:textColor="@color/text_secondary"
         android:textSize="13sp"
         android:lineSpacingExtra="3dp" />
@@ -51,7 +51,7 @@
         android:layout_marginTop="30dp"
         android:gravity="center"
         android:paddingHorizontal="32dp"
-        android:text="@string/layout_no_bikes_yet_nscan_your_e2df692"
+        android:text="@string/garage_no_bikes_yet_scan_your_dash_qr_or_enter_wi_fi_na"
         android:textColor="@color/text_secondary"
         android:textSize="15sp"
         android:lineSpacingExtra="4dp"
@@ -74,27 +74,25 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:baselineAligned="false"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="16dp"
+        android:paddingTop="4dp">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/garage_scan"
-            style="@style/Widget.OpenCfMoto.Button.Tonal"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:text="@string/layout_scan_new_bike_495a919"
+            android:text="@string/garage_scan_new_bike"
             app:icon="@drawable/ic_qr" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/garage_manual"
-            style="@style/Widget.OpenCfMoto.Button.Tonal"
-            android:layout_width="0dp"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_weight="1"
-            android:text="@string/garage_enter_wi_fi_manually" />
+            android:layout_marginTop="8dp"
+            android:text="@string/garage_enter_wi_fi_manually"
+            app:icon="@drawable/ic_wifi" />
     </LinearLayout>
 </LinearLayout>

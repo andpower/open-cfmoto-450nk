@@ -5,6 +5,7 @@ package dev.zanderp.opencfmoto
 
 import android.content.Context
 import android.content.res.Configuration
+import androidx.annotation.StringRes
 import java.util.Calendar
 
 /**
@@ -12,10 +13,10 @@ import java.util.Calendar
  * and dark map styles based on the head unit's NIGHT sensor — which OpenCfMoto reports (see
  * [dev.zanderp.opencfmoto.aa.NightModeEvent]). This just decides what value to report.
  */
-enum class MapTheme(val label: String) {
-    AUTO("Auto (day / night)"),
-    DAY("Day (light)"),
-    NIGHT("Night (dark)"),
+enum class MapTheme(val label: String, @StringRes val labelRes: Int) {
+    AUTO("Auto (day / night)", R.string.setup_auto_day_night),
+    DAY("Day (light)", R.string.pref_map_theme_day),
+    NIGHT("Night (dark)", R.string.pref_map_theme_night),
 }
 
 object NightPrefs {

@@ -18,11 +18,20 @@ import kotlin.system.exitProcess
  *  - installs a process-wide uncaught-exception handler
  *  - writes the stack + [LogBus] snapshot to durable files under [Context.getFilesDir]
  *  - on next launch, reloads those into [LogBus] so Share Logs still works
+ *
+ * Session restore is consume-once: after hydrate we delete [SESSION_FILE] so the next
+ * [persistSession] cannot re-wrap the same blob (nested "restored session log" banners).
  */
 object CrashGuard {
 
     private const val CRASH_FILE = "last_crash.txt"
     private const val SESSION_FILE = "last_session.log"
+    private const val RESTORE_BANNER = "--- restored session log (saved before last exit/crash) ---"
+    private const val PREV_CRASH_BANNER = "--- previous fatal crash (also in files/last_crash.txt) ---"
+    private const val END_CRASH_BANNER = "--- end previous crash — use Share Logs to send this ---"
+    /** Cap on-disk session / crash-attached snapshot (tail). */
+    private const val MAX_SESSION_BYTES = 256 * 1024
+
     private val stampFmt = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US)
 
     @Volatile private var installed = false
@@ -57,7 +66,7 @@ object CrashGuard {
     /** Flush the in-memory log so a later kill/crash still has a session file. */
     fun persistSession(appContext: Context) {
         try {
-            val text = LogBus.snapshot()
+            val text = liveSnapshotForDisk()
             if (text.isBlank()) return
             File(appContext.applicationContext.filesDir, SESSION_FILE).writeText(text)
         } catch (_: Exception) {
@@ -77,18 +86,27 @@ object CrashGuard {
         try {
             val session = File(app.filesDir, SESSION_FILE)
             if (session.exists() && session.length() > 0L) {
-                LogBus.restore(
-                    "--- restored session log (saved before last exit/crash) ---\n" +
-                        session.readText().trimEnd() + "\n",
-                )
+                val body = session.readText().trimEnd()
+                // Consume so the next persist cannot nest another restore banner around this blob.
+                try { session.delete() } catch (_: Exception) {}
+                if (body.isNotBlank()) {
+                    val alreadyRestored = body.lineSequence().firstOrNull { it.isNotBlank() }
+                        ?.contains(RESTORE_BANNER) == true
+                    val block = if (alreadyRestored) {
+                        "$body\n"
+                    } else {
+                        "$RESTORE_BANNER\n$body\n"
+                    }
+                    LogBus.restore(block)
+                }
             }
             val crash = pendingCrashText(app)
             if (crash != null) {
-                LogBus.log("--- previous fatal crash (also in files/last_crash.txt) ---")
+                LogBus.log(PREV_CRASH_BANNER)
                 for (line in crash.lineSequence()) {
                     if (line.isNotEmpty()) LogBus.log(line)
                 }
-                LogBus.log("--- end previous crash — use Share Logs to send this ---")
+                LogBus.log(END_CRASH_BANNER)
             }
         } catch (e: Exception) {
             try {
@@ -119,6 +137,14 @@ object CrashGuard {
         }
     }
 
+    /** Clear Logs: drop memory buffer and durable session so the next launch stays clean. */
+    fun clearSession(appContext: Context) {
+        try {
+            File(appContext.applicationContext.filesDir, SESSION_FILE).delete()
+        } catch (_: Exception) {
+        }
+    }
+
     private fun recordFatal(app: Context, thread: Thread, error: Throwable) {
         val sw = StringWriter()
         error.printStackTrace(PrintWriter(sw))
@@ -138,15 +164,52 @@ object CrashGuard {
         } catch (_: Exception) {
         }
         val snapshot = try {
-            LogBus.snapshot()
+            liveSnapshotForDisk()
         } catch (_: Exception) {
             ""
         }
         val body = header + "\n=== LogBus snapshot ===\n" + snapshot
-        File(app.filesDir, CRASH_FILE).writeText(body)
+        File(app.filesDir, CRASH_FILE).writeText(body.take(MAX_SESSION_BYTES * 2))
         if (snapshot.isNotBlank()) {
             File(app.filesDir, SESSION_FILE).writeText(snapshot)
         }
         Log.e(LogBus.TAG, "FATAL on ${thread.name}", error)
+    }
+
+    /** Live log only — strip nested restore / previous-crash banners; keep the tail. */
+    private fun liveSnapshotForDisk(): String {
+        val raw = try {
+            LogBus.snapshot()
+        } catch (_: Exception) {
+            return ""
+        }
+        if (raw.isBlank()) return ""
+        val stripped = stripRestoreBlocks(raw).trimEnd()
+        if (stripped.isBlank()) return ""
+        return if (stripped.length <= MAX_SESSION_BYTES) {
+            stripped + "\n"
+        } else {
+            stripped.takeLast(MAX_SESSION_BYTES) + "\n"
+        }
+    }
+
+    internal fun stripRestoreBlocks(text: String): String {
+        val lines = text.lineSequence().toList()
+        if (lines.isEmpty()) return text
+        val out = ArrayList<String>(lines.size)
+        var skippingPrevCrash = false
+        for (line in lines) {
+            when {
+                line.contains(RESTORE_BANNER) -> {
+                    // Drop the banner; keep following live lines (may still include old restore body —
+                    // consume-on-hydrate prevents re-wrapping on the next cycle).
+                }
+                line.contains(PREV_CRASH_BANNER) -> skippingPrevCrash = true
+                line.contains(END_CRASH_BANNER) -> skippingPrevCrash = false
+                skippingPrevCrash -> { /* drop prior crash dump from persisted session */ }
+                else -> out.add(line)
+            }
+        }
+        return out.joinToString("\n")
     }
 }

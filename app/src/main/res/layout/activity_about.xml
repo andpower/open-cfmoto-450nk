@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/layout_about_6b21fb7"
+            android:text="@string/about_about"
             android:textColor="@color/text_primary"
             android:textSize="26sp"
             android:textStyle="bold" />
@@ -46,7 +46,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="@string/layout_opencfmoto_28368d6"
+                    android:text="OpenCfMoto"
                     android:textColor="@color/text_primary"
                     android:textSize="22sp"
                     android:textStyle="bold" />
@@ -64,7 +64,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:gravity="center"
-                    android:text="@string/layout_wireless_android_auto_for_cfmoto_3027827"
+                    android:text="@string/about_wireless_android_auto_for_carbit_easyconnect_das"
                     android:textColor="@color/text_secondary"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -86,7 +86,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:letterSpacing="0.08"
-                    android:text="@string/layout_community_support_6d77b2b"
+                    android:text="@string/about_community_support"
                     android:textAllCaps="true"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
@@ -95,7 +95,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/layout_questions_logs_or_a_new_4656f72"
+                    android:text="@string/about_questions_logs_or_a_new_bike_join_discord_tips_k"
                     android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
 
@@ -112,7 +112,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="6dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_discord_bccc14e" />
+                        android:text="@string/about_discord" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_about_kofi"
@@ -121,7 +121,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_donate_95345e2" />
+                        android:text="@string/about_donate" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -141,7 +141,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:letterSpacing="0.08"
-                    android:text="@string/layout_copyright_a420abf"
+                    android:text="@string/about_copyright_2"
                     android:textAllCaps="true"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
@@ -170,7 +170,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="@string/layout_website_alexandru_rocks_df1180f" />
+                    android:text="@string/about_website_alexandru_rocks" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_about_github"
@@ -178,7 +178,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/layout_source_on_github_c60f2f8" />
+                    android:text="@string/about_source_on_github" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -197,7 +197,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:letterSpacing="0.08"
-                    android:text="@string/layout_license_3229609"
+                    android:text="@string/about_license"
                     android:textAllCaps="true"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
@@ -206,7 +206,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@string/layout_gnu_affero_general_public_license_3160ede"
+                    android:text="@string/about_gnu_affero_general_public_license_v3_or_later"
                     android:textColor="@color/text_primary"
                     android:textSize="15sp"
                     android:textStyle="bold" />
@@ -226,7 +226,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="@string/layout_view_license_notice_42183bf" />
+                    android:text="@string/about_view_license_notice" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -245,7 +245,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:letterSpacing="0.08"
-                    android:text="@string/layout_credits_bfac50d"
+                    android:text="@string/about_credits_2"
                     android:textAllCaps="true"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
@@ -276,7 +276,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:letterSpacing="0.08"
-                    android:text="@string/layout_disclaimer_4c4a2e8"
+                    android:text="@string/about_disclaimer_2"
                     android:textAllCaps="true"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
@@ -298,6 +298,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@string/layout_done_e9b450d" />
+            android:text="@string/about_done" />
     </LinearLayout>
 </ScrollView>

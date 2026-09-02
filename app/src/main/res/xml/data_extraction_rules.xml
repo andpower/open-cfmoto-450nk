@@ -3,9 +3,11 @@
     <cloud-backup>
         <!-- Contains the raw MotoPlay QR, including the bike Wi-Fi password. -->
         <exclude domain="sharedpref" path="opencfmoto_bike.xml" />
+        <exclude domain="sharedpref" path="app_mirror_session.xml" />
     </cloud-backup>
     <device-transfer>
         <!-- Force a fresh bike pairing instead of moving a Wi-Fi credential to another phone. -->
         <exclude domain="sharedpref" path="opencfmoto_bike.xml" />
+        <exclude domain="sharedpref" path="app_mirror_session.xml" />
     </device-transfer>
 </data-extraction-rules>

@@ -121,9 +121,11 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
                 if (on) takeMediaFocus()
                 s.isActive = on
                 s.setPlaybackToLocal(mediaAttrs)
-                if (on) pinVolume()
+                if (on) maybePinVolume("start")
                 startVolumeObserver()
-                log("[BTN] bridge ready — mode=${if (on) "control dash (media focus + volume hijacked)" else "control media"}")
+                startAbsentVolumeProbe()
+                log("[BTN] bridge ready — mode=${if (on) "control dash (media focus + volume hijacked)" else "control media"} " +
+                    "presence=${ButtonPresencePrefs.summarize(context)}")
                 scheduleReassertWhenBikeUp()
             } catch (e: Exception) {
                 log("[BTN] media session failed: $e")
@@ -168,7 +170,7 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
                 try {
                     publishMetadata()
                     session?.isActive = true
-                    pinVolume()
+                    maybePinVolume("reassert")
                     postMediaNotification()
                     log("[BTN] media session re-announced")
                 } catch (e: Exception) {
@@ -191,11 +193,13 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
                 if (on) takeMediaFocus() else releaseMediaFocus()
                 session?.isActive = on
                 if (on) {
-                    pinVolume()
+                    maybePinVolume("capture-on")
                     startKeepAlive()
+                    startAbsentVolumeProbe()
                 } else {
                     stopKeepAlive()
                     cancelReclaim()
+                    cancelAbsentVolumeProbe()
                     unpinVolume()
                     heldSelect.reset()
                     heldBack.reset()
@@ -309,7 +313,7 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
                     if (!ButtonMode.isControlAa(context)) return@postDelayed
                     refreshPlayingAppearance(reason = "reclaim")
                     session?.isActive = true
-                    pinVolume()
+                    maybePinVolume("reclaim")
                     log("[BTN] media buttons reclaimed")
                 } catch (e: Exception) {
                     log("[BTN] reclaim failed: $e")
@@ -376,12 +380,12 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
         try {
             val nm = context.getSystemService(NotificationManager::class.java)
             nm.createNotificationChannel(
-                NotificationChannel(MEDIA_CHANNEL, context.uiText("Bike button control"), NotificationManager.IMPORTANCE_LOW)
+                NotificationChannel(MEDIA_CHANNEL, context.getString(R.string.notif_media_channel), NotificationManager.IMPORTANCE_LOW)
             )
             val n = Notification.Builder(context, MEDIA_CHANNEL)
                 .setSmallIcon(android.R.drawable.ic_media_play)
-                .setContentTitle(context.uiText("Android Auto control"))
-                .setContentText(context.uiText("Bike buttons drive Android Auto — music players may briefly steal them"))
+                .setContentTitle(context.getString(R.string.notif_media_title))
+                .setContentText(context.getString(R.string.notif_media_text))
                 .setStyle(Notification.MediaStyle().setMediaSession(s.sessionToken))
                 .setVisibility(Notification.VISIBILITY_PUBLIC)
                 .setOngoing(true)
@@ -446,6 +450,7 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
         cancelPendingTaps()
         stopKeepAlive()
         cancelReclaim()
+        cancelAbsentVolumeProbe()
         stopVolumeObserver()
         unpinVolume()
         releaseMediaFocus()
@@ -455,6 +460,23 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
     }
 
     // ── volume as a navigation source ────────────────────────────────────────────────────────────
+
+    /**
+     * Pin only when this bike's volume rocker is not marked [ButtonPresence.ABSENT]. Firmware that
+     * never sends ▲/▼ must not hold STREAM_MUSIC hostage.
+     */
+    private fun maybePinVolume(reason: String) {
+        if (!ButtonPresencePrefs.shouldPinVolume(context)) {
+            if (pinnedVolume >= 0) {
+                log("[BTN] skip pin ($reason) — volume rocker ABSENT; unpinning")
+                unpinVolume()
+            } else {
+                log("[BTN] skip pin ($reason) — volume rocker ABSENT (${ButtonPresencePrefs.summarize(context)})")
+            }
+            return
+        }
+        pinVolume()
+    }
 
     /**
      * Pin the music stream while capturing. The bike sends AVRCP *absolute* volume, so we read the
@@ -478,6 +500,50 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
             log("[BTN] volume pinned at $pinnedVolume/$max (listening=$userVolume)")
         } catch (e: Exception) {
             log("[BTN] pinVolume failed: $e")
+        }
+    }
+
+    /**
+     * While capture is on and the rocker is still UNKNOWN: if the bike is streaming and no ▲/▼
+     * arrives for [ABSENT_VOLUME_PROBE_MS], mark ABSENT and unpin so phone volume works again.
+     * Teach-my-handlebar can set Present/Absent explicitly sooner.
+     */
+    private var absentVolumeProbe: Runnable? = null
+
+    private fun startAbsentVolumeProbe() {
+        cancelAbsentVolumeProbe()
+        if (!ButtonMode.isControlAa(context)) return
+        if (ButtonPresencePrefs.volumeRocker(context) != ButtonPresence.UNKNOWN) return
+        val r = object : Runnable {
+            override fun run() {
+                if (!ButtonMode.isControlAa(context)) return
+                if (ButtonPresencePrefs.volumeRocker(context) != ButtonPresence.UNKNOWN) return
+                val streaming = BikeLink.prober?.isStreaming == true
+                if (!streaming) {
+                    handler.postDelayed(this, ABSENT_VOLUME_PROBE_MS / 3)
+                    return
+                }
+                log("[BTN] no volume ▲/▼ for ${ABSENT_VOLUME_PROBE_MS / 1000}s while streaming — marking rocker ABSENT, unpinning")
+                ButtonPresencePrefs.setVolumeRocker(context, ButtonPresence.ABSENT)
+                unpinVolume()
+            }
+        }
+        absentVolumeProbe = r
+        handler.postDelayed(r, ABSENT_VOLUME_PROBE_MS)
+    }
+
+    private fun cancelAbsentVolumeProbe() {
+        absentVolumeProbe?.let { handler.removeCallbacks(it) }
+        absentVolumeProbe = null
+    }
+
+    /** Re-arm the absent probe after Teach resets presence to UNKNOWN, or capture toggles on. */
+    fun refreshVolumePresencePolicy() {
+        handler.post {
+            if (!ButtonMode.isControlAa(context)) return@post
+            if (ButtonPresencePrefs.shouldPinVolume(context)) maybePinVolume("presence-refresh")
+            else unpinVolume()
+            startAbsentVolumeProbe()
         }
     }
 
@@ -547,6 +613,8 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
                 val jump = now - pinnedVolume            // signed, in Android volume steps
                 val up = jump > 0
                 val dir = if (up) "UP" else "DOWN"
+                ButtonPresencePrefs.markVolumeSeen(context)
+                cancelAbsentVolumeProbe()
                 // Re-pin FIRST: the gesture handling below can take a while (BACK/HOME redraw the
                 // dash), and until we re-pin, a follow-up press is measured from the wrong base.
                 ignoreVolumeChanges = true
@@ -596,9 +664,9 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
      * waiting [ButtonTimingPrefs.doubleTapMs] for a second same-channel tap. A single press therefore
      * fires only after that window, which is the cost of telling the two apart.
      *
-     * Exception: [ButtonClusterPreset.prefersInstantSingles] (BACK/SET diamond) skips the wait —
-     * those pods can't do discrete ×2, so waiting only lags every OK / knob step. Coalesced volume
-     * jumps still use [forceDouble] and fire the ×2 gesture immediately.
+     * Exception: [ButtonTimingPrefs.snappySingles] (default on) or
+     * [ButtonClusterPreset.prefersInstantSingles] skips the wait — fire the single now; a second
+     * tap in-window still runs ×2. Coalesced volume jumps use [forceDouble] immediately.
      */
     private fun detectDoubleTap(single: ButtonGesture, double: ButtonGesture, forceDouble: Boolean) {
         val ch = taps.getOrPut(single) { Tap() }
@@ -613,10 +681,11 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
             return
         }
 
-        // Eager singles (5-way / MODE / BACK-SET): fire the tap now. A second tap inside the
-        // window still runs the ×2 action — no lag waiting to disambiguate (BT echoes used to
-        // turn every press into D-pad when we waited).
-        if (ButtonClusterPreset.prefersInstantSingles(context)) {
+        // Eager singles: fire the tap now. A second tap inside the window still runs ×2 — no lag
+        // waiting to disambiguate (BT echoes used to turn every press into D-pad when we waited).
+        val snappy = ButtonTimingPrefs.snappySingles(context) ||
+            ButtonClusterPreset.prefersInstantSingles(context)
+        if (snappy) {
             if (ch.pending != null && gap in 1 until window) {
                 ch.pending?.let { handler.removeCallbacks(it) }
                 ch.pending = null
@@ -781,6 +850,7 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
      */
     private fun onKeyDown(keyCode: Int, repeatCount: Int = 0) {
         val held = heldFor(keyCode) ?: return
+        ButtonPresencePrefs.markTrackSeen(context)
         lastKeyAt = SystemClock.elapsedRealtime()
         if (repeatCount > 0) {
             // Setup → Hold detection off: ignore key-repeat so a long physical press stays a tap.
@@ -857,12 +927,22 @@ class MediaButtonBridge(private val context: Context, private val log: (String) 
         private const val RECLAIM_MIN_GAP_MS = 2_000L
         /** Session refresh cadence; soft focus every 3rd tick when idle. */
         private const val KEEP_ALIVE_MS = 4_000L
+        /** No ▲/▼ while streaming → mark rocker absent and stop pinning volume. */
+        private const val ABSENT_VOLUME_PROBE_MS = 90_000L
         private const val MEDIA_CHANNEL = "opencfmoto_media"
         private const val MEDIA_NOTIF_ID = 3   // must not collide with AndroidAutoService's NOTIF_ID (2)
 
         /** The live bridge (when Android Auto is running), so the settings toggle can reach it. */
         @Volatile var instance: MediaButtonBridge? = null
             private set
+
+        fun injectGesture(gesture: ButtonGesture) {
+            instance?.let { b -> b.handler.post { b.run(gesture) } }
+        }
+
+        fun injectAction(action: ButtonAction) {
+            instance?.let { b -> b.handler.post { b.perform(action) } }
+        }
 
         /**
          * Music volume for the Controls slider — works even before AA starts (plain [AudioManager]).

@@ -109,23 +109,22 @@ class TripsListActivity : AppCompatActivity() {
 
         if (dayTrips.isEmpty()) {
             empty.visibility = View.VISIBLE
-            empty.text = uiText(if (allTrips.isEmpty()) {
-                "No trips yet.\nRides log automatically while you project Android Auto or use the built-in Map — or record one from the Trip screen."
+            empty.text = if (allTrips.isEmpty()) {
+                getString(R.string.trips_no_trips_yet)
             } else {
-                "No rides this day.\nUse ‹ › to browse other days."
-            })
-            daySummary.text = uiText("No rides")
+                getString(R.string.trips_no_rides_browse_days)
+            }
+            daySummary.text = getString(R.string.trips_no_rides_summary)
         } else {
             empty.visibility = View.GONE
             val km = dayTrips.sumOf { it.distanceKm }
             val n = dayTrips.size
-            daySummary.text = uiText(String.format(
-                Locale.getDefault(),
-                "%d ride%s · %.1f km",
+            daySummary.text = resources.getQuantityString(
+                R.plurals.trips_day_summary,
                 n,
-                if (n == 1) "" else "s",
+                n,
                 km,
-            ))
+            )
             for (trip in dayTrips) container.addView(buildCard(trip))
         }
     }
@@ -152,7 +151,7 @@ class TripsListActivity : AppCompatActivity() {
                     ViewGroup.LayoutParams.MATCH_PARENT, thumbH,
                 ).apply { bottomMargin = dp(10) }
                 scaleType = ImageView.ScaleType.FIT_XY
-                contentDescription = "Route preview"
+                contentDescription = getString(R.string.trips_route_preview)
                 clipToOutline = true
                 outlineProvider = object : ViewOutlineProvider() {
                     override fun getOutline(view: View, outline: Outline) {
@@ -191,10 +190,10 @@ class TripsListActivity : AppCompatActivity() {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
             ).apply { topMargin = dp(10) }
         }
-        stats.addView(stat("Distance", trip.distanceText()))
-        stats.addView(stat("Time", trip.durationText()))
-        stats.addView(stat("Avg", "${trip.avgKmh} km/h"))
-        stats.addView(stat("Max", "${trip.maxKmh} km/h"))
+        stats.addView(stat(getString(R.string.trip_distance), trip.distanceText()))
+        stats.addView(stat(getString(R.string.trips_stat_time), trip.durationText()))
+        stats.addView(stat(getString(R.string.trips_stat_avg), "${trip.avgKmh} km/h"))
+        stats.addView(stat(getString(R.string.trips_stat_max), "${trip.maxKmh} km/h"))
         col.addView(stats)
 
         val actions = LinearLayout(this).apply {
@@ -206,7 +205,7 @@ class TripsListActivity : AppCompatActivity() {
         }
         actions.addView(
             MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
-                text = "Export GPX"
+                text = getString(R.string.trips_export_gpx)
                 textSize = 13f
                 setOnClickListener { exportGpx(trip) }
             },
@@ -220,7 +219,7 @@ class TripsListActivity : AppCompatActivity() {
     private fun exportGpx(trip: Trip) {
         try {
             if (trip.points.isEmpty()) {
-                Toast.makeText(this, uiText("Trip has no GPS points"), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.trips_no_gps_points), Toast.LENGTH_SHORT).show()
                 return
             }
             val dir = File(cacheDir, "trip-export").apply { mkdirs() }
@@ -234,10 +233,10 @@ class TripsListActivity : AppCompatActivity() {
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 clipData = android.content.ClipData.newUri(contentResolver, file.name, uri)
             }
-            startActivity(Intent.createChooser(send, "Export GPX"))
+            startActivity(Intent.createChooser(send, getString(R.string.trips_export_gpx)))
             LogBus.log("→ Trip GPX exported: ${file.name}")
         } catch (e: Exception) {
-            Toast.makeText(this, uiText("Export failed: $e"), Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.trips_export_failed, e.toString()), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -263,14 +262,14 @@ class TripsListActivity : AppCompatActivity() {
 
     private fun confirmDelete(trip: Trip) {
         MaterialAlertDialogBuilder(this)
-            .setTitle(uiText("Delete trip?"))
-            .setMessage(uiText("${trip.dateText()} · ${trip.distanceText()}"))
-            .setPositiveButton(uiText("Delete")) { _, _ ->
+            .setTitle(R.string.trips_delete_trip_title)
+            .setMessage("${trip.dateText()} · ${trip.distanceText()}")
+            .setPositiveButton(R.string.trips_delete) { _, _ ->
                 TripStore.delete(this, trip.id)
                 allTrips = TripStore.list(this)
                 renderDay()
             }
-            .setNegativeButton(uiText("Cancel"), null)
+            .setNegativeButton(R.string.dash_cancel, null)
             .show()
     }
 

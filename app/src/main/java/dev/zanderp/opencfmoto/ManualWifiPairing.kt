@@ -48,21 +48,19 @@ object ManualWifiPairing {
             return et
         }
 
-        val ssid = field(activity.uiText("Wi‑Fi name (SSID)"))
-        val pwd = field(activity.uiText("Password"), password = true)
-        val name = field(activity.uiText("Bike name (optional)"))
+        val ssid = field("Wi‑Fi name (SSID)")
+        val pwd = field("Password", password = true)
+        val name = field("Bike name (optional)")
 
         val dialog = MaterialAlertDialogBuilder(activity)
-            .setTitle(activity.uiText("Enter bike Wi‑Fi"))
+            .setTitle("Enter bike Wi‑Fi")
             .setMessage(
-                activity.uiText(
-                    "For dashes that show SSID + password instead of a QR (e.g. Benelli TRK). " +
-                        "Use the exact network name from the bike screen.",
-                ),
+                "For dashes that show SSID + password instead of a QR (e.g. Benelli TRK). " +
+                    "Use the exact network name from the bike screen.",
             )
             .setView(col)
-            .setPositiveButton(activity.uiText("Add bike"), null)
-            .setNegativeButton(activity.uiText("Cancel"), null)
+            .setPositiveButton("Add bike", null)
+            .setNegativeButton("Cancel", null)
             .create()
         dialog.setOnShowListener {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
@@ -72,7 +70,7 @@ object ManualWifiPairing {
                     displayName = name.text?.toString(),
                 )
                 if (built == null) {
-                    Toast.makeText(activity, activity.uiText("SSID and password are required"), Toast.LENGTH_SHORT)
+                    Toast.makeText(activity, "SSID and password are required", Toast.LENGTH_SHORT)
                         .show()
                     return@setOnClickListener
                 }

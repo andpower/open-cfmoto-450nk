@@ -271,9 +271,12 @@ class AaCompositor(private val log: (String) -> Unit) {
 
     /**
      * Inverse of the letterbox: map a point in the bike canvas (the surface whose size we reported to
-     * the bike, [canvasW]x[canvasH]) to the Android Auto source video space ([srcW]x[srcH]). Returns
-     * null if the point falls in a black bar (outside the drawn AA rect) so the caller can drop it.
-     * Used to translate dashboard touch coordinates into AA input coordinates.
+     * the bike, [canvasW]x[canvasH]) to Android Auto source coordinates ([srcW]x[srcH]). Returns null
+     * if the point falls in a black bar (outside the drawn AA rect).
+     *
+     * Note: a prior experiment added a coded-buffer center offset (buf−src)/2 for match-aspect
+     * panels; that broke NK Adv touch (~+Y) even with Match off. Keep the v2.0.6 linear map until
+     * FILL+margins gets a dedicated, gated fix.
      */
     fun mapCanvasToSource(cx: Int, cy: Int): Pair<Int, Int>? {
         if (vpW == 0 || vpH == 0 || srcW == 0 || srcH == 0) return null
@@ -327,8 +330,9 @@ class AaCompositor(private val log: (String) -> Unit) {
     }
 
     /**
-     * Sample only [cu]x[cv] (fractions, top-left origin) of the coded AA frame — the usable content
-     * area when match-panel-aspect margins are advertised. 1,1 = whole frame (default).
+     * Sample only [cu]x[cv] (fractions) of the coded AA frame — the usable content area when
+     * match-panel-aspect margins are advertised. Crop is **centered** (see `uCrop` shader).
+     * 1,1 = whole frame (default).
      */
     fun setSourceCrop(cu: Float, cv: Float) {
         handler.post {

@@ -13,11 +13,9 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.core.os.LocaleListCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
@@ -38,8 +36,10 @@ class SetupActivity : AppCompatActivity() {
     private lateinit var step2Btn: MaterialButton
     private lateinit var qualityDesc: TextView
     private lateinit var fitDesc: TextView
+    private lateinit var mirrorOrientDesc: TextView
     private lateinit var powerDesc: TextView
     private lateinit var resDesc: TextView
+    private lateinit var dpiDesc: TextView
     private lateinit var themeDesc: TextView
     private lateinit var dblTapDesc: TextView
     private lateinit var holdsDesc: TextView
@@ -74,8 +74,10 @@ class SetupActivity : AppCompatActivity() {
         step2Btn = findViewById(R.id.step2_btn)
         qualityDesc = findViewById(R.id.quality_desc)
         fitDesc = findViewById(R.id.fit_desc)
+        mirrorOrientDesc = findViewById(R.id.mirror_orient_desc)
         powerDesc = findViewById(R.id.power_desc)
         resDesc = findViewById(R.id.res_desc)
+        dpiDesc = findViewById(R.id.dpi_desc)
         themeDesc = findViewById(R.id.theme_desc)
         dblTapDesc = findViewById(R.id.dbltap_desc)
         holdsDesc = findViewById(R.id.holds_desc)
@@ -90,9 +92,6 @@ class SetupActivity : AppCompatActivity() {
         step2Btn.setOnClickListener { requestMissingPermissions() }
         findViewById<MaterialButton>(R.id.step2_settings_btn).setOnClickListener { openAppSettings() }
         findViewById<MaterialButton>(R.id.step3_btn).setOnClickListener { openAndroidAutoSettings() }
-        findViewById<MaterialButton>(R.id.language_system).setOnClickListener { setLanguage("") }
-        findViewById<MaterialButton>(R.id.language_es).setOnClickListener { setLanguage("es") }
-        findViewById<MaterialButton>(R.id.language_en).setOnClickListener { setLanguage("en") }
 
         findViewById<MaterialButton>(R.id.quality_smooth).setOnClickListener { setQuality(VideoQuality.SMOOTH) }
         findViewById<MaterialButton>(R.id.quality_balanced).setOnClickListener { setQuality(VideoQuality.BALANCED) }
@@ -100,6 +99,18 @@ class SetupActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.fit_fill).setOnClickListener { setFit(ScreenFit.FILL) }
         findViewById<MaterialButton>(R.id.fit_fit).setOnClickListener { setFit(ScreenFit.FIT) }
         findViewById<MaterialButton>(R.id.fit_stretch).setOnClickListener { setFit(ScreenFit.STRETCH) }
+        findViewById<MaterialButton>(R.id.mirror_orient_dash).setOnClickListener {
+            setMirrorOrientation(MirrorOrientation.MATCH_DASH)
+        }
+        findViewById<MaterialButton>(R.id.mirror_orient_follow).setOnClickListener {
+            setMirrorOrientation(MirrorOrientation.FOLLOW)
+        }
+        findViewById<MaterialButton>(R.id.mirror_orient_land).setOnClickListener {
+            setMirrorOrientation(MirrorOrientation.LANDSCAPE)
+        }
+        findViewById<MaterialButton>(R.id.mirror_orient_port).setOnClickListener {
+            setMirrorOrientation(MirrorOrientation.PORTRAIT)
+        }
         findViewById<MaterialButton>(R.id.power_auto).setOnClickListener { setPower(PowerMode.AUTO) }
         findViewById<MaterialButton>(R.id.power_smooth).setOnClickListener { setPower(PowerMode.SMOOTH) }
         findViewById<MaterialButton>(R.id.power_balanced).setOnClickListener { setPower(PowerMode.BALANCED) }
@@ -109,6 +120,12 @@ class SetupActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.res_land_hd).setOnClickListener { setResolution(ResolutionMode.LANDSCAPE_HD) }
         findViewById<MaterialButton>(R.id.res_port_sd).setOnClickListener { setResolution(ResolutionMode.PORTRAIT_SD) }
         findViewById<MaterialButton>(R.id.res_port_hd).setOnClickListener { setResolution(ResolutionMode.PORTRAIT_HD) }
+        findViewById<MaterialButton>(R.id.dpi_auto).setOnClickListener { setAaDpi(null) }
+        findViewById<MaterialButton>(R.id.dpi_160).setOnClickListener { setAaDpi(160) }
+        findViewById<MaterialButton>(R.id.dpi_180).setOnClickListener { setAaDpi(180) }
+        findViewById<MaterialButton>(R.id.dpi_240).setOnClickListener { setAaDpi(240) }
+        findViewById<MaterialButton>(R.id.dpi_320).setOnClickListener { setAaDpi(320) }
+        findViewById<MaterialButton>(R.id.btn_bt_trigger).setOnClickListener { pickBtTrigger() }
         findViewById<MaterialButton>(R.id.theme_auto).setOnClickListener { setMapTheme(MapTheme.AUTO) }
         findViewById<MaterialButton>(R.id.theme_day).setOnClickListener { setMapTheme(MapTheme.DAY) }
         findViewById<MaterialButton>(R.id.theme_night).setOnClickListener { setMapTheme(MapTheme.NIGHT) }
@@ -127,6 +144,43 @@ class SetupActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.autoconnect_off).setOnClickListener { setAutoConnect(false) }
         findViewById<MaterialButton>(R.id.recovery_on).setOnClickListener { setAutoRecovery(true) }
         findViewById<MaterialButton>(R.id.recovery_off).setOnClickListener { setAutoRecovery(false) }
+        findViewById<MaterialButton>(R.id.btclock_on).setOnClickListener { setBtClock(true) }
+        findViewById<MaterialButton>(R.id.btclock_off).setOnClickListener { setBtClock(false) }
+        findViewById<MaterialButton>(R.id.clocklab_preset_latest).setOnClickListener {
+            setClockLabPreset(ClockLabPreset.LATEST)
+        }
+        findViewById<MaterialButton>(R.id.clocklab_preset_2012).setOnClickListener {
+            setClockLabPreset(ClockLabPreset.V2012)
+        }
+        findViewById<MaterialButton>(R.id.clocklab_preset_zontes).setOnClickListener {
+            setClockLabPreset(ClockLabPreset.ZONTES)
+        }
+        findViewById<MaterialButton>(R.id.clocklab_preset_phone).setOnClickListener {
+            setClockLabPreset(ClockLabPreset.PHONE_SYNC)
+        }
+        findViewById<MaterialButton>(R.id.clocklab_preset_bt).setOnClickListener {
+            setClockLabPreset(ClockLabPreset.BT_LISTEN)
+        }
+        findViewById<MaterialButton>(R.id.clocklab_query_empty).setOnClickListener {
+            setClockLabQuery(ClockQueryMode.EMPTY)
+        }
+        findViewById<MaterialButton>(R.id.clocklab_query_carbit).setOnClickListener {
+            setClockLabQuery(ClockQueryMode.CARBIT)
+        }
+        findViewById<MaterialButton>(R.id.clocklab_query_zontes).setOnClickListener {
+            setClockLabQuery(ClockQueryMode.ZONTES)
+        }
+        findViewById<MaterialButton>(R.id.clocklab_query_none).setOnClickListener {
+            setClockLabQuery(ClockQueryMode.NO_ACK)
+        }
+        findViewById<MaterialButton>(R.id.clocklab_sync_echo).setOnClickListener {
+            setClockLabTimeSync(ClockTimeSyncMode.ECHO)
+        }
+        findViewById<MaterialButton>(R.id.clocklab_sync_phone).setOnClickListener {
+            setClockLabTimeSync(ClockTimeSyncMode.PHONE)
+        }
+        findViewById<MaterialButton>(R.id.keepwifi_on).setOnClickListener { setKeepWifi(true) }
+        findViewById<MaterialButton>(R.id.keepwifi_off).setOnClickListener { setKeepWifi(false) }
         findViewById<MaterialButton>(R.id.logtrips_on).setOnClickListener { setLogTrips(true) }
         findViewById<MaterialButton>(R.id.logtrips_off).setOnClickListener { setLogTrips(false) }
         findViewById<MaterialButton>(R.id.nontouch_on).setOnClickListener { setForceNonTouch(true) }
@@ -186,7 +240,7 @@ class SetupActivity : AppCompatActivity() {
             }
             startActivity(Intent.createChooser(send, "Share settings JSON"))
         } catch (e: Exception) {
-            Toast.makeText(this, uiText("Share failed: $e"), Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Share failed: $e", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -194,52 +248,90 @@ class SetupActivity : AppCompatActivity() {
         try {
             val text = contentResolver.openInputStream(uri)?.use { it.readBytes().toString(Charsets.UTF_8) }
             if (text.isNullOrBlank()) {
-                Toast.makeText(this, uiText("Empty file"), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Empty file", Toast.LENGTH_SHORT).show()
                 return
             }
             val onto = BikeMemory.lastBikeName(this) ?: "the selected bike"
             AlertDialog.Builder(this)
-                .setTitle(uiText("Import settings?"))
+                .setTitle("Import settings?")
                 .setMessage(
-                    uiText("Replace bike tuning for $onto — profile, resolution, fit, power, margins, ") +
+                    "Replace bike tuning for $onto — profile, resolution, fit, power, margins, " +
                         "handlebar buttons, Control AA, non-touch, Wi‑Fi transport?\n\n" +
                         "Personal prefs (map theme, saved places, auto-connect, …) are left alone. " +
                         "Wi‑Fi passwords are never imported."
                 )
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(uiText("Import")) { _, _ ->
+                .setPositiveButton("Import") { _, _ ->
                     val result = SettingsBackup.importJson(this, text)
                     refreshOptions()
                     Toast.makeText(this, result.message, Toast.LENGTH_LONG).show()
                 }
                 .show()
         } catch (e: Exception) {
-            Toast.makeText(this, uiText("Import failed: $e"), Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Import failed: $e", Toast.LENGTH_LONG).show()
         }
     }
 
     private fun setQuality(q: VideoQuality) {
         VideoPrefs.set(this, q)
         refreshOptions()
-        toast("Video quality: ${uiText(q.label)}")
+        toast(getString(R.string.setup_toast_video_quality, getString(q.labelRes)))
     }
 
     private fun setFit(f: ScreenFit) {
         VideoPrefs.setFit(this, f)
         refreshOptions()
-        toast("Screen fit: ${uiText(f.label)}")
+        toast(getString(R.string.setup_toast_screen_fit, getString(f.labelRes)))
+    }
+
+    private fun setMirrorOrientation(m: MirrorOrientation) {
+        VideoPrefs.setMirrorOrientation(this, m)
+        refreshOptions()
+        toast(getString(R.string.setup_toast_mirror_orient, getString(m.labelRes)))
     }
 
     private fun setPower(m: PowerMode) {
         VideoPrefs.setPower(this, m)
         refreshOptions()
-        toast("Power mode: ${uiText(m.label)}")
+        toast(getString(R.string.setup_toast_power_mode, getString(m.labelRes)))
     }
 
     private fun setResolution(m: ResolutionMode) {
         VideoPrefs.setResolution(this, m)
         refreshOptions()
-        toast("Resolution: ${uiText(m.label)}")
+        toast(getString(R.string.setup_toast_resolution, getString(m.labelRes)))
+    }
+
+    private fun setAaDpi(dpi: Int?) {
+        VideoPrefs.setDpiOverride(this, dpi)
+        refreshOptions()
+        toast(
+            if (dpi == null) getString(R.string.setup_aa_dpi_auto)
+            else getString(R.string.setup_aa_dpi) + ": $dpi",
+        )
+    }
+
+    private fun pickBtTrigger() {
+        val bonded = BluetoothHelper.bondedDevices(this)
+        val labels = mutableListOf(getString(R.string.setup_bt_trigger_none))
+        val macs = mutableListOf<String?>(null)
+        val names = mutableListOf<String?>(null)
+        for ((mac, name) in bonded) {
+            labels.add("$name ($mac)")
+            macs.add(mac)
+            names.add(name)
+        }
+        AlertDialog.Builder(this)
+            .setTitle(R.string.setup_bt_trigger_pick)
+            .setItems(labels.toTypedArray()) { _, which ->
+                AppSettings.setBtTrigger(this, macs[which], names[which])
+                refreshOptions()
+                val toast = if (macs[which] == null) getString(R.string.setup_bt_trigger_none)
+                else getString(R.string.setup_bt_trigger_set, names[which])
+                Toast.makeText(this, toast, Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     /** Map day/night applies live (no reconnect needed) — push it to any running AA session. */
@@ -247,14 +339,20 @@ class SetupActivity : AppCompatActivity() {
         NightPrefs.setTheme(this, theme)
         AaVideoBridge.nightSink?.invoke(NightPrefs.isNightNow(this))
         refreshOptions()
-        Toast.makeText(this, uiText("Map theme: ${uiText(theme.label)}"), Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.setup_toast_map_theme, getString(theme.labelRes)), Toast.LENGTH_SHORT).show()
     }
 
     /** Button timing applies live — the next press uses the new window. */
     private fun setDoubleTap(delay: DoubleTapDelay) {
         ButtonTimingPrefs.setDoubleTap(this, delay)
         refreshOptions()
-        Toast.makeText(this, uiText("Double-tap delay: ${uiText(delay.label)}"), Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.setup_toast_dbl_tap, getString(delay.labelRes)), Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setLongPress(delay: LongPressDelay) {
+        ButtonTimingPrefs.setLongPress(this, delay)
+        refreshOptions()
+        Toast.makeText(this, getString(R.string.setup_toast_hold, getString(delay.labelRes)), Toast.LENGTH_SHORT).show()
     }
 
     private fun setHoldsEnabled(on: Boolean) {
@@ -262,57 +360,82 @@ class SetupActivity : AppCompatActivity() {
         refreshOptions()
         Toast.makeText(
             this,
-            uiText(if (on) "Hold gestures enabled" else "Hold gestures disabled"),
+            if (on) "Hold detection on"
+            else "Hold detection off — long presses count as taps / ×2",
             Toast.LENGTH_SHORT,
         ).show()
-    }
-
-    private fun setLongPress(delay: LongPressDelay) {
-        ButtonTimingPrefs.setLongPress(this, delay)
-        refreshOptions()
-        Toast.makeText(this, uiText("Hold delay: ${uiText(delay.label)}"), Toast.LENGTH_SHORT).show()
     }
 
     private fun setAutoConnect(on: Boolean) {
         AppSettings.setAutoConnect(this, on)
         refreshOptions()
-        Toast.makeText(this, uiText("Auto-connect ${if (on) "on" else "off"}"), Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Auto-connect ${if (on) "on" else "off"}", Toast.LENGTH_SHORT).show()
     }
 
     private fun setAutoRecovery(on: Boolean) {
         AppSettings.setAutoRecovery(this, on)
         refreshOptions()
-        Toast.makeText(this, uiText("Auto-recovery ${if (on) "on" else "off"}"), Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Auto-recovery ${if (on) "on" else "off"}", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setBtClock(on: Boolean) {
+        AppSettings.setBluetoothClockSync(this, on)
+        refreshOptions()
+        Toast.makeText(this, "Bluetooth clock ${if (on) "on" else "off"}", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setClockLabPreset(preset: ClockLabPreset) {
+        AppSettings.applyClockLabPreset(this, preset)
+        refreshOptions()
+        Toast.makeText(this, "Clock lab: ${preset.name}", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setClockLabQuery(mode: ClockQueryMode) {
+        AppSettings.setClockLabQuery(this, mode)
+        refreshOptions()
+        Toast.makeText(this, "QUERY_TIME: ${mode.id}", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setClockLabTimeSync(mode: ClockTimeSyncMode) {
+        AppSettings.setClockLabTimeSync(this, mode)
+        refreshOptions()
+        Toast.makeText(this, "TIME_SYNC: ${mode.id}", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setKeepWifi(on: Boolean) {
+        AppSettings.setKeepWifiAfterDisconnect(this, on)
+        refreshOptions()
+        Toast.makeText(this, "Keep bike Wi-Fi ${if (on) "on" else "off"}", Toast.LENGTH_SHORT).show()
     }
 
     private fun setLogTrips(on: Boolean) {
         AppSettings.setLogTrips(this, on)
         refreshOptions()
-        Toast.makeText(this, uiText("Trip logging ${if (on) "on" else "off"}"), Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Trip logging ${if (on) "on" else "off"}", Toast.LENGTH_SHORT).show()
     }
 
     private fun setForceNonTouch(on: Boolean) {
         AppSettings.setForceNonTouch(this, on)
         refreshOptions()
-        toast(uiText("Disable touchscreen: ${if (on) "on" else "off"}"))
+        toast("Disable touchscreen: ${if (on) "on" else "off"}")
     }
 
     private fun setForceTouch(on: Boolean) {
         AppSettings.setForceTouch(this, on)
         refreshOptions()
-        toast(uiText("Force touchscreen: ${if (on) "on" else "off"}"))
+        toast("Force touchscreen: ${if (on) "on" else "off"}")
     }
 
     private fun setProfileOverride(ov: ProfileOverride) {
         ProfilePrefs.set(this, ov)
         refreshOptions()
-        toast("Bike profile: ${uiText(ov.shortLabel)}")
+        toast("Bike profile: ${ov.shortLabel}")
     }
 
     private fun setTransport(t: WifiTransport) {
         AppSettings.setTransport(this, t)
         refreshOptions()
-        toast("Wi‑Fi transport: ${uiText(t.label)}")
+        toast(getString(R.string.setup_toast_transport, t.label))
     }
 
     private fun setSecrets(on: Boolean) {
@@ -320,10 +443,8 @@ class SetupActivity : AppCompatActivity() {
         refreshOptions()
         Toast.makeText(
             this,
-            uiText(
-                if (on) "Shared logs will include secrets — turn off before posting publicly"
-                else "Log redaction on",
-            ),
+            if (on) "Shared logs will include secrets — turn off before posting publicly"
+            else "Log redaction on",
             Toast.LENGTH_SHORT,
         ).show()
     }
@@ -341,57 +462,50 @@ class SetupActivity : AppCompatActivity() {
     }
 
     private fun toast(msg: String) =
-        Toast.makeText(this, uiText("$msg (applies next connect)"), Toast.LENGTH_SHORT).show()
-
-    /** Apply an app-specific locale; an empty tag follows the phone language. */
-    private fun setLanguage(languageTag: String) {
-        val current = AppCompatDelegate.getApplicationLocales().get(0)?.language.orEmpty()
-        if (current == languageTag) return
-        val locales = if (languageTag.isBlank()) {
-            LocaleListCompat.getEmptyLocaleList()
-        } else {
-            LocaleListCompat.forLanguageTags(languageTag)
-        }
-        AppCompatDelegate.setApplicationLocales(locales)
-    }
+        Toast.makeText(this, "$msg (applies next connect)", Toast.LENGTH_SHORT).show()
 
     /** Update every selector's description + highlight the active segment. */
     private fun refreshOptions() {
         val quality = VideoPrefs.get(this)
         val fit = VideoPrefs.fit(this)
+        val mirrorOrient = VideoPrefs.mirrorOrientation(this)
         val power = VideoPrefs.power(this)
         val res = VideoPrefs.resolution(this)
         val theme = NightPrefs.theme(this)
         val dbl = ButtonTimingPrefs.doubleTap(this)
         val holdsOn = ButtonTimingPrefs.holdsEnabled(this)
         val hold = ButtonTimingPrefs.longPress(this)
-        val language = AppCompatDelegate.getApplicationLocales().get(0)?.language.orEmpty()
-        highlight(language,
-            R.id.language_system to "",
-            R.id.language_es to "es",
-            R.id.language_en to "en")
-        qualityDesc.text = uiText(quality.label)
-        fitDesc.text = uiText(fit.label)
-        powerDesc.text = uiText(power.label)
-        resDesc.text = uiText(res.label)
-        themeDesc.text = uiText(theme.label)
-        dblTapDesc.text = uiText(dbl.label)
-        holdsDesc.text = getString(R.string.holds_desc)
-        holdDesc.text = uiText(hold.label)
-        nonTouchDesc.text = uiText(
-            if (AppSettings.forceNonTouch(this))
-                "On — focus/knob UI so handlebar buttons work"
-            else
-                "Off — use the bike profile (touch dashes stay touch)",
-        )
-        forceTouchDesc.text = uiText(
-            if (AppSettings.forceTouch(this))
-                "On — Android Auto touch UI (tap the dash)"
-            else
-                "Off — use the bike profile (1000 MT‑X stays focus/knob)",
-        )
+        qualityDesc.text = getString(quality.labelRes)
+        fitDesc.text = getString(fit.labelRes)
+        mirrorOrientDesc.text = getString(R.string.setup_mirror_orientation_desc) +
+            "\n" + getString(mirrorOrient.labelRes)
+        powerDesc.text = getString(power.labelRes)
+        resDesc.text = getString(res.labelRes)
+        val dpi = VideoPrefs.dpiOverride(this)
+        dpiDesc.text = if (dpi == null) getString(R.string.setup_aa_dpi_desc)
+        else getString(R.string.setup_aa_dpi) + ": $dpi"
+        val trigName = AppSettings.btTriggerName(this)
+        findViewById<MaterialButton>(R.id.btn_bt_trigger).text =
+            if (trigName != null) getString(R.string.setup_bt_trigger_set, trigName)
+            else getString(R.string.setup_bt_trigger_none)
+        themeDesc.text = getString(theme.labelRes)
+        dblTapDesc.text = getString(dbl.labelRes)
+        holdsDesc.text = if (holdsOn) {
+            getString(R.string.setup_on_press_and_hold_can_fire_hold_gestures)
+        } else {
+            getString(R.string.setup_holds_off_desc)
+        }
+        holdDesc.text = if (holdsOn) getString(hold.labelRes) else getString(R.string.pref_hold_ignored)
+        nonTouchDesc.text = if (AppSettings.forceNonTouch(this))
+            getString(R.string.setup_nontouch_on_desc)
+        else
+            getString(R.string.setup_off_use_the_bike_profile_touch_dashes_stay_touch)
+        forceTouchDesc.text = if (AppSettings.forceTouch(this))
+            getString(R.string.setup_forcetouch_on_desc)
+        else
+            getString(R.string.setup_off_use_the_bike_profile_1000_mt_x_stays_focus_k)
         val pov = ProfilePrefs.get(this)
-        profileDesc.text = uiText("${pov.shortLabel} — ${pov.detail}")
+        profileDesc.text = "${pov.shortLabel} — ${getString(pov.detailRes)}"
 
         highlight(quality,
             R.id.quality_smooth to VideoQuality.SMOOTH,
@@ -401,6 +515,11 @@ class SetupActivity : AppCompatActivity() {
             R.id.fit_fill to ScreenFit.FILL,
             R.id.fit_fit to ScreenFit.FIT,
             R.id.fit_stretch to ScreenFit.STRETCH)
+        highlight(mirrorOrient,
+            R.id.mirror_orient_dash to MirrorOrientation.MATCH_DASH,
+            R.id.mirror_orient_follow to MirrorOrientation.FOLLOW,
+            R.id.mirror_orient_land to MirrorOrientation.LANDSCAPE,
+            R.id.mirror_orient_port to MirrorOrientation.PORTRAIT)
         highlight(power,
             R.id.power_auto to PowerMode.AUTO,
             R.id.power_smooth to PowerMode.SMOOTH,
@@ -412,6 +531,14 @@ class SetupActivity : AppCompatActivity() {
             R.id.res_land_hd to ResolutionMode.LANDSCAPE_HD,
             R.id.res_port_sd to ResolutionMode.PORTRAIT_SD,
             R.id.res_port_hd to ResolutionMode.PORTRAIT_HD)
+        highlight<Int?>(
+            dpi,
+            R.id.dpi_auto to null,
+            R.id.dpi_160 to 160,
+            R.id.dpi_180 to 180,
+            R.id.dpi_240 to 240,
+            R.id.dpi_320 to 320,
+        )
         highlight(theme,
             R.id.theme_auto to MapTheme.AUTO,
             R.id.theme_day to MapTheme.DAY,
@@ -435,6 +562,26 @@ class SetupActivity : AppCompatActivity() {
         highlight(AppSettings.autoRecovery(this),
             R.id.recovery_on to true,
             R.id.recovery_off to false)
+        highlight(AppSettings.bluetoothClockSync(this),
+            R.id.btclock_on to true,
+            R.id.btclock_off to false)
+        highlight(AppSettings.clockLabQuery(this),
+            R.id.clocklab_query_empty to ClockQueryMode.EMPTY,
+            R.id.clocklab_query_carbit to ClockQueryMode.CARBIT,
+            R.id.clocklab_query_zontes to ClockQueryMode.ZONTES,
+            R.id.clocklab_query_none to ClockQueryMode.NO_ACK)
+        highlight(AppSettings.clockLabTimeSync(this),
+            R.id.clocklab_sync_echo to ClockTimeSyncMode.ECHO,
+            R.id.clocklab_sync_phone to ClockTimeSyncMode.PHONE)
+        highlight(ClockLab.matchingPreset(),
+            R.id.clocklab_preset_latest to ClockLabPreset.LATEST,
+            R.id.clocklab_preset_2012 to ClockLabPreset.V2012,
+            R.id.clocklab_preset_zontes to ClockLabPreset.ZONTES,
+            R.id.clocklab_preset_phone to ClockLabPreset.PHONE_SYNC,
+            R.id.clocklab_preset_bt to ClockLabPreset.BT_LISTEN)
+        highlight(AppSettings.keepWifiAfterDisconnect(this),
+            R.id.keepwifi_on to true,
+            R.id.keepwifi_off to false)
         highlight(AppSettings.logTrips(this),
             R.id.logtrips_on to true,
             R.id.logtrips_off to false)
@@ -453,17 +600,15 @@ class SetupActivity : AppCompatActivity() {
             R.id.profile_nk_adv to ProfileOverride.NK_ADV,
             R.id.profile_clc450 to ProfileOverride.CLC450)
         val transport = AppSettings.transport(this)
-        findViewById<android.widget.TextView>(R.id.transport_desc).text = uiText(transport.label)
+        findViewById<android.widget.TextView>(R.id.transport_desc).text = transport.label
         highlight(transport,
             R.id.transport_auto to WifiTransport.AUTO,
             R.id.transport_ap to WifiTransport.AP,
             R.id.transport_p2p to WifiTransport.P2P)
         val secrets = AppSettings.includeSecretsInLogs(this)
         findViewById<android.widget.TextView>(R.id.secrets_desc).text =
-            uiText(
-                if (secrets) "On — passwords/serials stay in shared logs"
-                else "Off — passwords and serials are redacted (recommended)",
-            )
+            if (secrets) getString(R.string.setup_secrets_on_desc)
+            else getString(R.string.setup_off_passwords_and_serials_are_redacted_recommend)
         highlight(secrets, R.id.secrets_on to true, R.id.secrets_off to false)
         val telemetry = AppSettings.anonymousTelemetry(this)
         findViewById<android.widget.TextView>(R.id.telemetry_desc).text =
@@ -475,7 +620,7 @@ class SetupActivity : AppCompatActivity() {
 
     /** Refresh the Bluetooth pairing status line shown in the helper card. */
     private fun refreshBluetooth() {
-        btStatus.text = BluetoothHelper.status(this).describe()
+        btStatus.text = BluetoothHelper.status(this).describe(this)
     }
 
     /** Paint the segment matching [selected] in brand color; the rest stay neutral tonal. */
@@ -501,16 +646,17 @@ class SetupActivity : AppCompatActivity() {
 
     private fun refresh() {
         val aaOk = SetupHelper.isAndroidAutoInstalled(this)
-        step1Title.text = tick(aaOk) + uiText(" 1. Android Auto")
-        step1Btn.text = uiText(if (aaOk) "Open Android Auto" else "Install Android Auto")
+        step1Title.text = tick(aaOk) + " " + getString(R.string.setup_1_android_auto)
+        step1Btn.text = if (aaOk) getString(R.string.setup_open_android_auto) else getString(R.string.setup_install_android_auto)
 
         val permsOk = SetupHelper.permissionsGranted(this)
-        step2Title.text = tick(permsOk) + uiText(" 2. Permissions")
-        step2Btn.text = uiText(if (permsOk) "All granted" else "Grant permissions")
+        step2Title.text = tick(permsOk) + " " + getString(R.string.setup_2_permissions)
+        step2Btn.text = if (permsOk) getString(R.string.setup_all_granted) else getString(R.string.setup_grant_permissions)
         step2Btn.isEnabled = !permsOk
 
         val resumeOk = SetupHelper.canAutoResume(this)
-        resumeBtn.text = uiText(if (resumeOk) "\u2713 Seamless resume enabled" else "Enable seamless resume")
+        resumeBtn.text = if (resumeOk) getString(R.string.setup_seamless_resume_enabled)
+            else getString(R.string.setup_enable_seamless_resume)
         resumeBtn.isEnabled = !resumeOk
     }
 
@@ -520,13 +666,13 @@ class SetupActivity : AppCompatActivity() {
         try {
             startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                 Uri.fromParts("package", packageName, null)))
-            Toast.makeText(this, uiText("Turn on \u201cDisplay over other apps\u201d for seamless resume"),
+            Toast.makeText(this, getString(R.string.setup_overlay_for_seamless_resume),
                 Toast.LENGTH_LONG).show()
         } catch (_: Exception) {
             try {
                 startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION))
             } catch (_: Exception) {
-                Toast.makeText(this, uiText("Couldn't open the overlay permission screen"), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.setup_overlay_permission_failed), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -548,7 +694,7 @@ class SetupActivity : AppCompatActivity() {
         // them at the system settings where it can still be granted.
         if (!SetupHelper.permissionsGranted(this)) {
             Toast.makeText(this,
-                uiText("Some permissions are still off — use \u201cApp settings\u201d to enable them."),
+                getString(R.string.setup_some_permissions_still_off),
                 Toast.LENGTH_LONG).show()
         }
     }
@@ -558,7 +704,7 @@ class SetupActivity : AppCompatActivity() {
             startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                 Uri.fromParts("package", packageName, null)))
         } catch (_: Exception) {
-            Toast.makeText(this, uiText("Couldn't open app settings"), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.main_settings_failed), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -576,7 +722,7 @@ class SetupActivity : AppCompatActivity() {
                 startActivity(Intent(Intent.ACTION_VIEW,
                     Uri.parse("https://play.google.com/store/apps/details?id=${SetupHelper.GEARHEAD_PACKAGE}")))
             } catch (_: Exception) {
-                Toast.makeText(this, uiText("Couldn't open the Play Store"), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.setup_play_store_failed), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -591,7 +737,7 @@ class SetupActivity : AppCompatActivity() {
                     SetupHelper.GEARHEAD_PACKAGE,
                     "com.google.android.projection.gearhead.companion.settings.DefaultSettingsActivity"))
             } catch (_: Exception) {
-                Toast.makeText(this, uiText("Couldn't open Android Auto settings"), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.setup_android_auto_settings_failed), Toast.LENGTH_SHORT).show()
             }
         }
     }

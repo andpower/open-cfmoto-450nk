@@ -1,21 +1,30 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Keep line numbers for crash/telemetry stacks.
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Protobuf (generated + reflective accessors used by AA / bike frames).
+-keep class * extends com.google.protobuf.GeneratedMessageLite { *; }
+-keepclassmembers class * extends com.google.protobuf.GeneratedMessageLite {
+  <fields>;
+}
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Conscrypt / TLS (AA self-mode).
+-keep class org.conscrypt.** { *; }
+-dontwarn org.conscrypt.**
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# MapLibre / OkHttp / jmDNS — reflection & native JNI.
+-keep class org.maplibre.** { *; }
+-keep class com.mapbox.** { *; }
+-dontwarn org.maplibre.**
+-dontwarn com.mapbox.**
+-keep class javax.jmdns.** { *; }
+-dontwarn javax.jmdns.**
+
+# ML Kit barcode / CameraX.
+-keep class com.google.mlkit.** { *; }
+-dontwarn com.google.mlkit.**
+-keep class androidx.camera.** { *; }
+
+# OpenCfMoto entry points + BuildConfig.
+-keep class dev.zanderp.opencfmoto.MainActivity { *; }
+-keep class dev.zanderp.opencfmoto.** { *; }

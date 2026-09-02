@@ -67,7 +67,7 @@ class ControlsActivity : AppCompatActivity() {
         findViewById<MaterialButton>(R.id.btn_nav_go).setOnClickListener {
             val dest = nav.text?.toString()?.trim().orEmpty()
             if (dest.isEmpty()) {
-                Toast.makeText(this, uiText("Type a destination first"), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Type a destination first", Toast.LENGTH_SHORT).show()
             } else {
                 NavLauncher.navigate(this, dest, LogBus::log)
             }
@@ -207,12 +207,12 @@ class ControlsActivity : AppCompatActivity() {
             }
         }
 
-        btnPadFullscreen.text = uiText(if (on) "Exit" else "Fullscreen")
+        btnPadFullscreen.text = if (on) "Exit" else "Fullscreen"
 
         if (on) {
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             insetsController.hide(WindowInsetsCompat.Type.systemBars())
-            Toast.makeText(this, uiText("Pad fullscreen — screen stays on. Press Back to exit."), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Pad fullscreen — screen stays on. Press Back to exit.", Toast.LENGTH_SHORT).show()
         } else {
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             insetsController.show(WindowInsetsCompat.Type.systemBars())
@@ -237,7 +237,7 @@ class ControlsActivity : AppCompatActivity() {
         NightPrefs.setTheme(this, theme)
         AaVideoBridge.nightSink?.invoke(NightPrefs.isNightNow(this))
         highlightTheme(theme)
-        Toast.makeText(this, uiText("Map theme: ${theme.label}"), Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.setup_toast_map_theme, getString(theme.labelRes)), Toast.LENGTH_SHORT).show()
     }
 
     /** Paint the selected segment in brand color; the rest stay neutral tonal. */
@@ -267,7 +267,7 @@ class ControlsActivity : AppCompatActivity() {
         }
         val sink = AaVideoBridge.keySink
         if (sink == null) {
-            Toast.makeText(this, uiText("Start Android Auto first"), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Start Android Auto or Map first", Toast.LENGTH_SHORT).show()
         } else {
             sink(code)
         }
@@ -281,7 +281,7 @@ class ControlsActivity : AppCompatActivity() {
         }
         val sink = AaVideoBridge.scrollSink
         if (sink == null) {
-            Toast.makeText(this, uiText("Start Android Auto first"), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Start Android Auto or Map first", Toast.LENGTH_SHORT).show()
         } else {
             sink(delta)
         }

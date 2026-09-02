@@ -146,6 +146,7 @@ object BikeProfiles {
     private val all: List<BikeProfile> = listOf(
         Nk800Profile,
         Cfdl26NkTouchProfile,
+        MoriniMlSoftApProfile,
         Cfdl16MotoPlayLandscapeProfile,
         ClC450Profile,
         Cfdl26LandscapeProfile,
@@ -186,6 +187,12 @@ object BikeProfiles {
 
     private fun selectByQrGuess(qr: QrData?): BikeProfile {
         if (qr == null) return legacy
+        // Morini SoftAP / Alltrhike family — SSID MLN_* / ML*_ before generic modelId ties.
+        if (qr.ssid.startsWith("MLN_", ignoreCase = true) ||
+            qr.ssid.startsWith("ML", ignoreCase = true) && qr.modelId in setOf("21333", "00297")
+        ) {
+            return MoriniMlSoftApProfile
+        }
         val matches = all.filter { it.matchesModelId(qr.modelId ?: "") }
         if (matches.isEmpty()) return legacy
         if (matches.size == 1) return matches[0]
@@ -221,6 +228,12 @@ object BikeProfileHolder {
     @Volatile var aaVideoOverride: AaVideoSpec? = null
 
     /**
+     * Setup ▸ Android Auto text size. When set, replaces [AaVideoSpec.dpi] on the effective spec
+     * so Maps / AA chrome scale without changing coded resolution.
+     */
+    @Volatile var aaDpiOverride: Int? = null
+
+    /**
      * Margins advertised to Android Auto so it renders at the dash panel's aspect ratio (see
      * [AaMargins]). Set before AA starts in [MainActivity]; read by [dev.zanderp.opencfmoto.aa.ServiceDiscoveryResponse]
      * (advertise) and the compositor (crop the source to the usable area). [AaMargins.NONE] = off.
@@ -248,7 +261,12 @@ object BikeProfileHolder {
     @Volatile var profileOverride: ProfileOverride = ProfileOverride.AUTO
 
     /** The effective Android Auto video spec: the user override if set, else the active profile's. */
-    val aaVideo: AaVideoSpec get() = aaVideoOverride ?: active.aaVideo
+    val aaVideo: AaVideoSpec
+        get() {
+            val base = aaVideoOverride ?: active.aaVideo
+            val d = aaDpiOverride ?: return base
+            return if (d == base.dpi) base else AaVideoSpec(base.resolution, d)
+        }
 
     /** Usable AA content size (coded frame minus [aaContentMargins]) — the aspect-correct area the
      *  compositor and the in-app Dash view actually show. Equals the coded size when margins are off. */
@@ -283,8 +301,102 @@ private fun basePhoneClientInfo(huid: String?, phoneUuid: String, supportFunctio
         put("bluetoothName", "OpenCfMoto")
         put("supportH264IFrame", true)
         put("supportFunction", supportFunction)
+        // Do NOT advertise supportSyncCorrectTime. Claiming it made some firmwares apply our
+        // 0x10601 aggressively (Zontes/Voge → 00:00) even when the cluster clock was already fine.
+        // We still body-ack every inbound 0x10600 (see HuTimeSync) so Morini/QJ never see empty→1970.
+        put("supportSyncCorrectTime", false)
         put("appVersionFingerPrint", "opencfmoto-poc")
     }
+
+/**
+ * Build a 0x10601 ack body for [PxcFrame.CMD_HU_TIME_SYNC].
+ *
+ * Live bike payload (45 bytes): little-endian header
+ *   i32@0 flags (−2), i32@4 channel/modelId, i32@8 seq, i32@12 0
+ * followed by 29 ASCII chars `yyyy-MM-dd HH:mm:ss.SSS000000`.
+ *
+ * Empty 0x10601 → epoch/1970 on Morini/Voge. Rewriting with phone time (2.0.7–2.0.9) still
+ * jumped **hours** on Voge/QJ/X-Cape (minutes often stayed — TZ / format apply).
+ * Strategy (2.0.10):
+ *  - if the request already carries any non-epoch stamp bytes → **echo the whole payload**
+ *  - only synthesize phone local time when the request is empty / 1970 / all-zero
+ * Never empty.
+ */
+internal object HuTimeSync {
+    private const val PAYLOAD_LEN = 45
+    private const val TIME_OFF = 16
+    private const val TIME_LEN = 29
+    private val stampRe = Regex("""^(\d{4})-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}""")
+    private val timeFmt = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US).apply {
+        timeZone = java.util.TimeZone.getDefault()
+    }
+
+    data class Ack(val payload: ByteArray, val mode: String, val stamp: String)
+
+    fun ackPayload(request: ByteArray): ByteArray = ack(request).payload
+
+    fun ack(request: ByteArray, forcePhone: Boolean = false): Ack {
+        val len = maxOf(PAYLOAD_LEN, request.size)
+        val out = ByteArray(len)
+        if (request.isNotEmpty()) {
+            System.arraycopy(request, 0, out, 0, minOf(request.size, len))
+        }
+        if (request.size < TIME_OFF) {
+            val bb = java.nio.ByteBuffer.wrap(out).order(java.nio.ByteOrder.LITTLE_ENDIAN)
+            bb.putInt(-2)
+            bb.putInt(0)
+            bb.putInt(1)
+            bb.putInt(0)
+        }
+        val bikeStamp = extractStamp(request)
+        val stamp: String
+        val mode: String
+        if (!forcePhone && shouldEcho(bikeStamp, request)) {
+            stamp = bikeStamp.ifBlank { extractStamp(out) }
+            mode = "echo"
+        } else {
+            stamp = phoneStamp()
+            mode = "phone"
+            val ascii = stamp.toByteArray(Charsets.US_ASCII)
+            System.arraycopy(ascii, 0, out, TIME_OFF, minOf(TIME_LEN, ascii.size))
+        }
+        return Ack(out, mode, stamp)
+    }
+
+    internal fun extractStamp(buf: ByteArray): String {
+        if (buf.size < TIME_OFF) return ""
+        val n = minOf(TIME_LEN, buf.size - TIME_OFF)
+        return String(buf, TIME_OFF, n, Charsets.US_ASCII).trimEnd('\u0000', ' ')
+    }
+
+    /** Echo unless the bike sent epoch / blank (those still need a phone wall-clock). */
+    internal fun shouldEcho(stamp: String, request: ByteArray): Boolean {
+        if (request.size < TIME_OFF) return false
+        if (stamp.isBlank() || stamp.all { it == '\u0000' || it == ' ' }) return false
+        val year = stampRe.find(stamp)?.groupValues?.getOrNull(1)?.toIntOrNull()
+        if (year != null && year in 1969..1971) return false
+        return true
+    }
+
+    internal fun isSaneStamp(stamp: String): Boolean {
+        val m = stampRe.find(stamp) ?: return false
+        val year = m.groupValues[1].toIntOrNull() ?: return false
+        return year in 2020..2099
+    }
+
+    private fun phoneStamp(): String {
+        val ms = System.currentTimeMillis()
+        return synchronized(timeFmt) {
+            timeFmt.timeZone = java.util.TimeZone.getDefault()
+            String.format(
+                java.util.Locale.US,
+                "%s.%03d000000",
+                timeFmt.format(java.util.Date(ms)),
+                (ms % 1000L).toInt(),
+            )
+        }
+    }
+}
 
 /**
  * BIKE A — the CFDL16 head unit (sdkVersion 0.9.29.1) the app was reverse-engineered against and
@@ -415,9 +527,17 @@ object Cfdl26PortraitProfile : BikeProfile {
 
     override fun score(info: JSONObject): Int {
         var s = 0
-        if (info.optString("version_name").startsWith("CFDL26")) s += 4
+        if (info.optString("HUID").startsWith("CARB", ignoreCase = true)) return 0
+        val versionName = info.optString("version_name")
+        val pkg = info.optString("package_name")
+        val looksCfmotoCfdl26 =
+            versionName.startsWith("CFDL26") ||
+                pkg.contains("cfmoto", ignoreCase = true) ||
+                pkg.contains("cfdash", ignoreCase = true)
+        if (versionName.startsWith("CFDL26")) s += 4
         val sdk = info.optString("sdkVersion")
-        if (sdk.isNotEmpty() && !sdk.startsWith("0.")) s += 2   // 1.1.4 etc., not the 0.9.x legacy unit
+        // Only credit sdk 1.x when this already looks like a CFMoto CFDL26 unit.
+        if (looksCfmotoCfdl26 && sdk.isNotEmpty() && !sdk.startsWith("0.")) s += 2
         if (info.optBoolean("enableSockServerAuth", false)) s += 2
         if (info.optString("package_name") == "com.cfmoto.cfdashmotoplay") s += 3
         // supportFunction=128 alone is NOT a CFDL26 signal — many CFDL16 units advertise it too and
@@ -435,6 +555,15 @@ object Cfdl26PortraitProfile : BikeProfile {
     override fun handleUnknownControl(
         tag: String, frame: PxcFrame, out: OutputStream, log: (String) -> Unit,
     ): Boolean {
+        // Bike wall-clock sync (supportSyncCorrectTime). Must carry phone time in the ack body —
+        // empty 0x10601 → epoch/1970 on Morini / Voge and unsynced clocks elsewhere.
+        if (frame.cmd == PxcFrame.CMD_HU_TIME_SYNC) {
+            val ack = HuTimeSync.ack(frame.payload, forcePhone = ClockLab.timeSync == ClockTimeSyncMode.PHONE)
+            log("[CLOCK-LAB] HU_TIME_SYNC → ${ClockLab.timeSync.id}")
+            log("[$tag] HU_TIME_SYNC len=${frame.payload.size} → ack 0x10601 mode=${ack.mode} time=${ack.stamp}")
+            PxcFrame(PxcFrame.CMD_HU_TIME_SYNC_ACK, ack.payload).write(out)
+            return true
+        }
         // After CHECK_SN the CFDL26 unit sends a burst of JSON notify frames the older CFDL16 never
         // did — 0x10780 (log), 0x103a0 (OTA FTP creds), 0x10020 (media-feature flags), and possibly
         // more — and will NOT connect to the media ports until each is acked. The whole PXC protocol
@@ -566,6 +695,59 @@ private class LearnedGeometryProfile(
     override val panelSize = panel
 }
 
+/**
+ * Moto Morini SoftAP / Alltrhike / MLN_* Carbit units (modelId/channel 21333, flavor 51).
+ * EasyConn links and frames flow, but mis-scoring as CFDL26 800MT was common — keep a dedicated
+ * Baseline landscape profile so CLIENT_INFO / canvas stay on the Morini SoftAP shape.
+ */
+object MoriniMlSoftApProfile : BikeProfile {
+    override val name = "Morini SoftAP / Alltrhike (MLN)"
+    override val requiresSockServerAuth = false
+    override val supportsScreenTouch = false
+    override val advertisedSupportFunction = 128
+    /**
+     * X‑Cape 1200 Yunmo: OEM runtime `NaviVirtualDisplay` is **1024×464** @187 dpi
+     * (Ride MO 1.0.23 dumpsys — not calculateMapMaxSize 1904×862).
+     * AA still requests 800×480; Yunmo re-encodes onto the reported dash canvas.
+     */
+    override val panelSize = 1024 to 464
+    override val aaVideo = AaVideoSpec(AaResolution.LANDSCAPE_800x480, dpi = 160)
+    /** Ride MO does not force Baseline — leave profile to the encoder. */
+    override val forceBaseline: Boolean get() = false
+    /**
+     * Ride MO map-nav path (vc45): 2 Mbit/s, **10 fps**, GOP 2s + request-sync every 1s.
+     * Full-screen OEM is 30 fps / GOP 1s — 10 fps is the path that also uses type-15 SPS.
+     */
+    override val videoBitrate: Int get() = 2_000_000
+    override val videoFrameRate: Int get() = 10
+    override val videoIFrameIntervalSec: Int get() = 2
+
+    override fun matchesModelId(modelId: String): Boolean =
+        modelId.trim() in setOf("21333", "21322")
+
+    override fun score(info: JSONObject): Int {
+        var s = 0
+        val channel = info.optString("channel")
+        if (channel == "21333" || channel == "21322") s += 12
+        val huid = info.optString("HUID")
+        if (huid.startsWith("CARB", ignoreCase = true)) s += 8
+        if (info.optInt("flavor", 0) == 51) s += 6
+        val pkg = info.optString("package_name")
+        if (pkg.isEmpty() && s > 0) s += 1
+        val sdk = info.optString("sdkVersion")
+        if (sdk.startsWith("1.0.13")) s += 2
+        if (!info.optBoolean("supportScreenTouch", false)) s += 1
+        return s
+    }
+
+    override fun buildClientInfoReply(info: JSONObject, huid: String?, phoneUuid: String): JSONObject =
+        basePhoneClientInfo(huid, phoneUuid, advertisedSupportFunction)
+
+    override fun handleUnknownControl(
+        tag: String, frame: PxcFrame, out: OutputStream, log: (String) -> Unit,
+    ): Boolean = Cfdl26PortraitProfile.handleUnknownControl(tag, frame, out, log)
+}
+
 object Cfdl26LandscapeProfile : BikeProfile {
     override val name = "CFDL26 / MotoPlay Landscape (800MT)"
     override val requiresSockServerAuth = true
@@ -584,17 +766,26 @@ object Cfdl26LandscapeProfile : BikeProfile {
 
     override fun score(info: JSONObject): Int {
         var s = 0
-        if (info.optString("version_name").startsWith("CFDL26")) s += 4
+        val versionName = info.optString("version_name")
+        val pkg = info.optString("package_name")
+        val looksCfmotoCfdl26 =
+            versionName.startsWith("CFDL26") ||
+                pkg.contains("cfmoto", ignoreCase = true) ||
+                pkg.contains("cfdash", ignoreCase = true)
+        if (versionName.startsWith("CFDL26")) s += 4
+        // Do NOT treat every sdk 1.x Carbit SoftAP (Morini Alltrhike 1.0.13.1) as CFDL26.
         val sdk = info.optString("sdkVersion")
-        if (sdk.isNotEmpty() && !sdk.startsWith("0.")) s += 2
+        if (looksCfmotoCfdl26 && sdk.isNotEmpty() && !sdk.startsWith("0.")) s += 2
         if (info.optBoolean("enableSockServerAuth", false)) s += 2
-        if (info.optString("package_name") == "com.cfmoto.easyconnect") s += 3
+        if (pkg == "com.cfmoto.easyconnect") s += 3
         if (s > 0 && info.optInt("supportFunction", 0) == 128) s += 1
         // Prefer landscape when the unit is clearly landscape / not the Advanced near-square path.
-        if (info.optBoolean("supportLandscapeAdaptive", false)) s += 4
+        if (looksCfmotoCfdl26 && info.optBoolean("supportLandscapeAdaptive", false)) s += 4
         // 800MT Explore / MT-X AP family often uses 6WWV… HUID (vs 6KWV… on NK Advanced).
         if (info.optString("HUID").startsWith("6WWV")) s += 3
         if (!info.optBoolean("supportScreenTouch", false)) s -= 1
+        // Generic Carbit HUID must not beat Morini SoftAP / Legacy.
+        if (info.optString("HUID").startsWith("CARB", ignoreCase = true)) s = 0
         return s
     }
 

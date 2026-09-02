@@ -15,9 +15,6 @@
         tools:targetApi="tiramisu" />
     <uses-feature android:name="android.hardware.wifi.direct" android:required="false" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <!-- Android 11 and older use the legacy Bluetooth permission model. -->
-    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
     <!-- Android 11 and earlier -->
     <uses-permission
         android:name="android.permission.BLUETOOTH"
@@ -60,8 +57,7 @@
         <package android:name="com.google.android.gms" />
         <!-- So we can detect + best-effort close the official CFMoto app when it grabs the link ports. -->
         <package android:name="com.cfmoto.cfmotointernational" />
-        <!-- Optional one-tap shortcuts in the parked Apps picker. "Choose another app" uses the
-             Android system activity picker, so this list is not an allowlist. -->
+        <!-- Parked-only shortcuts. The system picker still permits choosing any launchable app. -->
         <package android:name="com.google.android.youtube" />
         <package android:name="com.google.android.apps.youtube.music" />
         <package android:name="org.videolan.vlc" />
@@ -79,6 +75,7 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:localeConfig="@xml/locales_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.OpenCfMoto">
@@ -146,17 +143,16 @@
             android:name=".AndroidAutoService"
             android:exported="false"
             android:foregroundServiceType="connectedDevice|location|microphone" />
-        <service
-            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
-            android:enabled="false"
-            android:exported="false">
-            <meta-data
-                android:name="autoStoreLocales"
-                android:value="true" />
-        </service>
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
             android:value="barcode" />
+        <receiver
+            android:name=".BtConnectTrigger"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
+            </intent-filter>
+        </receiver>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

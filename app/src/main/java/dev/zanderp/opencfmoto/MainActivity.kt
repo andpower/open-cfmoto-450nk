@@ -16,6 +16,7 @@ import android.os.Build
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.text.method.ScrollingMovementMethod
+import android.view.KeyEvent
 import android.view.View
 import android.widget.Button
 import android.widget.ScrollView
@@ -37,6 +38,11 @@ import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (RemotePad.consume(this, event)) return true
+        return super.dispatchKeyEvent(event)
+    }
+
     private lateinit var logView: TextView
     private lateinit var logScroll: ScrollView
     private lateinit var logPanel: View
@@ -52,11 +58,11 @@ class MainActivity : AppCompatActivity() {
     private val ts = SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
     /** True when the pending QR scan should kick off the Android Auto flow (vs the mirror path). */
     private var pendingAaStart = false
-    /** Explicit installed app selected from [AppsActivity] for whole-screen parked projection. */
+    /** Installed app selected from [AppsActivity] for parked whole-screen projection. */
     private var pendingAppPackage: String? = null
     private var pendingAppClass: String? = null
     private var pendingAppLabel: String? = null
-    /** Cancels stale delayed launch/health tasks when the rider changes mode. */
+    /** Cancels stale delayed app-launch checks when the rider changes mode. */
     private var appProjectionWaitToken = 0
     private val appProjectionHandler = android.os.Handler(android.os.Looper.getMainLooper())
     /** Guards the "close the official CFMoto app" prompt so it shows once per error, not every redraw. */
@@ -70,26 +76,24 @@ class MainActivity : AppCompatActivity() {
         val raw = result.data?.getStringExtra(QrScanActivity.RESULT_QR)
         if (result.resultCode != RESULT_OK || raw == null) {
             log("QR scan cancelled")
-            if (pendingAppPackage != null) {
-                cancelProjection()
-                clearPendingApp()
-            }
             return@registerForActivityResult
         }
         log("QR raw: $raw")
         val qr = QrData.parse(raw)
         if (qr == null) {
-            log("QR parse FAILED — missing ssid/pwd?")
-            Toast.makeText(this, uiText("Invalid QR"), Toast.LENGTH_SHORT).show()
-            if (pendingAppPackage != null) {
-                cancelProjection()
-                clearPendingApp()
-            }
+            val hint = QrData.parseFailureHint(raw)
+            log("QR parse FAILED — missing ssid/pwd?" + (hint?.let { " ($it)" } ?: ""))
+            Toast.makeText(
+                this,
+                hint ?: getString(R.string.main_invalid_qr),
+                Toast.LENGTH_LONG,
+            ).show()
             return@registerForActivityResult
         }
         log(
             "QR parsed: ssid=${qr.ssid} mac=${qr.mac} action=${qr.action} " +
-                "(ap=${qr.supportsAp}, p2p=${qr.supportsP2p}) modelId=${qr.modelId} sn=${qr.sn}"
+                "(ap=${qr.supportsAp}, p2p=${qr.supportsP2p}, hotspot=${qr.supportsPhoneHotspot}) " +
+                "modelId=${qr.modelId} sn=${qr.sn}"
         )
         // Remember this bike so the next ride is a one-tap reconnect (skips the scan entirely).
         BikeMemory.save(this, raw, qr)
@@ -101,16 +105,17 @@ class MainActivity : AppCompatActivity() {
         } else {
             // Mirror path (screen projection already armed): connect straight away.
             applyProfile(qr)
+            MirrorOrientationLock.apply(this)
             ConnectionState.set(Phase.MIRRORING, BikeMemory.lastBikeName(this) ?: qr.ssid)
             joinWifi(qr, gateOnAaSteady = false)
-            if (pendingAppPackage != null) {
+            if (pendingAppLabel != null) {
                 waitForAppProjectionStream()
             } else {
                 // Same as startMirrorLink: single-app capture needs the shared app visible.
                 moveTaskToBack(true)
                 Toast.makeText(
                     this,
-                    uiText("Leave the shared app on screen (OpenCfMoto stays in the notification)"),
+                    getString(R.string.main_mirror_leave_shared_app),
                     Toast.LENGTH_LONG,
                 ).show()
             }
@@ -209,12 +214,13 @@ class MainActivity : AppCompatActivity() {
             ProjectionHolder.projection?.let { try { it.stop() } catch (_: Exception) {} }
             ProjectionHolder.projection = null
             try { ProjectionService.stop(this) } catch (_: Exception) {}
+            MirrorOrientationLock.clear(this)
         }
         if (clearMap) {
             try { GpxSession.clear() } catch (_: Exception) {}
             MapInputBridge.clear()
         }
-        BikeLink.beginHandoff()
+        BikeLink.beginHandoff(this)
     }
 
     /** Start the Android Auto → bike projection for [qr]. Shared by the one-tap Connect reconnect
@@ -222,6 +228,9 @@ class MainActivity : AppCompatActivity() {
     private fun startAaFlow(qr: QrData) {
         try {
             if (!WifiGate.ensureEnabledOrPrompt(this)) return
+            // AA Connect needs Nearby + Bluetooth so HUR (START_WIRELESS_PROJECTION) can run when
+            // WirelessStartupActivity is a no-op (common on AA 16.4+/17.4+). Mirror/Map unchanged.
+            if (!ensureNearbyBtForAaConnect()) return
             // Map / Mirror / stale PXC must die first — half-switches leave framesSent=0.
             tearDownForModeSwitch(clearMap = true, clearMirror = true)
             applyProfile(qr)
@@ -234,11 +243,12 @@ class MainActivity : AppCompatActivity() {
             // so the bike is never contacted before AA has frames to serve. These callbacks fire against
             // process-global state (applicationContext + BikeLink.prober), NOT this activity: launching
             // Google AA can destroy/recreate MainActivity mid-startup and the hand-off must still finish.
-            BikeLink.beginHandoff()
+            BikeLink.beginHandoff(this)
             AaVideoBridge.onSteadyVideo = {
                 AaVideoBridge.onSteadyVideo = null
                 ConnectionState.set(Phase.AA_VIDEO_LIVE)
                 LogBus.log("→ Android Auto video is live")
+                AndroidAutoService.upgradeForegroundForMicrophone()
                 BikeLink.markAaVideoSteady()
             }
             AndroidAutoService.start(this)
@@ -256,12 +266,7 @@ class MainActivity : AppCompatActivity() {
             // Additive retry for AA 16.4+/17.4+ that ignore the first broadcast — skipped if
             // a session is already live (re-firing START_WIRELESS_PROJECTION kills AAP).
             logView.postDelayed({
-                val p = ConnectionState.phase
-                if (AaVideoBridge.aaSessionLive || AaVideoBridge.aaDecoding ||
-                    p == Phase.AA_VIDEO_LIVE || p == Phase.PXC_CONNECTING || p == Phase.STREAMING ||
-                    p == Phase.IDLE || p == Phase.STOPPED || p == Phase.ERROR ||
-                    p == Phase.MIRRORING
-                ) {
+                if (aaAlreadyLiveOrTerminal()) {
                     if (AaVideoBridge.aaSessionLive || AaVideoBridge.aaDecoding) {
                         log("[AA] skip re-trigger — AA already connected/decoding")
                     }
@@ -274,6 +279,22 @@ class MainActivity : AppCompatActivity() {
                     log("AA self-mode re-trigger failed: $e")
                 }
             }, 4_500)
+            // Give up the silent black/QR reconnect loop — surface a clear error after several tries.
+            logView.postDelayed({
+                val p = ConnectionState.phase
+                if (p == Phase.IDLE || p == Phase.STOPPED || p == Phase.ERROR ||
+                    p == Phase.STREAMING || p == Phase.MIRRORING
+                ) return@postDelayed
+                if (AaVideoBridge.aaSessionLive || AaVideoBridge.aaDecoding) return@postDelayed
+                // Still no AA after retries — stop thrashing (bike SoftAP may already be up).
+                log("[AA] Android Auto never attached — stopping silent retry")
+                val detail = if (AaVideoBridge.aaSessionSeen) {
+                    getString(R.string.conn_detail_aa_dropped)
+                } else {
+                    getString(R.string.conn_detail_aa_not_started)
+                }
+                ConnectionState.set(Phase.ERROR, detail)
+            }, 18_000)
             // Kick off the Wi-Fi join right away, in parallel with AA boot.
             joinWifi(qr, gateOnAaSteady = true)
         } catch (e: Exception) {
@@ -283,19 +304,89 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun aaAlreadyLiveOrTerminal(): Boolean {
+        val p = ConnectionState.phase
+        return AaVideoBridge.aaSessionLive || AaVideoBridge.aaDecoding ||
+            p == Phase.AA_VIDEO_LIVE || p == Phase.PXC_CONNECTING || p == Phase.STREAMING ||
+            p == Phase.IDLE || p == Phase.STOPPED || p == Phase.ERROR ||
+            p == Phase.MIRRORING
+    }
+
+    /**
+     * Block AA Connect until Nearby (API 31+) is granted and Bluetooth is on — otherwise HUR
+     * never runs and Activity/Receiver alone often leave SoftAP up with no AA on the phone.
+     */
+    private fun ensureNearbyBtForAaConnect(): Boolean {
+        if (dev.zanderp.opencfmoto.aa.AaSelfMode.canAttemptHur(this)) return true
+        val needNearby = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) !=
+            PackageManager.PERMISSION_GRANTED
+        if (needNearby) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                    Manifest.permission.BLUETOOTH_SCAN,
+                ),
+                REQ_BT_FOR_AA,
+            )
+            log("→ Nearby/Bluetooth required for AA Connect — waiting for grant + BT on")
+        } else {
+            log("→ Bluetooth is off — turn it on, then tap Connect again")
+        }
+        ConnectionState.set(Phase.ERROR, getString(R.string.conn_detail_need_bluetooth))
+        showNearbyBtForAaDialog(needNearby)
+        return false
+    }
+
+    private fun showNearbyBtForAaDialog(needNearby: Boolean) {
+        if (isFinishing || isDestroyed) return
+        try {
+            val msg = if (needNearby) {
+                getString(R.string.main_aa_need_nearby_message)
+            } else {
+                getString(R.string.main_aa_need_bt_on_message)
+            }
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.main_aa_need_nearby_title)
+                .setMessage(msg)
+                .setPositiveButton(R.string.main_aa_need_nearby_settings) { _, _ ->
+                    try {
+                        if (needNearby) {
+                            startActivity(
+                                Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                    .setData(Uri.fromParts("package", packageName, null)),
+                            )
+                        } else {
+                            startActivity(Intent(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS))
+                        }
+                    } catch (_: Exception) {
+                        try {
+                            startActivity(Intent(android.provider.Settings.ACTION_SETTINGS))
+                        } catch (_: Exception) {
+                        }
+                    }
+                }
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
+        } catch (e: Exception) {
+            log("Nearby/BT dialog failed: $e")
+        }
+    }
+
     /** After a fatal crash, tell the rider logs survived and keep Share Logs useful. */
     private fun maybeShowCrashRecovery() {
         if (CrashGuard.pendingCrashText(this) == null) return
         try {
             androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle(uiText("Recovered after a crash"))
+                .setTitle(R.string.main_crash_title)
                 .setMessage(
-                    uiText("OpenCfMoto closed unexpectedly last time. The log and crash report were saved — ") +
+                    "OpenCfMoto closed unexpectedly last time. The log and crash report were saved — " +
                         "open Logs and tap Share Logs so we can see what happened.",
                 )
-                .setPositiveButton(uiText("Share Logs")) { _, _ -> shareLog() }
-                .setNegativeButton(uiText("Keep logs")) { _, _ -> }
-                .setNeutralButton(uiText("Dismiss")) { _, _ -> CrashGuard.clearCrash(this) }
+                .setPositiveButton("Share Logs") { _, _ -> shareLog() }
+                .setNegativeButton("Keep logs") { _, _ -> }
+                .setNeutralButton("Dismiss") { _, _ -> CrashGuard.clearCrash(this) }
                 .show()
         } catch (e: Exception) {
             log("crash recovery UI failed: $e")
@@ -307,6 +398,7 @@ class MainActivity : AppCompatActivity() {
     ) { result ->
         if (result.resultCode != RESULT_OK || result.data == null) {
             log("screen-capture consent declined")
+            MirrorOrientationLock.clear(this)
             clearPendingApp()
             return@registerForActivityResult
         }
@@ -326,42 +418,46 @@ class MainActivity : AppCompatActivity() {
                         ProjectionHolder.projection = mpm.getMediaProjection(code, data)
                         GpxSession.clear()
                         val selectedApp = pendingAppLabel
-                        val captureMode = if (selectedApp == null) {
-                            "pick Entire screen or a single app (Android 14+)"
+                        if (selectedApp != null) {
+                            log("screen-capture armed (FGS up after ${tries * 100}ms) — whole screen for $selectedApp")
+                            androidx.appcompat.app.AlertDialog.Builder(this@MainActivity)
+                                .setTitle(uiText("$selectedApp ready"))
+                                .setMessage(
+                                    uiText(
+                                        "OpenCfMoto will connect to the bike and open $selectedApp using " +
+                                            "whole-screen sharing.\n\nThe 450NK is not touch. Handlebar buttons " +
+                                            "switch temporarily to normal media control.\n\n" +
+                                            "Use this mode only while parked. Protected video may appear black.",
+                                    ),
+                                )
+                                .setPositiveButton(uiText("Launch on bike")) { _, _ -> startAppMirrorLink() }
+                                .setNegativeButton(uiText("Cancel")) { _, _ ->
+                                    clearPendingApp()
+                                    stopEverything()
+                                }
+                                .setCancelable(false)
+                                .show()
                         } else {
-                            "whole screen for $selectedApp"
-                        }
-                        log("screen-capture armed (FGS up after ${tries * 100}ms) — $captureMode")
-                        androidx.appcompat.app.AlertDialog.Builder(this@MainActivity)
-                            .setTitle(if (selectedApp == null) "Mirror ready" else "$selectedApp ready")
-                            .setMessage(
-                                if (selectedApp == null) {
-                                    "Entire screen — best for riding; phone stays awake while mirroring. " +
-                                        "Uses Setup ▸ Screen fit (Fit = whole UI + bars).\n\n" +
+                            log("screen-capture armed (FGS up after ${tries * 100}ms) — pick Entire screen or a single app (Android 14+)")
+                            androidx.appcompat.app.AlertDialog.Builder(this@MainActivity)
+                                .setTitle(R.string.main_mirror_ready_title)
+                                .setMessage(
+                                    "Entire screen — best for riding. " +
+                                        "Uses Setup ▸ Screen fit and Setup ▸ Mirror orientation " +
+                                        "(Match dash rotates the phone so the TFT fills).\n\n" +
                                         "Single app — that app must stay on screen; Android sends no frames " +
                                         "in the background. Prefer GPX / Tracks or Android Auto for pocket use.\n\n" +
                                         "Bike touch does not drive mirrored apps. Continue connects and " +
-                                        "sends OpenCfMoto to the background."
-                                } else {
-                                    "OpenCfMoto will connect to the bike and open $selectedApp using " +
-                                        "whole-screen sharing.\n\nThe 450NK is not touch. The handlebar " +
-                                        "buttons will be switched to normal media control, so play/pause " +
-                                        "and track changes work only if $selectedApp supports them.\n\n" +
-                                        "Use this mode only while parked. Protected video may appear black."
-                                },
-                            )
-                            .setPositiveButton(if (selectedApp == null) "Continue" else "Launch on bike") { _, _ ->
-                                if (selectedApp == null) startMirrorLink() else startAppMirrorLink()
-                            }
-                            .setNegativeButton(uiText("Cancel")) { _, _ ->
-                                cancelProjection()
-                                clearPendingApp()
-                            }
-                            .setCancelable(false)
-                            .show()
+                                        "sends OpenCfMoto to the background.",
+                                )
+                                .setPositiveButton("Continue") { _, _ -> startMirrorLink() }
+                                .setCancelable(false)
+                                .show()
+                        }
                     } catch (e: Exception) {
                         log("getMediaProjection failed: $e")
                         ProjectionService.stop(this@MainActivity)
+                        MirrorOrientationLock.clear(this@MainActivity)
                         clearPendingApp()
                     }
                 } else if (tries++ < maxTries) {
@@ -369,6 +465,7 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     log("foreground service did not start within 5s — aborting mirror")
                     ProjectionService.stop(this@MainActivity)
+                    MirrorOrientationLock.clear(this@MainActivity)
                     clearPendingApp()
                 }
             }
@@ -403,33 +500,20 @@ class MainActivity : AppCompatActivity() {
         // attributes like app:icon don't resolve in layouts, so we assign them programmatically.
         (connectBtn as? MaterialButton)?.setIconResource(R.drawable.ic_power)
         findViewById<android.widget.TextView>(R.id.brand_version).text =
-            uiText("v${BuildConfig.VERSION_NAME}")
-        // These four share a narrow row: put the icon on TOP so each label gets the full width.
-        // full width and isn't clipped (e.g. "Mirror" → "Mirro" when the icon sat inline).
-        (findViewById<View>(R.id.btn_aa_start) as? MaterialButton)?.apply {
-            setIconResource(R.drawable.ic_qr)
+            "v${BuildConfig.VERSION_NAME}"
+        // Scan / Map / Mirror: icon on top (Tile style). maxLines=1 + autoSize keeps labels
+        // horizontal on narrow phones / large system font (Samsung S22 report).
+        fun MaterialButton.asIconTopTile(iconRes: Int) {
+            setIconResource(iconRes)
             iconGravity = MaterialButton.ICON_GRAVITY_TOP
-            iconPadding = 2
-            setPadding(0, paddingTop, 0, paddingBottom)
+            iconPadding = resources.getDimensionPixelSize(R.dimen.btn_tile_icon_padding)
+            maxLines = 1
+            isSingleLine = true
         }
-        (findViewById<View>(R.id.btn_gpx) as? MaterialButton)?.apply {
-            setIconResource(R.drawable.ic_place)
-            iconGravity = MaterialButton.ICON_GRAVITY_TOP
-            iconPadding = 2
-            setPadding(0, paddingTop, 0, paddingBottom)
-        }
-        (findViewById<View>(R.id.btn_apps) as? MaterialButton)?.apply {
-            setIconResource(R.drawable.ic_apps)
-            iconGravity = MaterialButton.ICON_GRAVITY_TOP
-            iconPadding = 2
-            setPadding(0, paddingTop, 0, paddingBottom)
-        }
-        (findViewById<View>(R.id.btn_mirror_start) as? MaterialButton)?.apply {
-            setIconResource(R.drawable.ic_cast)
-            iconGravity = MaterialButton.ICON_GRAVITY_TOP
-            iconPadding = 2
-            setPadding(0, paddingTop, 0, paddingBottom)
-        }
+        (findViewById<View>(R.id.btn_aa_start) as? MaterialButton)?.asIconTopTile(R.drawable.ic_qr)
+        (findViewById<View>(R.id.btn_gpx) as? MaterialButton)?.asIconTopTile(R.drawable.ic_place)
+        (findViewById<View>(R.id.btn_apps) as? MaterialButton)?.asIconTopTile(R.drawable.ic_apps)
+        (findViewById<View>(R.id.btn_mirror_start) as? MaterialButton)?.asIconTopTile(R.drawable.ic_cast)
         (findViewById<View>(R.id.btn_aa_stop) as? MaterialButton)?.setIconResource(R.drawable.ic_stop)
         (findViewById<View>(R.id.btn_hud_view) as? MaterialButton)?.apply {
             setIconResource(R.drawable.ic_cast)
@@ -547,7 +631,7 @@ class MainActivity : AppCompatActivity() {
             logPanel.visibility = if (show) View.VISIBLE else View.GONE
             // The tips panel and the log panel share the flexible space, so only one shows at a time.
             tipsPanel.visibility = if (show) View.GONE else View.VISIBLE
-            toggleLogBtn.text = uiText(if (show) "Hide logs" else "Logs")
+            toggleLogBtn.text = if (show) getString(R.string.main_hide_logs) else getString(R.string.main_logs)
         }
 
         findViewById<View>(R.id.btn_hud_view).setOnClickListener { startActivity(Intent(this, HudViewActivity::class.java)) }
@@ -591,7 +675,16 @@ class MainActivity : AppCompatActivity() {
                         android.view.inputmethod.InputMethodManager.SHOW_FORCED,
                     )
                 }
-                Toast.makeText(this, uiText("Type here — results show on the bike"), Toast.LENGTH_SHORT).show()
+                try {
+                    @Suppress("DEPRECATION")
+                    (getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator)
+                        ?.vibrate(40)
+                } catch (_: Exception) {}
+                Toast.makeText(
+                    this,
+                    "Bike search open — type here. Results appear on the dash.",
+                    Toast.LENGTH_LONG,
+                ).show()
             }
         }
         // Live suggestions on the dash while typing on the phone.
@@ -624,13 +717,15 @@ class MainActivity : AppCompatActivity() {
             try {
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(AboutActivity.URL_KOFI)))
             } catch (_: Exception) {
-                Toast.makeText(this, uiText("Couldn't open donate link"), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.main_donate_failed, Toast.LENGTH_SHORT).show()
             }
         }
 
         findViewById<Button>(R.id.btn_clear).setOnClickListener {
             LogBus.clear()
-            logView.text = uiText("")
+            CrashGuard.clearSession(this)
+            logView.text = ""
+            LogBus.logSessionBanner()
         }
 
         log("Ready. Tap Connect to project Android Auto to your dash.")
@@ -640,6 +735,7 @@ class MainActivity : AppCompatActivity() {
             if (!SetupActivity.hasSeen(this)) SetupActivity.start(this)
             else maybeAutoConnect()
             maybeResumeFromParked(intent)
+            maybeStartFromBtTrigger(intent)
         } catch (e: Exception) {
             log("startup failed (UI still up): $e")
             CrashGuard.persistSession(this)
@@ -655,6 +751,7 @@ class MainActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         maybeResumeFromParked(intent)
+        maybeStartFromBtTrigger(intent)
         if (intent.getBooleanExtra(EXTRA_START_GPX, false)) {
             intent.removeExtra(EXTRA_START_GPX)
             beginGpxProjection()
@@ -691,6 +788,23 @@ class MainActivity : AppCompatActivity() {
         log("→ Resuming projection to '${BikeMemory.lastBikeName(this)}' from the foreground")
         autoConnectStarted = true
         AndroidAutoService.notifyForegroundResuming()
+        ProjectionHolder.projection = null
+        ensureLocationPermission()
+        startAaFlow(saved)
+    }
+
+    /** Helmet remote / watch ACL → same one-tap Connect as a saved-QR tap. */
+    private fun maybeStartFromBtTrigger(intent: Intent?) {
+        if (intent?.getBooleanExtra(EXTRA_BT_TRIGGER, false) != true) return
+        intent.removeExtra(EXTRA_BT_TRIGGER)
+        if (AndroidAutoService.isRunning) return
+        if (ConnectionState.phase.busy ||
+            ConnectionState.phase == Phase.STREAMING ||
+            ConnectionState.phase == Phase.MIRRORING
+        ) return
+        val saved = BikeMemory.lastQr(this) ?: return
+        log("→ Bluetooth trigger: starting Connect for '${BikeMemory.lastBikeName(this)}'")
+        autoConnectStarted = true
         ProjectionHolder.projection = null
         ensureLocationPermission()
         startAaFlow(saved)
@@ -810,11 +924,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /** AA 17.4 HUS banner — riders see it often; don't flood telemetry. */
+    private fun isHusConnectNoise(detail: String): Boolean {
+        if (detail == getString(R.string.conn_detail_aa_not_started)) return true
+        val d = detail.lowercase()
+        return d.contains("head unit server") || d.contains("start head unit")
+    }
+
     /** Update the big status header + Connect button label from a [ConnectionState] transition. */
     private fun renderStatus(phase: Phase, detail: String) {
         statusView.text = getString(phase.labelRes)
         bikeView.text = if (detail.isNotBlank()) detail else bikeLabelText()
-        if (phase == Phase.ERROR && detail.isNotBlank()) {
+        if (phase == Phase.ERROR && detail.isNotBlank() && !isHusConnectNoise(detail)) {
             try {
                 AnonymousTelemetry.reportError(this, detail)
             } catch (_: Exception) {
@@ -847,12 +968,13 @@ class MainActivity : AppCompatActivity() {
         } else {
             vpnPromptShown = false
         }
-        connectBtn.text = uiText(when {
-            phase.busy -> "Stop"
-            phase == Phase.STREAMING || phase == Phase.MIRRORING -> "Stop"
-            BikeMemory.hasSaved(this) -> "Connect to ${BikeMemory.lastBikeName(this)}"
-            else -> "Connect"
-        })
+        connectBtn.text = when {
+            phase.busy -> getString(R.string.main_stop)
+            phase == Phase.STREAMING || phase == Phase.MIRRORING -> getString(R.string.main_stop)
+            BikeMemory.hasSaved(this) ->
+                getString(R.string.main_connect_to, BikeMemory.lastBikeName(this) ?: "")
+            else -> getString(R.string.main_connect)
+        }
         (connectBtn as? MaterialButton)?.setIconResource(
             if (phase.busy || phase == Phase.STREAMING || phase == Phase.MIRRORING) {
                 R.drawable.ic_stop
@@ -898,25 +1020,25 @@ class MainActivity : AppCompatActivity() {
     private fun promptCloseRival() {
         val installed = RivalClient.isInstalled(this)
         com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-            .setTitle(uiText("Official CFMoto app is in the way"))
+            .setTitle(R.string.main_rival_title)
             .setMessage(
-                uiText("The official CFMoto/EasyConnect app is running and holding the bike's link ports, so ") +
+                "The official CFMoto/EasyConnect app is running and holding the bike's link ports, so " +
                     "the dash stays blank. Close it, then reconnect.\n\n" +
                     "\"Close & retry\" tries to stop it for you; if the dash is still blank, use " +
                     "\"App settings\" and tap Force stop."
             )
-            .setPositiveButton(uiText("Close & retry")) { _, _ ->
+            .setPositiveButton("Close & retry") { _, _ ->
                 val killed = RivalClient.closeBestEffort(this)
                 log(if (killed) "→ asked Android to close the official CFMoto app; retrying…"
                     else "→ couldn't auto-close the official CFMoto app — open its settings to Force stop.")
                 connectBtn.postDelayed({ reconnectSavedBike() }, 1500)
             }
-            .setNeutralButton(uiText("App settings")) { _, _ ->
+            .setNeutralButton("App settings") { _, _ ->
                 if (!RivalClient.openAppInfo(this)) {
-                    Toast.makeText(this, uiText("Couldn't open app settings"), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.main_settings_failed, Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton(uiText("Dismiss"), null)
+            .setNegativeButton("Dismiss", null)
             .setCancelable(true)
             .apply { if (!installed) setMessage("Something is holding the bike's link ports (10920-10922). Close any other CFMoto/EasyConnect app and reconnect.") }
             .show()
@@ -928,9 +1050,9 @@ class MainActivity : AppCompatActivity() {
      */
     private fun promptVpnKillSwitch() {
         com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-            .setTitle(uiText("VPN is blocking the bike"))
+            .setTitle("VPN is blocking the bike")
             .setMessage(
-                uiText("Android Auto reached the phone, but a VPN kill-switch is blocking the bike Wi‑Fi ") +
+                "Android Auto reached the phone, but a VPN kill-switch is blocking the bike Wi‑Fi " +
                     "(Network.bindSocket → EPERM).\n\n" +
                     "Fix (any one):\n" +
                     "• Turn the VPN off for this ride\n" +
@@ -938,18 +1060,18 @@ class MainActivity : AppCompatActivity() {
                     "• Allow LAN / local network in the VPN app (PCAPdroid, AdGuard, etc.)\n\n" +
                     "Then tap Connect again."
             )
-            .setPositiveButton(uiText("VPN settings")) { _, _ ->
+            .setPositiveButton("VPN settings") { _, _ ->
                 try {
                     startActivity(Intent("android.net.vpn.SETTINGS"))
                 } catch (_: Exception) {
                     try {
                         startActivity(Intent(android.provider.Settings.ACTION_SETTINGS))
                     } catch (_: Exception) {
-                        Toast.makeText(this, uiText("Open Settings ▸ Network ▸ VPN"), Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "Open Settings ▸ Network ▸ VPN", Toast.LENGTH_LONG).show()
                     }
                 }
             }
-            .setNegativeButton(uiText("Dismiss"), null)
+            .setNegativeButton("Dismiss", null)
             .setCancelable(true)
             .show()
     }
@@ -982,26 +1104,61 @@ class MainActivity : AppCompatActivity() {
         if (!WifiGate.ensureEnabledOrPrompt(this)) return
         ConnectionState.set(Phase.JOINING_WIFI)
         val transport = AppSettings.transport(this)
-        // AUTO: only use Wi‑Fi Direct when the QR SSID is a real P2P group name (DIRECT-…).
-        // Some bikes (e.g. QJ Motor) set action=P2P-only but advertise a normal SoftAP name
-        // like "qj-5G-…"; P2P credential-join rejects those and we waste 25s before AP fallback.
-        val useP2p = when (transport) {
-            WifiTransport.P2P -> true
-            WifiTransport.AP -> false
-            WifiTransport.AUTO -> qr.ssid.startsWith("DIRECT-", ignoreCase = true) &&
-                (qr.supportsP2p || !qr.supportsAp)
-        }
-        if (useP2p) {
-            joinWifiP2p(qr, gateOnAaSteady)
+        // Phone-hosts-hotspot (Zontes action=128 / no SoftAP pwd): dash joins the phone.
+        if (qr.supportsPhoneHotspot && qr.pwd.isEmpty()) {
+            joinPhoneHotspot(qr, gateOnAaSteady)
             return
         }
-        if (transport == WifiTransport.AUTO && qr.supportsP2p && !qr.supportsAp &&
-            !qr.ssid.startsWith("DIRECT-", ignoreCase = true)
-        ) {
+        // AUTO: P2P when the QR is P2P-only (incl. non-DIRECT SSIDs — join by MAC), or DIRECT-*.
+        // SoftAP fallback remains in joinWifiP2p.onFailed for SoftAP-capable units.
+        // Never force P2P when the QR is SoftAP-only (action bit3 clear) — Setup→P2P on those
+        // bikes only burns 25s then falls back (Benelli TRK / bj* SSIDs in the field).
+        val useP2p = when (transport) {
+            WifiTransport.P2P -> qr.supportsP2p || !qr.supportsAp
+            WifiTransport.AP -> false
+            WifiTransport.AUTO ->
+                (qr.supportsP2p && !qr.supportsAp) ||
+                    (qr.ssid.startsWith("DIRECT-", ignoreCase = true) &&
+                        (qr.supportsP2p || !qr.supportsAp))
+        }
+        // Per-bike memory refines AUTO only (an explicit P2P/AP setting is the rider's call): once a
+        // transport has produced a live link for THIS bike, use it and skip the dead path. Some dashes
+        // advertise DIRECT-* + SoftAP, so AUTO tries P2P first and burns the whole timeout on every
+        // connect even when P2P never forms a group on this phone, while SoftAP connects in seconds.
+        val remembered = if (transport == WifiTransport.AUTO) BikeMemory.winningTransport(this, qr.ssid) else null
+        val effUseP2p = when {
+            remembered == "AP" && qr.supportsAp -> false
+            remembered == "P2P" && qr.supportsP2p -> true
+            else -> useP2p
+        }
+        if (remembered != null && effUseP2p != useP2p) {
+            log("→ transport memory: '$remembered' connected before for '${qr.ssid}' — using it, skipping the dead path")
+        }
+        if (transport == WifiTransport.P2P && !useP2p) {
             log(
-                "→ QR says P2P-only but SSID '${qr.ssid}' is not DIRECT-* — " +
-                    "joining as SoftAP (Setup → P2P if this bike is truly Wi‑Fi Direct)",
+                "→ Setup Wi‑Fi transport is P2P but QR is SoftAP-only " +
+                    "(action=${qr.action} ssid=${qr.ssid}) — joining SoftAP instead",
             )
+        }
+        if (effUseP2p) {
+            val isDirect = qr.ssid.startsWith("DIRECT-", ignoreCase = true)
+            // P2P-only QRs with a SoftAP-style SSID but no MAC burn ~40s on MAC ERROR
+            // (Voge-5G / ZT5G / etc.). Prefer SoftAP immediately when we have a password.
+            if (!isDirect && qr.mac.isNullOrBlank() && qr.pwd.isNotEmpty()) {
+                log(
+                    "→ QR says P2P-only; SSID '${qr.ssid}' has no MAC — " +
+                        "joining SoftAP first (skip Wi‑Fi Direct by MAC)",
+                )
+            } else {
+                if (!isDirect) {
+                    log(
+                        "→ QR says P2P-only; SSID '${qr.ssid}' is not DIRECT-* — " +
+                            "trying Wi‑Fi Direct by MAC (then SoftAP fallback)",
+                    )
+                }
+                joinWifiP2p(qr, gateOnAaSteady)
+                return
+            }
         }
         BikeWifi.reuseOrJoin(
             context = applicationContext,
@@ -1009,6 +1166,8 @@ class MainActivity : AppCompatActivity() {
             psk = qr.pwd,
             onAvailable = { network ->
                 WifiGate.cancelNotification(applicationContext)
+                // SoftAP got Wi-Fi up for this bike → remember it so AUTO skips P2P next time.
+                BikeMemory.setWinningTransport(applicationContext, qr.ssid, "AP")
                 if (gateOnAaSteady) {
                     LogBus.log("→ bike Wi-Fi bound (waiting for AA video to go steady)")
                     BikeLink.markWifiReady(network)
@@ -1028,15 +1187,153 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    /** Wi‑Fi Direct Group Owner path (CL‑C450 / some DIRECT- SSIDs). */
+    /**
+     * Dash is the Wi‑Fi client (Carbit `action=128`). Android cannot create a hotspot with the
+     * dash SSID/password for us — show assist dialog, open tether settings, then poll for EasyConn.
+     */
+    private fun joinPhoneHotspot(qr: QrData, gateOnAaSteady: Boolean) {
+        LogBus.log(
+            "→ phone-hotspot mode (action=${qr.action} mac=${qr.mac}) — " +
+                "assist dialog (app cannot create AP; set dash SSID/pwd in system hotspot)",
+        )
+        ConnectionState.set(Phase.JOINING_WIFI, getString(R.string.main_phone_hotspot_status))
+        PhoneHotspotAssist.showSetupDialog(
+            activity = this,
+            qr = qr,
+            onContinue = { startPhoneHotspotScan(gateOnAaSteady) },
+            onCancel = {
+                ConnectionState.set(Phase.ERROR, getString(R.string.main_phone_hotspot_cancelled))
+            },
+        )
+    }
+
+    /** Poll for tether iface (~45s) then NSD / subnet EasyConn scan. */
+    private fun startPhoneHotspotScan(gateOnAaSteady: Boolean) {
+        val creds = PhoneHotspotAssist.loadCreds(this)
+        if (creds.ssid.isNotEmpty()) {
+            Toast.makeText(
+                this,
+                getString(R.string.main_phone_hotspot_waiting_named, creds.ssid),
+                Toast.LENGTH_LONG,
+            ).show()
+        } else {
+            Toast.makeText(this, R.string.main_phone_hotspot_hint, Toast.LENGTH_LONG).show()
+        }
+        ConnectionState.set(Phase.JOINING_WIFI, getString(R.string.main_phone_hotspot_status))
+        Thread({
+            try {
+                var subnets = emptyList<PhoneHotspotScan.Subnet>()
+                val pollRounds = 30 // ~45s at 1.5s
+                for (i in 0 until pollRounds) {
+                    if (ConnectionState.phase == Phase.STOPPED) return@Thread
+                    subnets = PhoneHotspotScan.tetheringSubnets()
+                    if (subnets.isNotEmpty()) break
+                    if (i == 0 || i % 5 == 0) {
+                        LogBus.log(
+                            "[HOTSPOT] waiting for tether interface… " +
+                                "(${i + 1}/$pollRounds) set Android hotspot" +
+                                creds.ssid.takeIf { it.isNotEmpty() }?.let { " SSID='$it'" }.orEmpty(),
+                        )
+                    }
+                    try {
+                        Thread.sleep(1_500)
+                    } catch (_: InterruptedException) {
+                        return@Thread
+                    }
+                }
+                if (subnets.isEmpty()) {
+                    LogBus.log(
+                        "[HOTSPOT] no tether interface after wait — open hotspot settings " +
+                            "and set the dash SSID/password, then Connect again",
+                    )
+                    runOnUiThread {
+                        ConnectionState.set(Phase.ERROR, getString(R.string.main_phone_hotspot_no_iface))
+                        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                            .setTitle(R.string.main_phone_hotspot_dialog_title)
+                            .setMessage(R.string.main_phone_hotspot_no_iface)
+                            .setPositiveButton(R.string.main_phone_hotspot_open_settings) { _, _ ->
+                                PhoneHotspotAssist.openHotspotSettings(this)
+                            }
+                            .setNegativeButton(android.R.string.ok, null)
+                            .show()
+                    }
+                    return@Thread
+                }
+                val subnet = subnets.first()
+                LogBus.log(
+                    "[HOTSPOT] using ${subnet.interfaceName} " +
+                        "${subnet.localAddress.hostAddress}/${subnet.prefixLength}",
+                )
+                // Prefer NSD first (works when multicast reaches the tether iface).
+                val nsd = EasyConnDiscovery.discoverNsd(applicationContext, LogBus::log)
+                val peer = nsd?.host
+                    ?: PhoneHotspotScan.findEasyConnPeer(subnet, LogBus::log)
+                if (peer == null) {
+                    runOnUiThread {
+                        ConnectionState.set(Phase.ERROR, getString(R.string.main_phone_hotspot_no_peer))
+                        Toast.makeText(
+                            this,
+                            getString(R.string.main_phone_hotspot_no_peer),
+                            Toast.LENGTH_LONG,
+                        ).show()
+                    }
+                    return@Thread
+                }
+                val bindIp = subnet.localAddress
+                runOnUiThread {
+                    WifiGate.cancelNotification(applicationContext)
+                    if (gateOnAaSteady) {
+                        LogBus.log(
+                            "→ hotspot peer ${peer.hostAddress} (waiting for AA); " +
+                                "bind=${bindIp.hostAddress}",
+                        )
+                        BikeLink.markP2pReady(bindIp, peer)
+                    } else {
+                        ConnectionState.set(Phase.PXC_CONNECTING)
+                        LogBus.log("→ hotspot peer ${peer.hostAddress}; starting EasyConn PXC …")
+                        try {
+                            (BikeLink.prober ?: prober).start(
+                                network = null,
+                                gatewayOverride = peer,
+                                bindIpOverride = bindIp,
+                            )
+                        } catch (e: Exception) {
+                            LogBus.log("prober start failed: $e")
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                LogBus.log("[HOTSPOT] failed: $e")
+                runOnUiThread {
+                    ConnectionState.set(Phase.ERROR, "hotspot scan failed")
+                }
+            }
+        }, "phone-hotspot-scan").apply { isDaemon = true }.start()
+    }
+
+    /** Wi‑Fi Direct Group Owner path (CL‑C450 / some DIRECT- SSIDs / Zontes MAC join). */
     private fun joinWifiP2p(qr: QrData, gateOnAaSteady: Boolean) {
         if (!WifiGate.ensureEnabledOrPrompt(this)) return
         LogBus.log("→ joining via Wi‑Fi Direct (P2P)")
+        // How long to wait for a P2P group before failing over to SoftAP:
+        //  - "P2P" remembered  → proven P2P device on this phone; give it the full window.
+        //  - SoftAP advertised → a working fallback exists, so bail (12s) when P2P is hopeless
+        //    (some phones ERROR on every join attempt in <1s but the group never forms).
+        //  - otherwise (P2P-only) → full window; there is nothing to fall back to.
+        val known = BikeMemory.winningTransport(this, qr.ssid)
+        val p2pTimeout = when {
+            known == "P2P" -> BikeWifiP2p.CONNECT_TIMEOUT_MS
+            qr.supportsAp && qr.pwd.isNotEmpty() -> 12_000L
+            else -> BikeWifiP2p.CONNECT_TIMEOUT_MS
+        }
         BikeWifiP2p.connect(
             context = applicationContext,
             qr = qr,
+            timeoutMs = p2pTimeout,
             onConnected = { bindIp, gatewayIp ->
                 WifiGate.cancelNotification(applicationContext)
+                // P2P actually formed a group for this bike → remember it (some DIRECT-* bikes need P2P).
+                BikeMemory.setWinningTransport(applicationContext, qr.ssid, "P2P")
                 if (gateOnAaSteady) {
                     LogBus.log("→ P2P bound (waiting for AA video); bike=${gatewayIp.hostAddress}")
                     BikeLink.markP2pReady(bindIp, gatewayIp)
@@ -1055,6 +1352,11 @@ class MainActivity : AppCompatActivity() {
                 }
             },
             onFailed = { reason ->
+                if (qr.pwd.isEmpty() || qr.ssid.startsWith("PHONE-HOTSPOT", ignoreCase = true)) {
+                    LogBus.log("P2P join failed: $reason — no SoftAP credentials to fall back to")
+                    ConnectionState.set(Phase.ERROR, "Wi‑Fi Direct failed")
+                    return@connect
+                }
                 LogBus.log("P2P join failed: $reason — falling back to AP join")
                 if (!WifiGate.ensureEnabledOrNotify(applicationContext)) return@connect
                 BikeWifi.join(
@@ -1063,6 +1365,8 @@ class MainActivity : AppCompatActivity() {
                     psk = qr.pwd,
                     onAvailable = { network ->
                         WifiGate.cancelNotification(applicationContext)
+                        // SoftAP fallback connected → remember AP so AUTO goes straight here next time.
+                        BikeMemory.setWinningTransport(applicationContext, qr.ssid, "AP")
                         if (gateOnAaSteady) BikeLink.markWifiReady(network)
                         else {
                             ConnectionState.set(Phase.PXC_CONNECTING)
@@ -1138,7 +1442,7 @@ class MainActivity : AppCompatActivity() {
         val field = findViewById<android.widget.EditText>(R.id.et_destination)
         val dest = field.text?.toString()?.trim().orEmpty()
         if (dest.isEmpty()) {
-            Toast.makeText(this, uiText("Type a place to search on the map"), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.main_type_place, Toast.LENGTH_SHORT).show()
             return
         }
         (getSystemService(INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager)
@@ -1150,14 +1454,14 @@ class MainActivity : AppCompatActivity() {
         // 1) Our own map is on the bike — never send AA intents (would crash/steal Maps).
         if (ourMapOnBike && DashRemote.submit(dest)) {
             field.setText("")
-            Toast.makeText(this, uiText("Searching \"$dest\" on the dash"), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.main_searching_dash, dest), Toast.LENGTH_SHORT).show()
             return
         }
         // 2) Android Auto is live — resolve place then navigate (free-text google.navigation often
         //    crashes or won't let the rider pick a route on newer Maps / AA).
         if (aaLive && !GpxSession.active) {
             field.setText("")
-            Toast.makeText(this, uiText("Sent \"$dest\" to Android Auto"), Toast.LENGTH_SHORT).show()
+            sendDestinationToAndroidAuto(dest)
             return
         }
         // Stale DashRemote with no map session: ignore and fall through.
@@ -1237,8 +1541,8 @@ class MainActivity : AppCompatActivity() {
         ProjectionHolder.projection = null
         try { GpxSession.clear() } catch (_: Exception) {}
         try { ProjectionService.stop(this) } catch (e: Exception) { log("projection stop: $e") }
-        try { BikeWifi.leave(this, ::log) } catch (e: Exception) { log("wifi leave: $e") }
-        try { BikeWifiP2p.stop(::log) } catch (e: Exception) { log("p2p stop: $e") }
+        try { DashClockBle.stop() } catch (_: Exception) {}
+        try { BikeWifi.releaseSession(this, ::log) } catch (e: Exception) { log("wifi leave: $e") }
         AppMirrorSession.restoreButtons(this)
         clearPendingApp()
         ConnectionState.set(Phase.STOPPED, "")
@@ -1263,9 +1567,24 @@ class MainActivity : AppCompatActivity() {
      * otherwise start mirror flow (consent then connect).
      */
     private fun onMirrorPressed() {
+        // parsec82 TRK 702 X (2026-07-30): tapping Mirror again while frames were still flowing
+        // tore down a live PXC session (freeze → second tap recovery). Ignore duplicate taps
+        // when mirroring and we sent a frame recently; allow retry when stalled/frozen.
+        val mirroring =
+            ConnectionState.phase == Phase.MIRRORING || ConnectionState.phase == Phase.RECONNECTING
+        val ms = BikeLink.prober?.msSinceLastFrame() ?: Long.MAX_VALUE
+        if (mirroring && ms < 15_000L) {
+            log("→ Mirror: already mirroring (last frame ${ms}ms ago) — ignore duplicate tap")
+            Toast.makeText(
+                this,
+                "Already mirroring — wait for the dash, or tap Stop first",
+                Toast.LENGTH_SHORT,
+            ).show()
+            return
+        }
         log("→ Mirror: cast phone screen to dash")
-        clearPendingApp()
         pendingAaStart = false
+        MirrorOrientationLock.apply(this)
         ensureLocationPermission()
         try {
             val mpm = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
@@ -1274,7 +1593,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(
                     this,
-                    uiText("Single-app mirror needs Android 14+. Whole screen will be used."),
+                    "Single-app mirror needs Android 14+. Whole screen will be used.",
                     Toast.LENGTH_LONG,
                 ).show()
                 mpm.createScreenCaptureIntent()
@@ -1285,7 +1604,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /** Validate that the rider is stopped, then request whole-screen capture for the chosen app. */
+    /** Refuse non-AA apps while a fresh GPS fix reports movement, then request screen capture. */
     private fun confirmParkedAndStartApp() {
         val label = pendingAppLabel ?: return
         val speed = ParkedSafety.recentSpeedKmh(this)
@@ -1305,20 +1624,23 @@ class MainActivity : AppCompatActivity() {
             .setTitle(uiText("Confirm the bike is parked"))
             .setMessage(
                 uiText("$speedNote$label is not a standard Android Auto app. It will be mirrored as a ") +
-                    "phone screen and may require phone interaction.\n\nDo not use video or touch-only " +
-                    "apps while riding.",
+                    uiText(
+                        "phone screen and may require phone interaction.\n\n" +
+                            "Do not use video or touch-only apps while riding.",
+                    ),
             )
             .setPositiveButton(uiText("I am parked")) { _, _ -> startAppProjection() }
             .setNegativeButton(uiText("Cancel")) { _, _ -> clearPendingApp() }
             .show()
     }
 
-    /** Apps mode always captures the whole display so OpenCfMoto can launch the selected app itself. */
+    /** Apps mode captures the complete display so the selected external activity can stay visible. */
     private fun startAppProjection() {
         val label = pendingAppLabel ?: return
         log("→ Apps: prepare whole-screen projection for $label")
         pendingAaStart = false
         ensureLocationPermission()
+        MirrorOrientationLock.apply(this)
         try {
             val mpm = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
             val intent = if (Build.VERSION.SDK_INT >= 34) {
@@ -1384,12 +1706,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkUpdateManual() {
-        Toast.makeText(this, uiText("Checking for update…"), Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, R.string.main_checking_update, Toast.LENGTH_SHORT).show()
         Thread {
             val release = UpdateChecker.check(this, manual = true)
             runOnUiThread {
                 if (release == null) {
-                    Toast.makeText(this, uiText("You're up to date (or offline)"), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.main_up_to_date, Toast.LENGTH_SHORT).show()
                 } else {
                     showUpdateDialog(release)
                 }
@@ -1399,17 +1721,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun showUpdateDialog(release: UpdateChecker.Release) {
         val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle(uiText("Update ${release.version}"))
+            .setTitle("Update ${release.version}")
             .setMessage(ReleaseNotes.toSpanned(release.notes))
-            .setPositiveButton(uiText("Download")) { _, _ ->
+            .setPositiveButton("Download") { _, _ ->
                 try {
                     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(release.downloadUrl)))
                 } catch (_: Exception) {
-                    Toast.makeText(this, uiText("Couldn't open download link"), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.main_download_failed, Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton(uiText("Skip")) { _, _ -> UpdateChecker.skip(this, release.version) }
-            .setNeutralButton(uiText("Later"), null)
+            .setNegativeButton("Skip") { _, _ -> UpdateChecker.skip(this, release.version) }
+            .setNeutralButton("Later", null)
             .show()
         // Headings/bullets/bold come from [ReleaseNotes]; make markdown links tappable too.
         dialog.findViewById<TextView>(android.R.id.message)?.movementMethod =
@@ -1419,17 +1741,17 @@ class MainActivity : AppCompatActivity() {
     private fun reportProblem() {
         val pad = (16 * resources.displayMetrics.density).toInt()
         val problem = android.widget.EditText(this).apply {
-            hint = "What went wrong?"
+            hint = context.getString(R.string.main_report_hint_problem)
             minLines = 3
             setPadding(pad, pad, pad, pad)
         }
         val model = android.widget.EditText(this).apply {
-            hint = "Bike model (e.g. 800NK Advanced)"
+            hint = context.getString(R.string.main_report_hint_bike_model)
             setText(BikeMemory.lastBikeName(this@MainActivity).orEmpty())
             setPadding(pad, pad / 2, pad, pad / 2)
         }
         val year = android.widget.EditText(this).apply {
-            hint = "Year (optional)"
+            hint = context.getString(R.string.main_report_hint_year)
             setPadding(pad, pad / 2, pad, pad / 2)
         }
         val box = android.widget.LinearLayout(this).apply {
@@ -1440,24 +1762,27 @@ class MainActivity : AppCompatActivity() {
             addView(year)
         }
         androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle(uiText("Report a problem"))
-            .setMessage(uiText("Builds a shareable report with diagnostics + recent log (secrets redacted unless enabled in Setup)."))
+            .setTitle(R.string.main_report_a_problem)
+            .setMessage(R.string.main_report_problem_message)
             .setView(box)
-            .setPositiveButton(uiText("Share")) { _, _ ->
+            .setPositiveButton(R.string.main_share) { _, _ ->
                 shareProblemReport(
                     problem.text.toString(),
                     model.text.toString(),
                     year.text.toString(),
                 )
             }
-            .setNegativeButton(uiText("Cancel"), null)
+            .setNegativeButton(R.string.dash_cancel, null)
             .show()
     }
 
     private fun shareProblemReport(problem: String, model: String, year: String) {
         try {
             val diagnostics = buildString {
-                appendLine("app=${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
+                appendLine(
+                    "app=${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE}) " +
+                        "git=${BuildConfig.GIT_HASH}",
+                )
                 appendLine("profile=${BikeProfileHolder.active.name}")
                 appendLine("override=${BikeProfileHolder.profileOverride}")
                 appendLine("transport=${AppSettings.transport(this@MainActivity).label}")
@@ -1485,9 +1810,9 @@ class MainActivity : AppCompatActivity() {
                 putExtra(Intent.EXTRA_STREAM, uri)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
-            startActivity(Intent.createChooser(send, "Share problem report"))
+            startActivity(Intent.createChooser(send, getString(R.string.main_share_problem_report)))
         } catch (e: Exception) {
-            Toast.makeText(this, uiText("Couldn't share report: $e"), Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.main_share_report_failed, e.toString()), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -1499,6 +1824,7 @@ class MainActivity : AppCompatActivity() {
         val saved = BikeMemory.lastQr(this)
         if (saved != null) {
             log("→ Apps: reusing saved bike '${BikeMemory.lastBikeName(this)}' for $label")
+            tearDownForModeSwitch(clearMap = true, clearMirror = false)
             applyProfile(saved)
             ConnectionState.set(Phase.MIRRORING, BikeMemory.lastBikeName(this) ?: saved.ssid)
             joinWifi(saved, gateOnAaSteady = false)
@@ -1509,25 +1835,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Do not open the selected app until the complete path is proven:
-     * MediaProjection → encoder → EasyConn handshake → TFT data requests → first delivered frame.
-     *
-     * Launching immediately after [joinWifi] raced the asynchronous Wi‑Fi/PXC setup. The selected
-     * app appeared on the phone while the dash still had no media channel, which looked like the app
-     * "couldn't be transmitted". [EasyConnProber.isStreaming] is only true after frame #1 is sent.
-     */
+    /** Wait for the first confirmed TFT frame before opening the selected external app. */
     private fun waitForAppProjectionStream() {
         val label = pendingAppLabel ?: return
         val token = ++appProjectionWaitToken
         val startedAt = android.os.SystemClock.elapsedRealtime()
         var lastStageLogAt = 0L
         log("→ Apps: waiting for confirmed TFT video before opening $label")
-        Toast.makeText(
-            this,
-            uiText("Preparing $label on the bike…"),
-            Toast.LENGTH_LONG,
-        ).show()
+        Toast.makeText(this, uiText("Preparing $label on the bike…"), Toast.LENGTH_LONG).show()
 
         val poll = object : Runnable {
             override fun run() {
@@ -1561,10 +1876,10 @@ class MainActivity : AppCompatActivity() {
 
                 if (elapsed - lastStageLogAt >= 2_000L) {
                     lastStageLogAt = elapsed
-                    val phase = ConnectionState.phase
                     log(
-                        "→ Apps: preparing $label — phase=$phase prober=${active.isRunning} " +
-                            "stream=${active.isStreaming} lastFrame=${active.msSinceLastFrame()}ms",
+                        "→ Apps: preparing $label — phase=${ConnectionState.phase} " +
+                            "prober=${active.isRunning} stream=${active.isStreaming} " +
+                            "lastFrame=${active.msSinceLastFrame()}ms",
                     )
                 }
                 appProjectionHandler.postDelayed(this, APP_STREAM_POLL_MS)
@@ -1574,16 +1889,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun launchPendingMirrorApp() {
-        val packageName = pendingAppPackage
+        val selectedPackage = pendingAppPackage
         val className = pendingAppClass
-        val label = pendingAppLabel ?: packageName.orEmpty()
-        if (packageName.isNullOrBlank() || className.isNullOrBlank()) {
+        val label = pendingAppLabel ?: selectedPackage.orEmpty()
+        if (selectedPackage.isNullOrBlank() || className.isNullOrBlank()) {
             log("→ Apps failed: selected component was lost")
             Toast.makeText(this, uiText("The selected app was lost. Choose it again."), Toast.LENGTH_LONG).show()
             stopEverything()
             return
         }
-        val component = ComponentName(packageName, className)
+        val component = ComponentName(selectedPackage, className)
         val enabled = runCatching { packageManager.getActivityInfo(component, 0).enabled }
             .getOrDefault(false)
         if (!enabled) {
@@ -1604,7 +1919,7 @@ class MainActivity : AppCompatActivity() {
             val mediaMode = if (changedMode) "media (temporary)" else "media"
             log("→ Apps: launched $label ($component); handlebar mode=$mediaMode")
             verifyAppProjectionHealth(label)
-            val drm = if (AppsCatalog.mayUseProtectedVideo(packageName)) {
+            val drm = if (AppsCatalog.mayUseProtectedVideo(selectedPackage)) {
                 " Protected video may appear black."
             } else {
                 ""
@@ -1666,14 +1981,6 @@ class MainActivity : AppCompatActivity() {
         pendingAppLabel = null
     }
 
-    private fun cancelProjection() {
-        ProjectionHolder.projection?.let { projection ->
-            try { projection.stop() } catch (_: Exception) {}
-        }
-        ProjectionHolder.projection = null
-        ProjectionService.stop(this)
-    }
-
     /** After screen-capture consent: connect using saved bike or scan. */
     private fun startMirrorLink() {
         val saved = BikeMemory.lastQr(this)
@@ -1682,6 +1989,7 @@ class MainActivity : AppCompatActivity() {
             // Drop AA / Map / old PXC; keep the MediaProjection token we just armed.
             tearDownForModeSwitch(clearMap = true, clearMirror = false)
             applyProfile(saved)
+            MirrorOrientationLock.apply(this)
             ConnectionState.set(Phase.MIRRORING, BikeMemory.lastBikeName(this) ?: saved.ssid)
             joinWifi(saved, gateOnAaSteady = false)
             // Single-app MediaProjection only emits while the shared app is visible. Leaving this
@@ -1689,7 +1997,7 @@ class MainActivity : AppCompatActivity() {
             moveTaskToBack(true)
             Toast.makeText(
                 this,
-                uiText("Leave the shared app on screen (OpenCfMoto stays in the notification)"),
+                getString(R.string.main_mirror_leave_shared_app),
                 Toast.LENGTH_LONG,
             ).show()
         } else {
@@ -1744,8 +2052,10 @@ class MainActivity : AppCompatActivity() {
         private const val APP_STREAM_RECOVERY_CHECK_MS = 8_000L
         private const val APP_STREAM_STALL_MS = 3_500L
         const val EXTRA_START_GPX = "start_gpx"
+        const val EXTRA_BT_TRIGGER = "bt_trigger"
         /** When set with [EXTRA_START_GPX], join the bike even if not already live. */
         const val EXTRA_GPX_TO_BIKE = "gpx_to_bike"
+        private const val REQ_BT_FOR_AA = 4
         /** Latched once an auto-connect attempt actually starts, so it fires only once per process. */
         @Volatile private var autoConnectStarted = false
         /** So the "idle/not-in-range" reason is logged once, not on every onResume retry. */

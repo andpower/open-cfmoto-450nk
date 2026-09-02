@@ -5,7 +5,7 @@
 ### Wireless Android Auto on Carbit / EasyConnect dashes (CFMoto MotoPlay and siblings) — no root, no PC.
 
 **CFMoto** · **Voge** · **Moto Morini** · **Morbidelli** · **Zontes** · **Benelli** · **QJ Motor** ·
-**GOES** / **Gladiator** · and other brands with a MotoPlay / EasyConnect pairing QR
+**Longjia** · **GOES** / **Gladiator** · and other brands with a MotoPlay / EasyConnect pairing QR
 
 [Supported bikes](docs/SUPPORTED-BIKES.md) · [Dash showcase](docs/SHOWCASE.md) — real Android Auto photos from the community
 
@@ -14,11 +14,11 @@ every ride — all from an Android phone in your pocket.
 
 <br/>
 
-[![Join the Discord](https://img.shields.io/badge/Discord-Join%20the%20community-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/xRt5yZy2U)
-[![Downloads](https://img.shields.io/github/downloads/andpower/open-cfmoto-450nk/total?style=for-the-badge&label=450NK%20Downloads)](https://github.com/andpower/open-cfmoto-450nk/releases)
+[![Join the Discord](https://img.shields.io/badge/Discord-Join%20the%20community-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/KNTjJhmFZ6)
+[![Downloads](https://img.shields.io/github/downloads/zanderp/open-cfmoto/total?style=for-the-badge&label=Downloads)](https://github.com/zanderp/open-cfmoto/releases)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20the%20project-ff5e5b?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/alexandrupopa)
 
-**💬 Questions, logs, or a new bike to add? [Join the Open CFMoto Discord](https://discord.gg/xRt5yZy2U).**
+**💬 Questions, logs, or a new bike to add? [Join the Open CFMoto Discord](https://discord.gg/KNTjJhmFZ6).**
 
 <br/>
 
@@ -39,7 +39,7 @@ dash touchscreen.
 
 ### 📸 See it on more bikes — [Dash showcase](docs/SHOWCASE.md)
 
-CFMoto · Voge · Morini · Morbidelli and more — community photos of Android Auto on the dash.
+CFMoto · Voge · Morini · Morbidelli · QJ Motor · GOES and more — community photos of Android Auto on the dash.
 
 </div>
 
@@ -53,33 +53,6 @@ CFMoto · Voge · Morini · Morbidelli and more — community photos of Android 
 
 ---
 
-## 450NK edition
-
-This repository is an independent, AGPL-compatible 450NK edition maintained at
-[`andpower/open-cfmoto-450nk`](https://github.com/andpower/open-cfmoto-450nk). It preserves the
-working OpenCfMoto Android Auto path and its full attribution. A real 450NK test confirmed that the
-display fits correctly and that focus navigation works with the handlebar/menu double press.
-
-The additional **Apps** mode can launch YouTube, VLC, Spotify, a browser, or another installed app
-through whole-screen projection. It is **parked-only**: the 450NK is not touch, ordinary handlebar
-media keys work only where the selected app supports Bluetooth play/pause/track controls, and
-protected DRM video may appear black.
-
-This edition uses the independent Android application ID
-`com.andpower.opencfmoto450nk` and its own teal **450** launcher icon. It can be installed beside
-the upstream `dev.zanderp.opencfmoto` app; each installation keeps separate bikes and settings,
-so scan the motorcycle QR once in this edition.
-
-### Español / English
-
-Version 2.2 adds a complete Spanish interface while keeping English available. Open **Setup /
-Configuración → Language / Idioma** and choose **Automatic / Automático**, **Español**, or
-**English**. Automatic follows the phone language. The choice is saved by Android and applies to
-screens, map controls, status messages, warnings, dialogs, and notifications. Apps projected by
-Android Auto or Apps mode keep their own language setting.
-
----
-
 ## ✨ Features
 
 | | |
@@ -88,7 +61,7 @@ Android Auto or Apps mode keep their own language setting.
 | 👆 **Multi-touch** | Two-finger pinch-to-zoom and full tap/scroll straight from the dash touchscreen (ghost-touch filter for noisy digitizers). |
 | 📺 **Dash view** | Big home-screen button — watch and drive the live dash from the phone (touch, pad, fullscreen). |
 | 🎛️ **Controls** | Big home-screen button — on-screen D-pad/knob, media volume, and handlebar-button mapping. |
-| 🕹️ **Handlebar buttons → AA** | On touchless / focus-mode dashes, ◀/▶/★ (or ▲/▼) navigate Android Auto over Bluetooth — tap / hold / ×2 on each, every gesture remappable. |
+| 🕹️ **Handlebar buttons → AA** | On touchless / focus-mode dashes, ◀/▶/★ (or ▲/▼) navigate Android Auto over Bluetooth — snappy singles, tap / hold / ×2, Teach-my-handlebar, every gesture remappable. |
 | 🧭 **Navigate-to + saved places** | Type a destination or map a handlebar button to a saved place for one-press turn-by-turn. |
 | 🎙️ **Voice / Assistant** | Streams your (helmet) mic to Android Auto so "Hey Google" sets a destination hands-free. |
 | ⚡ **One-tap Connect & Auto-connect** | Remembers your bike; reconnects on launch when in range; Wi‑Fi join timeout + auto re-join after ignition cycles. |
@@ -105,22 +78,21 @@ Android Auto or Apps mode keep their own language setting.
 | 📤 **Share / import bike tuning** | Export profile, resolution, fit, margins & button map as JSON (no passwords / personal prefs) — share on Discord, Import on another phone. |
 | 📶 **Wi‑Fi-off alert** | If phone Wi‑Fi is off when connecting, a dialog offers **Wi‑Fi settings** (one tap). |
 | 🗺️ **Map / GPX** | Free ride, GPX tracks, OSM search/POI, Home/favorites/markers, parked pin, road routing, voice cues — on the bike dash or phone. |
-| 🧩 **Parked Apps (450NK edition)** | Launch YouTube, VLC, Spotify, browsers, or another installed app through whole-screen projection, with motion guard and temporary handlebar media mode. |
 | 📱 **Mirror phone** | Cast the phone screen when you really need it (screen on; awkward for nav apps). |
-| 🌐 **Languages** | Follows the phone language, or set **per-app** on Android 13+: Settings → Apps → OpenCfMoto → **Language**. Draft DE / IT / FR / ES / PT / PL / CS / RO / NL ([docs/TRANSLATIONS.md](docs/TRANSLATIONS.md)). |
+| 🌐 **Languages** | Follows the phone language, or set **per-app** on Android 13+: Settings → Apps → OpenCfMoto → **Language**. Draft DE / IT / FR / ES / CA / PT / PL / CS / RO / NL / HU / TR ([docs/TRANSLATIONS.md](docs/TRANSLATIONS.md)). |
 
 ---
 
 ## 📋 What you need
 
-- **A CFMoto (or CFMoto scooter / ATV) whose dash can show a MotoPlay / EasyConnect QR.**
-  **No T‑BOX required.** Works on **US and international** units. See the full list:
-  **[Supported bikes](docs/SUPPORTED-BIKES.md)**. Touch dashes use the screen; non‑touch /
-  focus-mode bikes use **Controls** + handlebar buttons. Unknown dashes are learned after the first
-  connect.
+- **A bike / ATV whose dash can show a MotoPlay / EasyConnect QR** (CFMoto, Voge, Morini, Morbidelli,
+  Zontes, Benelli, QJ Motor, GOES/Gladiator, and siblings). **No T‑BOX required.** Works on **US and
+  international** units. See **[Supported bikes](docs/SUPPORTED-BIKES.md)** and
+  **[Dash showcase](docs/SHOWCASE.md)**. Touch dashes use the screen; non‑touch / focus-mode bikes
+  use **Controls** + handlebar buttons. Unknown dashes are learned after the first connect.
 - **An Android phone**, Android **10 or newer**.
-- **Google Android Auto** set up once (see [step 3](#3-one-time-android-auto-setup)).
-- **OpenCfMoto 450NK** from [Releases](https://github.com/andpower/open-cfmoto-450nk/releases/latest) (sideload).
+- **Google Android Auto** (see [step 3](#3-android-auto-setup); 17.4+ also needs **Start head unit server**).
+- **OpenCfMoto** from [Releases](https://github.com/zanderp/open-cfmoto/releases/latest) (sideload).
 - A **mobile-data plan** is recommended: the phone joins the bike's Wi‑Fi, so maps/traffic use cellular.
 
 No root, no VPN, no PC required to ride.
@@ -129,8 +101,9 @@ No root, no VPN, no PC required to ride.
 
 ## 🏍️ Supported bikes
 
-**→ Full list (source of truth): [docs/SUPPORTED-BIKES.md](docs/SUPPORTED-BIKES.md)**
-(same content as Setup → Supported bikes in the app)
+**→ Full list (source of truth): [docs/SUPPORTED-BIKES.md](docs/SUPPORTED-BIKES.md)** ·
+**→ Dash showcase (photos): [docs/SHOWCASE.md](docs/SHOWCASE.md)**  
+(same model list as Setup → Supported bikes in the app)
 
 **Rule:** if the dash shows a **pairing QR**, try OpenCfMoto. Same **Carbit / EasyConnect** framework
 used by CFMoto MotoPlay and several sibling brands. T‑BOX / CFMOTO RIDE subscription is **not**
@@ -143,19 +116,23 @@ required. US CRCP and international dashes both work. OpenCfMoto projects **wire
 
 ### Confirmed with OpenCfMoto
 
-**450NK** (non-touch, handlebar focus navigation) · 800MT (MT‑X / Explore / Explore GT) · 1000 MT‑X ·
-800NK (US CRCP) · 800NK Advanced · 450SR (+ SR‑S / TC) · 450CL‑C / CL‑C450 · **150SC** scooter
+**CFMoto:** 800MT (MT‑X / Explore / Explore GT / **Ibex 800**) · 1000 MT‑X · 800NK (US CRCP) · 800NK Advanced ·
+**675NK** · **675SR‑R** · **700MT Adventure** · **450MT** · 450SR (+ SR‑S / TC) · 450CL‑C / CL‑C450 · **450NK** ·
+**150SC** scooter · **CFORCE 850 / 1000** · **GOES Terrox 1000** / **Gladiator G3 1000** (CFORCE rebadges)
 
-**Other brands:** **Voge DS800 Rally** · **Moto Morini X-Cape 649** · **Moto Morini X-Cape 700** ·
-**Moto Morini Seiemmezzo** · **Morbidelli T1002VX**
+**Other brands:** **Voge DS800 Rally / DS900X** · **Moto Morini X-Cape 649 / 700 / Seiemmezzo** ·
+**Benelli TRK 702 / 702X** · **Rieju 307** · **Zontes 125X** · **Morbidelli T1002VX / T352X** ·
+**QJ Motor SRK800RR / SRK450RR / SRK250RD / SRT 600 / SRV600**
 
 ### Other brands (Carbit / EasyConnect)
 
 Try Connect when the dash shows a pairing QR; report results in Discord:
 
-**Voge** (DS800 Rally confirmed) · **Moto Morini** (X-Cape 649 / 700 / Seiemmezzo confirmed; MotoFun) · **Zontes** ·
-**Benelli** (e.g. TRK 702 / 702X) · **QJ Motor** (e.g. Fort 4.0) · **Morbidelli** / MBP (**T1002VX**
-confirmed)
+**Voge** (DS800 Rally / DS900X confirmed) · **Moto Morini** (X-Cape 649 / 700 / Seiemmezzo confirmed; 1200 SoftAP
+experimental; MotoFun) · **Zontes** (**125X** confirmed) · **Benelli** (e.g. TRK 702 / 702X) · **Rieju** (**307** confirmed) ·
+**QJ Motor** (**SRK800RR / SRK450RR / SRK250RD / SRT 600 / SRV600** confirmed; 550/600SX + Fort 4.0 testing) ·
+**Morbidelli** / MBP (**T1002VX / T352X** confirmed) · **Longjia** (e.g. V-Bob 650; MotoFUN / Carbit Ride —
+unconfirmed, try if QR present) · **Kove** (Thinkerride SoftAP experimental — no dash video yet)
 
 ### Full CFMoto list (summary)
 
@@ -172,7 +149,7 @@ confirmed)
 Usually **no** projection QR (won’t work unless your unit has one anyway): 800MT Sport · 800MT
 Touring · 450SR World Champion Edition · 700CL‑X · PAPIO.
 
-Report a working bike that isn’t listed in **[Discord](https://discord.gg/xRt5yZy2U)**.
+Report a working bike that isn’t listed in **[Discord](https://discord.gg/KNTjJhmFZ6)**.
 
 ---
 
@@ -188,8 +165,8 @@ its **pairing QR code** — the same QR the official brand / Carbit companion ap
 The app isn't on the Play Store — you sideload the APK.
 
 1. Download the latest **`OpenCfMoto.apk`** from the
-   **[Releases page](https://github.com/andpower/open-cfmoto-450nk/releases/latest)**
-   (direct link: <https://github.com/andpower/open-cfmoto-450nk/releases/latest/download/OpenCfMoto-450NK.apk>).
+   **[Releases page](https://github.com/zanderp/open-cfmoto/releases/latest)**
+   (direct link: <https://github.com/zanderp/open-cfmoto/releases/latest/download/OpenCfMoto.apk>).
 2. Tap it in a file manager / your browser downloads to install; allow installation from your
    browser/file manager when Android prompts about "unknown sources".
 3. Open **OpenCfMoto** once and grant the permissions it requests:
@@ -201,7 +178,7 @@ The app isn't on the Play Store — you sideload the APK.
 > 💡 The **Setup** screen has an *All granted* button that checks every permission at once and
 > deep-links to system settings for anything missing.
 
-### 3. One-time Android Auto setup
+### 3. Android Auto setup
 
 Android Auto must be installed and allowed to start in "self / head-unit" mode.
 
@@ -211,8 +188,13 @@ Android Auto must be installed and allowed to start in "self / head-unit" mode.
    times** to unlock Developer settings.
 3. In the **⋮ Developer settings** menu, turn **on** *"Add new cars to Android Auto"* / *"Unknown
    sources"* (wording varies by version).
+4. **Android Auto 17.4+:** in that same **⋮** menu, tap **Start head unit server**, then return to
+   OpenCfMoto and tap **Connect**. The app dials that server automatically. You may need to start
+   the server again after a reboot or an Android Auto update.
 
-You only do this once.
+Do **not** uninstall Android Auto updates — that is no longer needed and is the wrong fix.
+
+Steps 1–3 are once. Step 4 is once per reboot / Android Auto update on 17.4+.
 
 ### 4. Connect and ride
 
@@ -367,6 +349,17 @@ the mirroring link — so you must **pair the phone to the bike over Bluetooth**
 then auto-routes whatever your bike sends — ▲/▼ *volume* on many non-touch dashes, or ◀/▶ *track*
 keys on the 800MT 5-way — into those gestures.
 
+**Quick setup (intuitive path)**
+
+1. Pair **Bluetooth** phone ↔ bike (audio / hands-free).
+2. Open **Controls → Customize buttons** — the top line shows the **live connected BT device**
+   (tap it to open system Bluetooth settings if nothing is connected).
+3. **Apply cluster preset…** for your left pod (photos below), or leave defaults.
+4. Tap **Teach my handlebar…** if ▲/▼ never move focus (or the phone volume feels “stuck”):
+   mark **▲/▼ absent** so we stop pinning music volume waiting for rockers the bike never sends.
+   Leave *untested* and we’ll auto-mark absent after ~90 s of streaming with no ▲/▼ events.
+5. Ride — **singles fire immediately** (snappy); a second tap in the double-tap window still runs ×2.
+
 #### Which left switch do you have?
 
 CFMOTO ships more than one left pod. **Doubles and long-press are not equal across them** — pick the
@@ -475,18 +468,29 @@ Preset **MODE / ENT cluster** — all nine rows:
 ##### Shared tips (every cluster)
 
 - Every gesture stays **remappable** after a preset (knob, D-pad, select, back, home, Assistant, do-nothing, or *navigate to a saved place*).
+- **Snappy singles** — a single press runs its action **immediately**; a second press in the
+  double-tap window still fires ×2. (No lag waiting to guess tap vs double.)
+- **Teach my handlebar** — on the mapping screen: mark which sources this bike actually sends
+  (▲/▼ volume rocker vs ◀/▶ track keys). Marking ▲/▼ **absent** stops the “volume hostage”
+  (phone music volume pinned forever when firmware never emits rocker events — common on some
+  NK Adventure units). Per-bike; reset anytime.
+- **Live Bluetooth line** — mapping screen shows the *currently connected* audio device, not an
+  old paired headset. Tap the line → system Bluetooth settings.
 - **On-screen pad + Navigate to…** — Controls also has a D-pad, rotary knob, and a **"Navigate to…"** box. Save up to three places and map them to a handlebar button for **one-press** navigation with the phone in your pocket (*Display over other apps* required for background launch — the app prompts you when a nav button is mapped).
 - **Voice** — map any gesture (or tap **Voice**) to the Assistant; OpenCfMoto streams the mic to Android Auto (grant microphone when asked).
+- **Link drops** — auto-recovery re-probes the bike with a larger reconnect budget and faster early
+  retries; after the budget is spent, the watchdog re-arms so a bike back in range can link again
+  without a full Stop → Connect (Setup → auto-recovery must stay on).
 
 ##### Tune timing & verify in Logs
 
 Changes apply on the **next press** (no reconnect).
 
 1. **Setup → Handlebar**
-   - **Double-tap delay** — `200 ms` · `300 ms` (default) · `450 ms` · `1000 ms` (slow doubles). Longer = easier ×2 when each physical click is slow; singles wait that long unless the cluster fires them instantly.
+   - **Double-tap delay** — `200 ms` · `300 ms` (default) · `450 ms` · `1000 ms` (slow doubles). Longer = easier ×2 when each physical click is slow. With snappy singles (default), the single action still fires immediately; this window only decides when a second press upgrades to ×2.
    - **Hold detection** — On (default) or **Off**. Turn **Off** when a long physical press must still count as a tap / ×2 (otherwise Hold delay eats it). Pair with `1000 ms` double-tap if needed.
    - **Hold delay** — `500 ms` · `600 ms` (default) · `800 ms`. Ignored when Hold detection is Off.
-2. **Controls → Customize buttons** — remap any of the 9 gestures; use **Apply cluster preset…** first if you changed bikes.
+2. **Controls → Customize buttons** — remap any of the 9 gestures; use **Apply cluster preset…** first if you changed bikes; run **Teach my handlebar…** if rockers never arrive.
 3. **Diagnostics (home → Logs)** while projecting with *Handlebar buttons drive Android Auto* **ON** — press the bars and watch for `[BTN]` lines:
 
 | Log line | Meaning |
@@ -499,6 +503,8 @@ Changes apply on the **next press** (no reconnect).
 | `Backward ×2 → …` / `Forward ×2 → …` / `Select ×2 → …` | Double-tap fired and ran its mapped action |
 | `Backward (hold) → …` / `Forward (hold) → …` / `Select (hold) → …` | Hold fired and ran its mapped action |
 | `Backward → Knob back` (etc.) | Single tap committed |
+| `volume rocker marked PRESENT` / `ABSENT` | Teach / auto-probe decided whether to pin phone volume |
+| `skip pin … volume rocker ABSENT` | Volume hostage off — phone volume behaves normally |
 
 **How to tune from the log**
 
@@ -506,6 +512,7 @@ Changes apply on the **next press** (no reconnect).
 - Hold always shows `held 80ms → tap`: the bike isn’t keeping the key down — set that hold row to *Do nothing* (typical BACK/SET).
 - Hold shows `held 550ms → tap` with delay at 600: drop **Hold delay** to **500 ms**, or hold a bit longer.
 - No `[BTN]` lines at all: Bluetooth not paired / capture switch off / music app stole focus (see below — look for `reclaiming media buttons`).
+- Phone volume stuck / no ▲▼ nav: **Teach my handlebar → ▲/▼ absent**, or wait for auto-absent after ~90 s streaming.
 
 ##### Handlebar buttons vs music apps
 
@@ -597,7 +604,7 @@ OpenCfMoto routes and **Connect** for Maps/Waze Android Auto.
 | Button | What it does |
 | --- | --- |
 | **Connect / Stop** | Connect starts Android Auto on the dash; becomes **Stop** while linking or projecting. |
-| **Scan · Map · Apps · Mirror** | Scan QR; Map = OpenCfMoto Map/GPX; Apps = parked installed-app launcher; Mirror = cast phone. |
+| **Scan · Map · Mirror** | Scan QR; Map = OpenCfMoto Map/GPX; Mirror = cast phone. While connected, Map/Mirror switch content. |
 | **Dash view · Controls** | Phone HUD and D-pad / handlebar (same row). |
 | **Dash view** | Live in-app mirror of the dash — touch + on-screen controls. |
 | **Controls** | On-screen D-pad/knob, volume, handlebar mapping, Navigate-to. |
@@ -627,26 +634,26 @@ OpenCfMoto routes and **Connect** for Maps/Waze Android Auto.
 | App reports **VPN** blocking bike Wi‑Fi | Always-on VPN with “Block connections without VPN” returns EPERM when pinning sockets to the bike AP. Turn the VPN off for the ride, disable that kill-switch, or allow LAN / local network in the VPN app — then Connect again. |
 | Dash stays **black** after connecting | Tap **Stop**, then **Connect** / **Scan bike** again. Make sure the dash is on its phone-connection screen. |
 | **No Wi‑Fi dialog** appears | Confirm the Location permission is granted; move the phone next to the bike; tap **Stop** and retry. Some phones show the dialog behind Android Auto — swipe back to OpenCfMoto. |
-| **Android Auto never starts** | Re-check [step 3](#3-one-time-android-auto-setup) (developer mode + unknown sources). |
+| **Android Auto never starts** | On AA 17.4+: open Android Auto → tap Version 10× → ⋮ → **Start head unit server**, then Connect. Also re-check [step 3](#3-android-auto-setup) (developer mode + unknown sources). Do **not** uninstall Android Auto updates. |
 | **Auto-connect doesn't fire** | Ensure *Auto-connect* is On, the bike is paired, and its Wi‑Fi is in range; open the app or return to it to retry. |
 | Picture is **stretched / letterboxed** on an unknown bike | Reconnect once so it learns the dash shape, or set the orientation/size manually in Setup. |
 | Dash **froze** and didn't recover | With *Auto-recovery* on it should reconnect itself; otherwise tap **Stop** then **Connect**. |
 | **Didn't resume on its own** after a long stop | Enable **Seamless resume** (Setup ▸ Startup & recovery → *Display over other apps*) so the app can re-project with the screen off; otherwise tap the **“Bike reconnected”** notification. |
 
 **Getting help:** reproduce the issue, then **Logs ▸ Share** or **Setup → Report a problem**, and drop
-the file in **[Discord](https://discord.gg/xRt5yZy2U)**.
+the file in **[Discord](https://discord.gg/KNTjJhmFZ6)**.
 
 ---
 
 ## 💬 Community
 
 Got a question, a log to share, or a bike you'd like supported? **Join the
-[Open CFMoto Discord](https://discord.gg/xRt5yZy2U).** It's the fastest place to get help, compare
+[Open CFMoto Discord](https://discord.gg/KNTjJhmFZ6).** It's the fastest place to get help, compare
 notes across bikes/phones, share captures that help add new dash profiles, and hear about new releases.
 
 <div align="center">
 
-[![Join the Discord](https://img.shields.io/badge/Discord-Join%20the%20community-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/xRt5yZy2U)
+[![Join the Discord](https://img.shields.io/badge/Discord-Join%20the%20community-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/KNTjJhmFZ6)
 
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20the%20project-ff5e5b?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/alexandrupopa)
 
@@ -697,13 +704,18 @@ and built the Android Auto plumbing before us. Huge thanks to:
   / stitch, reconnect polish, and 800NK Advanced geometry.
 - **[eugen0309/open-cfmoto](https://github.com/eugen0309/open-cfmoto)** — Wi‑Fi Direct (`BikeWifiP2p`)
   and CL‑C450 path.
+- **[Martin Escudero](https://github.com/martinescudero)** — Android Auto 17.4+ head-unit-server
+  dial-out, so current Play Store Android Auto works again.
+- **[Glifaus](https://github.com/Glifaus)** — Wi‑Fi Direct keep-alive (PR #21).
+- **[sashop2001](https://github.com/sashop2001/APOpenCfMoto)** — AA DPI, Bluetooth Connect trigger,
+  Bulgarian strings.
+- **[Authoritt](https://github.com/Authoritt)** — vehicle-telemetry field notes (PR #29).
 - **[headunit-revived](https://github.com/andreknieriem/headunit-revived)** by *andreknieriem* — the
   Android Auto (AAP) receiver foundation.
 
-The upstream project is maintained by **Alexandru**
-([alexandru.rocks](https://alexandru.rocks)). This 450NK edition and its Apps mode are maintained by
-**Andrés Hugo Quintana** ([andpower](https://github.com/andpower)). Thank you to everyone who shared
-logs, captures, and bike reports. Technical notes live in [`docs/`](docs/).
+Maintained by **Alexandru** ([alexandru.rocks](https://alexandru.rocks)) — see **About** in the app.
+Thank you to everyone who shared logs, captures, and bike reports. Technical notes live in
+[`docs/`](docs/).
 
 ---
 
@@ -752,6 +764,6 @@ turned off under Setup → Privacy — details in **[PRIVACY.md](PRIVACY.md)**.
 
 <div align="center">
 
-<sub>Built with ❤️ for the CFMoto community — [join us on Discord](https://discord.gg/xRt5yZy2U).</sub>
+<sub>Built with ❤️ for the CFMoto community — [join us on Discord](https://discord.gg/KNTjJhmFZ6).</sub>
 
 </div>

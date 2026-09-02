@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/layout_controls_bee75ca"
+            android:text="@string/controls_controls"
             android:textColor="@color/text_primary"
             android:textSize="26sp"
             android:textStyle="bold" />
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="12dp"
-            android:text="@string/layout_drive_android_auto_without_touching_c758cbb"
+            android:text="@string/controls_drive_android_auto_without_touching_the_dash_typ"
             android:textColor="@color/text_secondary"
             android:textSize="14sp" />
         </LinearLayout>
@@ -60,7 +60,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/layout_navigate_to_e897077"
+                    android:text="@string/controls_navigate_to"
                     android:textColor="@color/text_secondary"
                     android:textAllCaps="true"
                     android:textSize="12sp"
@@ -70,7 +70,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/layout_type_an_address_or_place_8caa83d"
+                    android:text="@string/controls_type_an_address_or_place_the_route_appears_on_th"
                     android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
 
@@ -79,7 +79,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="@string/layout_destination_d427134"
+                    android:hint="@string/controls_destination"
                     android:inputType="textPostalAddress"
                     android:textColor="@color/text_primary"
                     android:textColorHint="@color/text_secondary" />
@@ -90,7 +90,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/layout_navigate_1eee3af" />
+                    android:text="@string/controls_navigate" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -110,7 +110,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/layout_map_theme_99bfadc"
+                    android:text="@string/controls_map_theme"
                     android:textColor="@color/text_secondary"
                     android:textAllCaps="true"
                     android:textSize="12sp"
@@ -121,7 +121,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/layout_auto_switches_the_dash_map_b32a7fb"
+                    android:text="@string/controls_auto_switches_the_dash_map_to_dark_at_night_and_"
                     android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
 
@@ -139,7 +139,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_auto_c614ba7" />
+                        android:text="@string/controls_auto" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/theme_day"
@@ -148,7 +148,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_day_987b9ce" />
+                        android:text="@string/controls_day" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/theme_night"
@@ -157,7 +157,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_night_1097b55" />
+                        android:text="@string/controls_night" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -186,7 +186,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/layout_on_screen_pad_7f359c7"
+                        android:text="@string/controls_on_screen_pad"
                         android:textColor="@color/text_secondary"
                         android:textAllCaps="true"
                         android:textSize="12sp"
@@ -200,7 +200,7 @@
                         android:minHeight="0dp"
                         android:minWidth="0dp"
                         android:paddingHorizontal="8dp"
-                        android:text="@string/layout_fullscreen_bb08d10"
+                        android:text="@string/controls_fullscreen"
                         android:textColor="@color/brand_orange"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -210,7 +210,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/layout_the_rotary_knob_steps_through_4d7e7b2"
+                    android:text="@string/controls_the_rotary_knob_steps_through_lists_the_arrows_j"
                     android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
 
@@ -220,7 +220,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:text="@string/layout_volume_3b18e8e"
+                    android:text="@string/controls_volume"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -230,7 +230,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="@string/layout_phone_media_volume_nav_voice_9ec3627"
+                    android:text="@string/controls_phone_media_volume_nav_voice_music_use_this_when"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
 
@@ -245,7 +245,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/layout_low_a124947"
+                        android:text="@string/controls_low"
                         android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 
@@ -283,7 +283,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_prev_6a7005f" />
+                        android:text="@string/controls_prev" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_dpad_up"
@@ -301,7 +301,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_next_8e4ffea" />
+                        android:text="@string/controls_next" />
                 </LinearLayout>
 
                 <!-- left / OK / right -->
@@ -328,7 +328,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_ok_9ce3bd4" />
+                        android:text="OK" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_dpad_right"
@@ -383,7 +383,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_back_b52b36b" />
+                        android:text="@string/controls_back" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_home"
@@ -392,7 +392,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_home_70f8bb9" />
+                        android:text="@string/controls_home" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_assistant"
@@ -401,7 +401,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
-                        android:text="@string/layout_voice_3091c84" />
+                        android:text="@string/controls_voice" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -422,7 +422,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/layout_handlebar_buttons_a7366b1"
+                    android:text="@string/controls_handlebar_buttons"
                     android:textColor="@color/text_secondary"
                     android:textAllCaps="true"
                     android:textSize="12sp"
@@ -435,7 +435,7 @@
                     android:layout_marginTop="8dp"
                     android:padding="10dp"
                     android:background="@drawable/hint_pill"
-                    android:text="@string/layout_your_dash_is_a_touchscreen_14dee9b"
+                    android:text="@string/controls_your_dash_is_a_touchscreen_just_tap_the_screen_t"
                     android:textColor="@color/text_primary"
                     android:textSize="13sp"
                     android:visibility="gone" />
@@ -445,7 +445,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/layout_handlebar_buttons_drive_android_auto_4b89f44"
+                    android:text="@string/controls_handlebar_buttons_drive_android_auto"
                     android:textColor="@color/text_primary"
                     android:textSize="15sp" />
 
@@ -453,7 +453,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="@string/layout_requires_the_phone_paired_to_d6eff42"
+                    android:text="@string/controls_requires_the_phone_paired_to_the_bike_over_bluet"
                     android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
 
@@ -463,7 +463,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@string/layout_customize_buttons_ef5a899" />
+                    android:text="@string/controls_customize_buttons" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>

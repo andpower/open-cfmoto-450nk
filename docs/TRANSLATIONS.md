@@ -11,11 +11,16 @@ Draft locales ship for Discord community languages:
 | `values-it/` | Italiano |
 | `values-fr/` | Français |
 | `values-es/` | Español |
+| `values-ca/` | Català |
 | `values-pt/` | Português |
 | `values-pl/` | Polski |
 | `values-cs/` | Čeština |
 | `values-ro/` | Română |
 | `values-nl/` | Nederlands |
+| `values-hu/` | Magyar |
+| `values-tr/` | Türkçe |
+| `values-ko/` | 한국어 |
+| `values-bg/` | Български (sashop2001) |
 
 ## How to improve a translation
 

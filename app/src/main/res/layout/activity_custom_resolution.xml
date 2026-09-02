@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/layout_match_panel_aspect_3f71c1b"
+            android:text="@string/res_match_panel_aspect"
             android:textColor="@color/text_primary"
             android:textSize="26sp"
             android:textStyle="bold" />
@@ -26,7 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="@string/layout_makes_android_auto_render_at_7552b58"
+            android:text="@string/res_makes_android_auto_render_at_your_dash_s_real_as"
             android:textColor="@color/text_secondary"
             android:textSize="14sp" />
 
@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
                 android:layout_weight="1"
-                android:text="@string/layout_auto_c614ba7" />
+                android:text="@string/controls_auto" />
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/match_off"
                 style="@style/Widget.OpenCfMoto.Segment"
@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="4dp"
                 android:layout_weight="1"
-                android:text="@string/layout_off_e3de5ab" />
+                android:text="@string/res_off" />
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/match_manual"
                 style="@style/Widget.OpenCfMoto.Segment"
@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_weight="1"
-                android:text="@string/layout_manual_4e836fd" />
+                android:text="@string/res_manual" />
         </LinearLayout>
 
         <LinearLayout
@@ -76,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
                 android:layout_weight="1"
-                android:hint="@string/layout_panel_width_c9f2042"
+                android:hint="@string/res_panel_width"
                 android:importantForAutofill="no"
                 android:inputType="number"
                 android:textColor="@color/text_primary"
@@ -87,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_weight="1"
-                android:hint="@string/layout_panel_height_d330e37"
+                android:hint="@string/res_panel_height"
                 android:importantForAutofill="no"
                 android:inputType="number"
                 android:textColor="@color/text_primary"
@@ -108,7 +108,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="@string/layout_save_efc007a" />
+            android:text="@string/res_save" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_custom_res_done"
@@ -116,6 +116,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/layout_done_e9b450d" />
+            android:text="@string/about_done" />
     </LinearLayout>
 </ScrollView>
